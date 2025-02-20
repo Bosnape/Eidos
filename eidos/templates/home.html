@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eidos - Digital Tools for Modern Barbershops</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00a896;
+            --primary-dark: #007f6e;
+        }
+        
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .text-primary {
+            color: var(--primary-color);
+        }
+        
+        .border-primary {
+            border-color: var(--primary-color);
+        }
+        
+        .hover-grow {
+            transition: transform 0.2s;
+        }
+        
+        .hover-grow:hover {
+            transform: scale(1.05);
+        }
+
+        .sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* New styles to fix overlapping */
+        body {
+            padding-top: 30px; /* Height of the navbar */
+        }
+
+        #navbar {
+            height: 64px; /* Fixed height for the navbar */
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <nav id="navbar" class="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-primary">Eidos</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-gray-600 hover:text-primary">Features</a>
+                    <a href="/business" class="text-gray-600 hover:text-primary">Businesses</a>
+                    <a href="/contact" class="text-gray-600 hover:text-primary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Hero Section -->
+    <div class="relative bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto text-center">
+            <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                <div class="text-center">
+                    <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                        <span class="block">Transform Your</span>
+                        <span class="block text-primary">Digital Presence</span>
+                    </h1>
+                    <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl">
+                        Empower your business with powerful digital tools designed specifically for barbershops and beauty professionals.
+                    </p>
+                    <div class="mt-5 sm:mt-8 flex justify-center">
+                        <div class="rounded-md shadow">
+                            <a href="/get_started" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:opacity-90 md:py-4 md:text-lg md:px-10">
+                                Start Free Trial
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- Features Section -->
+    <div id="features" class="py-12 bg-white" style="padding-top: 80px;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">Comprehensive Business Solutions</h2>
+                <p class="mt-4 text-xl text-gray-500">Everything you need to establish and grow your digital presence.</p>
+            </div>
+            <div class="mt-10">
+                <!-- Identity Section -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-primary mb-8">Identity Management</h3>
+                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-palette text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Brand Customization</h4>
+                            <p class="text-gray-600">Upload your logo, customize colors, and maintain consistent branding across your digital presence.</p>
+                        </div>
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-share-alt text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Social Integration</h4>
+                            <p class="text-gray-600">Connect all your social media accounts and maintain a cohesive online presence.</p>
+                        </div>
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-book-open text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Story Telling</h4>
+                            <p class="text-gray-600">Share your brand story, mission, and vision to connect with customers on a deeper level.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sales Section -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-primary mb-8">Sales Enhancement</h3>
+                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-camera text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Visual Showcase</h4>
+                            <p class="text-gray-600">Display high-quality images of your services and products with our advanced gallery system.</p>
+                        </div>
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-tags text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Service Catalog</h4>
+                            <p class="text-gray-600">Create detailed service descriptions with pricing, duration, and availability information.</p>
+                        </div>
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-chart-line text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Performance Tracking</h4>
+                            <p class="text-gray-600">Monitor sales performance and identify trending services with detailed analytics.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Operations Section -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-primary mb-8">Operational Excellence</h3>
+                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-users text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Staff Management</h4>
+                            <p class="text-gray-600">Create detailed staff profiles, manage schedules, and track performance metrics.</p>
+                        </div>
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-calendar-alt text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Smart Scheduling</h4>
+                            <p class="text-gray-600">Automated appointment booking system with customizable time slots and instant confirmations.</p>
+                        </div>
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-gift text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Promotion Management</h4>
+                            <p class="text-gray-600">Create and manage targeted promotions, discounts, and special offers with timing controls.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Analytics Section -->
+                <div>
+                    <h3 class="text-2xl font-bold text-primary mb-8">Business Intelligence</h3>
+                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-star text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Customer Feedback</h4>
+                            <p class="text-gray-600">Collect and analyze customer reviews and ratings to improve service quality.</p>
+                        </div>
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-chart-pie text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Data Analytics</h4>
+                            <p class="text-gray-600">Get insights into customer preferences, peak hours, and business trends.</p>
+                        </div>
+                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
+                            <i class="fas fa-bullseye text-primary text-2xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-4">Strategic Planning</h4>
+                            <p class="text-gray-600">Make data-driven decisions with comprehensive business performance reports.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Call to Action -->
+    <div class="bg-primary">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-white">Ready to Transform Your Business?</h2>
+                <p class="mt-4 text-xl text-white opacity-90">Join thousands of successful barbershops using Eidos.</p>
+                <div class="mt-8">
+                    <a href="/get_started" class="inline-block bg-white text-primary px-8 py-3 rounded-lg font-medium hover:opacity-90">
+                        Get Started Today
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer remains the same -->
+    <footer class="bg-gray-800">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-bold mb-4">Product</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Features</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">About</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Blog</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Privacy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2025 Eidos. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.onscroll = function() {stickyNav()};
+
+        var navbar = document.getElementById("navbar");
+        var sticky = navbar.offsetTop;
+
+        function stickyNav() {
+            if (window.pageYOffset >= sticky) {
+                navbar.classList.add("sticky")
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        }
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - Eidos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00a896;
+            --primary-dark: #007f6e;
+            --secondary-color: #f8f9fa;
+        }
+        
+        .bg-primary { background-color: var(--primary-color); }
+        .text-primary { color: var(--primary-color); }
+        .border-primary { border-color: var(--primary-color); }
+        .bg-secondary { background-color: var(--secondary-color); }
+        
+        body { padding-top: 64px; }
+        #navbar { height: 64px; }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .file-upload {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border: 2px dashed #e5e7eb;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-color);
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .help-text {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        #logo-preview {
+            max-width: 100%;
+            max-height: 200px;
+            display: none;
+            margin-top: 1rem;
+        }
+
+        #logo-message {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav id="navbar" class="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-primary">Eidos</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/business" class="text-gray-600 hover:text-primary">Businesses</a>
+                    <a href="/contact" class="text-gray-600 hover:text-primary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Get Started Form -->
+    <div class="max-w-3xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-xl rounded-lg overflow-hidden">
+            <div class="px-4 py-5 bg-secondary sm:p-6">
+                <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-6">Get Started with Eidos</h2>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="error-message">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+                            {% if field.errors %}
+                                <div class="error-message">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                            {% if field.name == 'logo' %}
+                                {{ field }}
+                                <div id="logo-message"></div>
+                                <img id="logo-preview" src="#" alt="Logo preview" />
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                            {% if field.help_text %}
+                                <p class="help-text">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+
+                    <div class="mt-6">
+                        <button type="submit" class="btn-primary w-full">
+                            Register Your Business
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 mt-16">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-bold mb-4">Product</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Features</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">About</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Blog</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Privacy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2025 Eidos. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoInput = document.querySelector('input[type="file"]');
+            const logoPreview = document.getElementById('logo-preview');
+            const logoMessage = document.getElementById('logo-message');
+            logoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        logoPreview.src = e.target.result;
+                        logoPreview.style.display = 'block';
+                        logoMessage.textContent = 'Logo uploaded successfully!';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    logoPreview.style.display = 'none';
+                    logoMessage.textContent = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

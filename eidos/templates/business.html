@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eidos - Businesses Using Our Digital Tools</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00a896;
+            --primary-dark: #007f6e;
+        }
+        
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .text-primary {
+            color: var(--primary-color);
+        }
+        
+        .border-primary {
+            border-color: var(--primary-color);
+        }
+        
+        .hover-grow {
+            transition: transform 0.2s;
+        }
+        
+        .hover-grow:hover {
+            transform: scale(1.05);
+        }
+        .sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .search-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .search-container:hover {
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        .search-input {
+            width: 100%;
+            padding: 15px 60px 15px 30px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.3);
+        }
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            bottom: 5px;
+            padding: 0 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .search-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        /* New styles to fix overlapping */
+        body {
+            padding-top: 64px; /* Height of the navbar */
+        }
+        #navbar {
+            height: 64px; /* Fixed height for the navbar */
+        }
+        .hero-section {
+            padding-top: 2rem; /* Add some top padding to the hero section */
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav id="navbar" class="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-primary">Eidos</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/business" class="text-gray-600 hover:text-primary">Businesses</a>
+                    <a href="/contact" class="text-gray-600 hover:text-primary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Modified Hero Section with Search Bar and Immediate Results -->
+    <div class="relative bg-white overflow-hidden hero-section">
+        <div class="max-w-7xl mx-auto text-center py-12 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                <span class="block">Discover Thriving</span>
+                <span class="block text-primary">Eidos-Powered Businesses</span>
+            </h1>
+            <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl">
+                Explore how barbershops and beauty professionals are transforming their digital presence with Eidos.
+            </p>
+            <!-- Search Form -->
+            <div class="mt-8 max-w-3xl mx-auto">
+                <form method="GET" action="" class="search-container">
+                    <input type="text" 
+                        name="searchBusiness" 
+                        placeholder="Find your next favorite salon or barbershop..." 
+                        class="search-input"
+                        value="{{ searchTerm|default:'' }}">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modified Search Results Section -->
+    {% if searchTerm %}
+    <div class="bg-gray-50 border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">
+                    Results for "{{ searchTerm }}"
+                </h2>
+                <p class="text-sm text-gray-500">
+                    {{ businesses|length }} businesses found
+                </p>
+            </div>
+            
+            {% if businesses %}
+            <div class="space-y-4">
+                {% for business in businesses %}
+                <div class="business-result bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/4 relative">
+                            <img src="{{ business.logo.url }}" 
+                                alt="{{ business.name }}" 
+                                class="w-full h-48 md:h-full object-cover">
+                            <div class="absolute top-2 right-2 bg-white rounded-full p-2 shadow-sm">
+                                <i class="fas fa-heart text-gray-300 hover:text-primary cursor-pointer"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1 p-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ business.name }}</h3>
+                                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        <span>4.8 (124 reviews)</span>
+                                    </div>
+                                </div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-primary">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Verified
+                                </span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <p class="flex items-center text-gray-600">
+                                    <i class="fas fa-map-marker-alt w-5 text-primary"></i>
+                                    {{ business.address }}
+                                </p>
+                                <p class="flex items-center text-gray-600">
+                                    <i class="fas fa-phone w-5 text-primary"></i>
+                                    {{ business.phone }}
+                                </p>
+                            </div>
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                <div class="flex space-x-4">
+                                    <span class="inline-flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Open until 8:00 PM
+                                    </span>
+                                    <span class="inline-flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-scissors mr-1"></i>
+                                        20+ services
+                                    </span>
+                                </div>
+                                <a href="/{{ business.name }}" 
+                                class="inline-flex items-center px-4 py-2 border border-primary text-sm font-medium rounded-md text-primary hover:bg-primary hover:text-white transition-colors duration-200">
+                                    View Details
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12 bg-white rounded-xl shadow-sm">
+                <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-600 mb-2">No businesses found matching your search criteria.</p>
+                <p class="text-gray-500">Try adjusting your search terms.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Success Stories -->
+    <div class="bg-gray-100 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">Success Stories</h2>
+                <p class="mt-4 text-xl text-gray-500">Hear from our satisfied customers</p>
+            </div>
+            <div class="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Testimonial 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <p class="text-gray-600 italic">"Eidos has revolutionized how we manage our barbershop. Our online bookings have increased by 200% since we started using the platform."</p>
+                    <p class="mt-4 font-bold">- John Doe, Owner of Classic Cuts</p>
+                </div>
+                <!-- Testimonial 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <p class="text-gray-600 italic">"The customer analytics provided by Eidos have helped us tailor our services to meet our clients' needs better. It's been a game-changer for our salon."</p>
+                    <p class="mt-4 font-bold">- Jane Smith, Manager at Sleek Styles</p>
+                </div>
+                <!-- Testimonial 3 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <p class="text-gray-600 italic">"Thanks to Eidos, we've been able to showcase our work effectively on social media. Our follower count has tripled in just a few months!"</p>
+                    <p class="mt-4 font-bold">- Mike Johnson, Co-founder of Beard Bros</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="bg-primary">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-white">Ready to Join These Success Stories?</h2>
+                <p class="mt-4 text-xl text-white opacity-90">Transform your barbershop or salon with Eidos today.</p>
+                <div class="mt-8">
+                    <a href="/get_started" class="inline-block bg-white text-primary px-8 py-3 rounded-lg font-medium hover:opacity-90">
+                        Get Started Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-bold mb-4">Product</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Features</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">About</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Blog</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Privacy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2025 Eidos. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        window.onscroll = function() {stickyNav()};
+        var navbar = document.getElementById("navbar");
+        var sticky = navbar.offsetTop;
+        function stickyNav() {
+            if (window.pageYOffset >= sticky) {
+                navbar.classList.add("sticky")
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        }
+    </script>
+
+</body>
+</html>
