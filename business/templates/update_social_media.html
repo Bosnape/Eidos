@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Social Media - {{ business.name }}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .social-label {
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-icon {
+            font-size: 1.5rem;
+            width: 32px;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button, .cancel-button {
+            width: 50%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        button {
+            background-color: #00a896;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #007f6e;
+        }
+
+        .cancel-button {
+            background-color: #555;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            line-height: 40px;
+        }
+
+        .cancel-button:hover {
+            background-color: #333;
+        }
+    </style>
+{% endblock %}
+
+{% block body_class %}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Edit Social Media for {{ business.name }}</h1>
+        <form method="post">
+            {% csrf_token %}
+            
+            <label class="social-label" for="id_instagram">
+                <i class="fab fa-instagram social-icon" style="color: #E1306C;"></i> Instagram
+            </label>
+            <input type="url" name="instagram" id="id_instagram" value="{{ form.instagram.value|default_if_none:'' }}" placeholder="https://instagram.com/...">
+
+            <label class="social-label" for="id_facebook">
+                <i class="fab fa-facebook-f social-icon" style="color: #1877F2;"></i> Facebook
+            </label>
+            <input type="url" name="facebook" id="id_facebook" value="{{ form.facebook.value|default_if_none:'' }}" placeholder="https://facebook.com/...">
+
+            <label class="social-label" for="id_twitter">
+                <i class="fab fa-x-twitter social-icon" style="color: #000;"></i> X (Twitter)
+            </label>
+            <input type="url" name="twitter" id="id_twitter" value="{{ form.twitter.value|default_if_none:'' }}" placeholder="https://x.com/...">
+
+            <label class="social-label" for="id_tiktok">
+                <i class="fab fa-tiktok social-icon" style="color: #000;"></i> TikTok
+            </label>
+            <input type="url" name="tiktok" id="id_tiktok" value="{{ form.tiktok.value|default_if_none:'' }}" placeholder="https://tiktok.com/...">
+
+            <div class="button-container">
+                <button type="submit">Save Changes</button>
+                <a href="{% url 'business_dashboard' %}" class="cancel-button">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
