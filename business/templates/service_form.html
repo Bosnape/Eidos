@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if service %}Edit Service{% else %}Add Service {% endif %}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f4f4; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+        }
+        .container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            width: 350px; 
+            text-align: center;
+        }
+        h1 { 
+            font-size: 22px; 
+            color: #333; 
+        }
+        form { 
+            text-align: left; 
+        }
+        label { 
+            display: block; 
+            font-weight: bold; 
+            margin-top: 10px; 
+            text-align: left;
+        }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 8px; 
+            margin-top: 5px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            box-sizing: border-box; 
+            font-size: 14px;
+        }
+        textarea { 
+            height: 60px; 
+            resize: none; 
+        }
+        .checkbox-container { 
+            display: flex; 
+            align-items: center; 
+            margin-top: 10px; 
+        }
+        .checkbox-container input { 
+            width: auto; 
+            margin-right: 10px; 
+        }
+        .button { 
+            background-color: #00a896; 
+            color: white; 
+            padding: 10px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .button:hover { 
+            background-color: #007f6e; 
+        }
+        .image-preview { 
+            margin-top: 10px;
+            text-align: center;
+        }
+        .image-preview img { 
+            max-width: 100px; 
+            max-height: 100px; 
+            border-radius: 5px; 
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        .image-preview {
+            text-align: center; 
+            margin-bottom: 10px; 
+        }
+
+        .image-preview img {
+            max-width: 100px; 
+            height: auto;
+            border-radius: 5px; 
+            display: block;
+            margin: 0 auto; 
+        }
+        .change-button {
+            background-color: #757272; 
+            color: white;
+            padding: 8px 16px; 
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: block;
+            margin: 5px auto 0; /* Centrado debajo de la imagen */
+        }
+
+        .change-button:hover {
+            background-color: #666; /* Un gris más oscuro al pasar el mouse */
+        }
+    </style>
+{% endblock %}
+
+{% block body_class %}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>{% if service %}Edit Service{% else %}Add a new service{% endif %}</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {{ form.name.label_tag }}
+            {{ form.name }}
+
+            {{ form.description.label_tag }}
+            {{ form.description }}
+
+            {{ form.price.label_tag }}
+            {{ form.price }}
+
+            <div class="checkbox-container">
+                {{ form.available }}
+                <label for="{{ form.available.id_for_label }}">Available</label>
+            </div>
+
+            <div class="image-container">
+                <label class="image-label">Image:</label>
+                {% if service and service.image %}
+                    <div class="image-preview">
+                        <img src="{{ service.image.url }}" alt="Service Image">
+                    </div>
+                {% endif %}
+                <input type="file" name="{{ form.image.name }}" style="display: none;" id="imageInput">
+                <button type="button" class="change-button" onclick="document.getElementById('imageInput').click();">
+                    <strong>Change image</strong>
+                </button>
+            </div>         
+
+            <button type="submit" class="button">
+                {% if service %}Save Changes{% else %}Add Service{% endif %}
+            </button>
+        </form>
+    </div>
+{% endblock %}
