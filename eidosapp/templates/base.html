@@ -117,7 +117,7 @@
                     {% if user.is_authenticated %}
                         <a href="{% url 'search_business' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'search_business' %}active{% endif %}">Businesses</a>
                         <a href="{% url 'business_dashboard' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'business_dashboard' %}active{% endif %}">Dashboard</a>
-                        <a href="#" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'services' %}active{% endif %}">Services</a>
+                        <a href="{% url 'dashboard_services' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'dashboard_services' %}active{% endif %}">Services</a>
                         <a href="#" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'staff' %}active{% endif %}">Staff</a>
                         <a href="{% url 'manage_profile' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'manage_profile' %}active{% endif %}">Profile</a>
                         <a href="{% url 'logout' %}" class="auth-btn logout-btn ml-4">Logout</a>
