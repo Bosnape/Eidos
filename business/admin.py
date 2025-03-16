@@ -1,6 +1,13 @@
 from django.contrib import admin
-from business.models import Business
+from .models import BusinessAccount, RegistrationSession
 
-# Register your models here.
+class BusinessAccountAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user', 'phone')
+    search_fields = ('name', 'phone')
+    
+class RegistrationSessionAdmin(admin.ModelAdmin):
+    list_display = ('session_key', 'name', 'created_at')
+    readonly_fields = ('created_at',)
 
-admin.site.register(Business)
+admin.site.register(BusinessAccount, BusinessAccountAdmin)
+admin.site.register(RegistrationSession, RegistrationSessionAdmin)
