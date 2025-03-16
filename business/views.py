@@ -5,8 +5,128 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 import os
-from .models import BusinessAccount, RegistrationSession, Account
-from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm
+from .models import BusinessAccount, RegistrationSession, Account, Service
+from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, ServiceForm, SocialMediaForm
+
+@login_required
+def provideDashboardSection(request):
+    try:
+        business = BusinessAccount.objects.get(user=request.user)
+    except BusinessAccount.DoesNotExist:
+        # This shouldn't happen with normal flow, but handle edge case
+        messages.error(request, "Business profile not found")
+        return redirect('home')
+        
+    return render(request, 'dashboard.html', {'business': business})
+
+@login_required
+def manageProfile(request):
+    try:
+        business = BusinessAccount.objects.get(user=request.user)
+    except BusinessAccount.DoesNotExist:
+        messages.error(request, "Business profile not found")
+        return redirect('business_dashboard')
+        
+    if request.method == 'POST':
+        form = BusinessProfileForm(request.POST, request.FILES, instance=business)
+        if 'logo' in request.FILES:
+            if business.logo and business.logo.name:
+                try:
+                    old_logo_path = business.logo.path
+                    if os.path.isfile(old_logo_path):
+                        os.remove(old_logo_path)
+                except Exception as e:
+                    print(f"Error deleting old logo: {str(e)}")
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('business_dashboard')
+    else:
+        form = BusinessProfileForm(instance=business)
+        
+    return render(request, 'manage.html', {'form': form, 'business': business})
+
+def updateSocialMedia(request):
+    try:
+        business = BusinessAccount.objects.get(user=request.user)
+    except BusinessAccount.DoesNotExist:
+        messages.error(request, "Business profile not found")
+        return redirect('home')
+
+    if request.method == "POST":
+        form = SocialMediaForm(request.POST, instance=business)
+        if form.is_valid():
+            form.save()
+            return redirect('business_dashboard') 
+
+    else:
+        form = SocialMediaForm(instance=business)
+
+    return render(request, 'update_social_media.html', {'form': form, 'business': business})
+
+@login_required
+def dashboardServicesView(request):
+    try:
+        business = BusinessAccount.objects.get(user=request.user)
+    except BusinessAccount.DoesNotExist:
+        messages.error(request, "Business profile not found")
+        return redirect('home')
+    
+    services = Service.objects.filter(business=business)
+    return render(request, 'dashboard_services.html', {'business': business, 'services': services})
+
+@login_required
+def addService(request):
+    try:
+        business = BusinessAccount.objects.get(user=request.user)
+    except BusinessAccount.DoesNotExist:
+        messages.error(request, "Business profile not found")
+        return redirect('home')
+
+    if request.method == "POST":
+        form = ServiceForm(request.POST, request.FILES)
+        if form.is_valid():
+            service = form.save(commit=False)
+            service.business = business  # Asigna el negocio al servicio
+            service.save()
+            messages.success(request, "Service added successfully!")
+            return redirect('dashboard_services')
+
+    else:
+        form = ServiceForm()
+
+    return render(request, 'service_form.html', {'form': form, 'business': business})
+
+@login_required
+def editService(request, service_id):
+    try:
+        service = Service.objects.filter(id=service_id).first()
+    except Service.DoesNotExist:
+        messages.error(request, "Service not found")
+        return redirect('home')
+
+    if request.method == "POST":
+        form = ServiceForm(request.POST, request.FILES, instance=service)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Service updated successfully!")
+            return redirect('dashboard_services') 
+    else:
+        form = ServiceForm(instance=service)
+
+    return render(request, 'service_form.html', {'form': form, 'service': service, 'business': service.business})
+
+@login_required
+def deleteService(request, service_id):
+    try:
+        service = Service.objects.filter(id=service_id).first()
+    except Service.DoesNotExist:
+        messages.error(request, "Service not found")
+        return redirect('home')
+
+    service.delete()
+    messages.success(request, "Service deleted successfully!")
+    return redirect('dashboard_services')
 
 def registerBusinessInfo(request):
     
@@ -122,58 +242,16 @@ def logoutBusiness(request):
     messages.success(request, "Logged out successfully!")
     return redirect('home')
 
-@login_required
-def provideDashboardSection(request):
-    try:
-        business = BusinessAccount.objects.get(user=request.user)
-    except BusinessAccount.DoesNotExist:
-        # This shouldn't happen with normal flow, but handle edge case
-        messages.error(request, "Business profile not found")
-        return redirect('home')
-        
-    return render(request, 'dashboard.html', {'business': business})
-
-@login_required
-def provideServicesSection(request, name):
-    pass
-
-@login_required
-def manageProfile(request):
-    try:
-        business = BusinessAccount.objects.get(user=request.user)
-    except BusinessAccount.DoesNotExist:
-        messages.error(request, "Business profile not found")
-        return redirect('business_dashboard')
-        
-    if request.method == 'POST':
-        form = BusinessProfileForm(request.POST, request.FILES, instance=business)
-        if 'logo' in request.FILES:
-            if business.logo and business.logo.name:
-                try:
-                    old_logo_path = business.logo.path
-                    if os.path.isfile(old_logo_path):
-                        os.remove(old_logo_path)
-                except Exception as e:
-                    print(f"Error deleting old logo: {str(e)}")
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile updated successfully!")
-            return redirect('business_dashboard')
-    else:
-        form = BusinessProfileForm(instance=business)
-        
-    return render(request, 'manage.html', {'form': form, 'business': business})
-
 def displayProfile(request, business_name):
     try:
         # Get the specific business by name (case-insensitive)
         business = BusinessAccount.objects.filter(name__iexact=business_name).first()
-        
         if business is None:
             messages.error(request, f"Business '{business_name}' not found.")
             return redirect('home')
-            
-        return render(request, "profile.html", {'business': business})
+        
+        services = Service.objects.filter(business=business)
+        return render(request, "public_profile.html", {'business': business, 'services': services})
     except Exception as e:
         messages.error(request, f"Error finding business: {str(e)}")
         return redirect('home')
