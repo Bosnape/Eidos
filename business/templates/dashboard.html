@@ -83,10 +83,20 @@
                         </span>
                     </div>
                 </div>
-                <div class="rounded-md shadow">
-                    <a href="{% url 'manage_profile'%}" class="edit-button">
-                        <i class="fas fa-edit mr-2"></i>Edit Profile
-                    </a>
+
+                <div class="flex md:flex-col items-start gap-8">
+                    <div class="rounded-md shadow">
+                        <a href="{% url 'manage_profile'%}" class="edit-button">
+                            <i class="fas fa-edit mr-2"></i>Edit Profile
+                        </a>
+                    </div>
+
+                    <div class="rounded-md shadow">
+                        <a href="{% url 'update_social_media' %}" class="edit-button">
+                            <i class="fas fa-edit mr-2"></i>
+                            <span>Edit Social Media</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -120,6 +130,36 @@
                         <p class="text-lg font-medium text-gray-900">{{ business.address }}</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center items-center mt-4">
+            <div class="flex items-center space-x-3">
+                {% if business.instagram %}
+                    <a href=" {{ business.instagram }} " class="social-btn" target="_blank">
+                        <i class="fab fa-instagram"></i> Instagram
+                    </a>
+                {% endif %}
+        
+                {% if business.facebook %}
+                    <a href="{{ business.facebook }}" class="social-btn" target="_blank" style="background-color: #1877F2;">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                {% endif %}
+        
+                {% if business.twitter %}
+                    <a href="{{ business.twitter }}" class="social-btn" target="_blank" style="background-color: #000;">
+                        <i class="fab fa-x-twitter"></i>
+                        <span>X</span>
+                    </a>
+                {% endif %}
+        
+                {% if business.tiktok %}
+                <a href="{{ business.tiktok }}" class="social-btn" target="_blank" style="background-color: #000;">
+                    <i class="fab fa-tiktok"></i>
+                    <span>Tiktok</span>
+                </a>
+                {% endif %}
             </div>
         </div>
     </section>
