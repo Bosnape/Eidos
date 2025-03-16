@@ -1,23 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ business.name }} - Professional Barbershop</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% extends 'base.html' %}
+
+{% block title %}Public Page - Professional Barbershop{% endblock %}
+
+{% block extra_css %}
     <style>
-        :root {
-            --primary-color: #00a896;
-            --primary-dark: #007f6e;
-        }
-        
-        .bg-primary { background-color: var(--primary-color); }
-        .text-primary { color: var(--primary-color); }
-        .border-primary { border-color: var(--primary-color); }
-        
+        body {
+            padding-top: 32px; /* Height of the navbar */
+        }    
+
         .service-card {
-            transition: transform 0.2s ease-in-out;
+                transition: transform 0.2s ease-in-out;
         }
         
         .service-card:hover {
@@ -35,25 +27,10 @@
         .contact-info-item:hover {
             background-color: rgba(0, 168, 150, 0.1);
         }
-        
     </style>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav id="navbar" class="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <a href="/" class="text-2xl font-bold text-primary">Eidos</a>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="/business" class="text-gray-600 hover:text-primary">Businesses</a>
-                    <a href="/contact" class="text-gray-600 hover:text-primary">Contact Us</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% endblock %}
 
+{% block content %}
     <!-- Hero Section -->
     <div class="relative overflow-hidden bg-white">
         <div class="absolute inset-0 z-0">
@@ -105,17 +82,18 @@
     </div>
 
     <!-- About Section -->
+    {% if business.description %}
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-gray-900">About Us</h2>
                 <div class="mt-8 text-lg text-gray-600 max-w-3xl mx-auto">
-                    <p>Welcome to {{ business.name }}, where traditional barbering meets modern style. With over 10 years of experience, we pride ourselves on delivering exceptional grooming services in a comfortable, professional environment.</p>
-                    <p class="mt-4">Our team of skilled barbers is dedicated to helping you look and feel your best, combining time-honored techniques with contemporary trends to create the perfect look for each client.</p>
+                    <p>{{ business.description }}</p>
                 </div>
             </div>
         </div>
     </section>
+    {% endif %}
 
     <!-- Services Section -->
     <section class="py-16 bg-gray-50">
@@ -356,8 +334,10 @@
             </a>
         </div>
     </section>
+{% endblock %}
 
-    <!-- Footer -->
+{% block default_footer %}
+    <!-- Footer changed-->
     <footer class="bg-gray-800 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -382,5 +362,4 @@
             </div>
         </div>
     </footer>
-</body>
-</html>
+{% endblock %}
