@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import BusinessAccount, RegistrationSession
+from .models import BusinessAccount, RegistrationSession, Service
 
 Account = get_user_model()
 
@@ -66,3 +66,13 @@ class BusinessProfileForm(forms.ModelForm):
     class Meta:
         model = BusinessAccount
         fields = ['name', 'phone', 'email', 'address', 'description', 'logo']
+        
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name', 'description', 'price', 'available', 'image']
+
+class SocialMediaForm(forms.ModelForm):
+    class Meta:
+        model = BusinessAccount
+        fields = ['instagram', 'facebook', 'twitter', 'tiktok']
