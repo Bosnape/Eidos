@@ -46,6 +46,7 @@ def manageProfile(request):
         
     return render(request, 'manage.html', {'form': form, 'business': business})
 
+@login_required
 def updateSocialMedia(request):
     try:
         business = BusinessAccount.objects.get(user=request.user)
@@ -236,6 +237,7 @@ def loginBusiness(request):
     
     return render(request, 'login.html', {'form': form})
 
+@login_required
 def logoutBusiness(request):
     """User logout view"""
     logout(request)
