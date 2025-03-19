@@ -3,134 +3,341 @@
 {% block title %}Edit Social Media - {{ business.name }}{% endblock %}
 
 {% block extra_css %}
-    <style>
-        body {
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<style>
+    :root {
+        --primary-color: #00a896;
+        --primary-dark: #007f6e;
+        --secondary-color: #f8f9fa;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+    }
 
-        .container {
-            width: 50%;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
+    /* Page Styles */
+    .page-container {
+        min-height: calc(100vh - 64px);
+        background-color: #f9fafb;
+        padding: 2rem 1rem;
+        margin-top: 0; /* Removed top margin */
+    }
 
-        h1 {
-            font-size: 1.5rem;
-            color: #333;
-            margin-bottom: 20px;
-        }
+    .content-wrapper {
+        max-width: 700px;
+        margin: 0 auto;
+    }
 
-        label {
-            display: block;
-            font-weight: bold;
-            margin-top: 15px;
-            text-align: left;
-        }
+    .card {
+        background-color: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
+    .card-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 1.5rem;
+        position: relative;
+    }
 
-        .social-label {
-            font-size: 1rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .card-header::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: linear-gradient(to right bottom, 
+            rgba(0, 168, 150, 0.5) 0%, 
+            rgba(0, 168, 150, 0) 50%, 
+            rgba(0, 168, 150, 0) 100%);
+    }
 
-        .social-icon {
-            font-size: 1.5rem;
-            width: 32px;
-            text-align: center;
-        }
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
 
+    .card-title i {
+        font-size: 1.75rem;
+    }
+
+    .card-subtitle {
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        opacity: 0.9;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .social-label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .social-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: var(--gray-100);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .social-icon {
+        font-size: 1.25rem;
+    }
+
+    .instagram-icon { color: #E1306C; }
+    .facebook-icon { color: #1877F2; }
+    .twitter-icon { color: #000; }
+    .tiktok-icon { color: #000; }
+
+    /* Custom X icon for Twitter */
+    .x-icon {
+        position: relative;
+        width: 1em;
+        height: 1em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+        font-weight: bold;
+        font-size: 1.25rem;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+        pointer-events: none;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.75rem;
+        border: 1px solid var(--gray-300);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        background-color: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .form-control::placeholder {
+        color: var(--gray-400);
+    }
+
+    /* Button Styles */
+    .button-container {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 0.875rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .btn-secondary {
+        background-color: var(--gray-200);
+        color: var(--gray-700);
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--gray-300);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-secondary:active {
+        transform: translateY(0);
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .content-wrapper {
+            max-width: 100%;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
         .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
+            flex-direction: column;
         }
+        
+        .btn {
+            width: 100%;
+        }
+    }
 
-        button, .cancel-button {
-            width: 50%;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            text-align: center;
-            transition: background 0.2s;
-        }
-
-        button {
-            background-color: #00a896;
-            color: white;
-        }
-
-        button:hover {
-            background-color: #007f6e;
-        }
-
-        .cancel-button {
-            background-color: #555;
-            color: white;
-            text-decoration: none;
-            display: inline-block;
-            line-height: 40px;
-        }
-
-        .cancel-button:hover {
-            background-color: #333;
-        }
-    </style>
+    /* Hover Effects */
+    .form-group:hover .social-icon-wrapper {
+        transform: scale(1.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
 {% endblock %}
 
-{% block body_class %}{% endblock %}
+{% block body_class %}bg-gray-50{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h1>Edit Social Media for {{ business.name }}</h1>
-        <form method="post">
-            {% csrf_token %}
-            
-            <label class="social-label" for="id_instagram">
-                <i class="fab fa-instagram social-icon" style="color: #E1306C;"></i> Instagram
-            </label>
-            <input type="url" name="instagram" id="id_instagram" value="{{ form.instagram.value|default_if_none:'' }}" placeholder="https://instagram.com/...">
-
-            <label class="social-label" for="id_facebook">
-                <i class="fab fa-facebook-f social-icon" style="color: #1877F2;"></i> Facebook
-            </label>
-            <input type="url" name="facebook" id="id_facebook" value="{{ form.facebook.value|default_if_none:'' }}" placeholder="https://facebook.com/...">
-
-            <label class="social-label" for="id_twitter">
-                <i class="fab fa-x-twitter social-icon" style="color: #000;"></i> X (Twitter)
-            </label>
-            <input type="url" name="twitter" id="id_twitter" value="{{ form.twitter.value|default_if_none:'' }}" placeholder="https://x.com/...">
-
-            <label class="social-label" for="id_tiktok">
-                <i class="fab fa-tiktok social-icon" style="color: #000;"></i> TikTok
-            </label>
-            <input type="url" name="tiktok" id="id_tiktok" value="{{ form.tiktok.value|default_if_none:'' }}" placeholder="https://tiktok.com/...">
-
-            <div class="button-container">
-                <button type="submit">Save Changes</button>
-                <a href="{% url 'business_dashboard' %}" class="cancel-button">Cancel</a>
+<div class="page-container">
+    <div class="content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">
+                    <i class="fas fa-share-alt"></i>
+                    Edit Social Media
+                </h1>
+                <div class="card-subtitle">Connect your business profiles for {{ business.name }}</div>
             </div>
-        </form>
+            
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label class="social-label" for="id_instagram">
+                            <div class="social-icon-wrapper">
+                                <i class="fab fa-instagram social-icon instagram-icon"></i>
+                            </div>
+                            Instagram
+                        </label>
+                        <div class="input-group">
+                            <i class="fas fa-link input-icon"></i>
+                            <input type="url" name="instagram" id="id_instagram" class="form-control" 
+                                value="{{ form.instagram.value|default_if_none:'' }}" 
+                                placeholder="https://instagram.com/yourbusiness">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="social-label" for="id_facebook">
+                            <div class="social-icon-wrapper">
+                                <i class="fab fa-facebook-f social-icon facebook-icon"></i>
+                            </div>
+                            Facebook
+                        </label>
+                        <div class="input-group">
+                            <i class="fas fa-link input-icon"></i>
+                            <input type="url" name="facebook" id="id_facebook" class="form-control" 
+                                value="{{ form.facebook.value|default_if_none:'' }}" 
+                                placeholder="https://facebook.com/yourbusiness">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="social-label" for="id_twitter">
+                            <div class="social-icon-wrapper">
+                                <!-- Using a custom X icon to ensure it appears -->
+                                <span class="x-icon">𝕏</span>
+                            </div>
+                            X (Twitter)
+                        </label>
+                        <div class="input-group">
+                            <i class="fas fa-link input-icon"></i>
+                            <input type="url" name="twitter" id="id_twitter" class="form-control" 
+                                value="{{ form.twitter.value|default_if_none:'' }}" 
+                                placeholder="https://x.com/yourbusiness">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="social-label" for="id_tiktok">
+                            <div class="social-icon-wrapper">
+                                <i class="fab fa-tiktok social-icon tiktok-icon"></i>
+                            </div>
+                            TikTok
+                        </label>
+                        <div class="input-group">
+                            <i class="fas fa-link input-icon"></i>
+                            <input type="url" name="tiktok" id="id_tiktok" class="form-control" 
+                                value="{{ form.tiktok.value|default_if_none:'' }}" 
+                                placeholder="https://tiktok.com/@yourbusiness">
+                        </div>
+                    </div>
+                    
+                    <div class="button-container">
+                        <a href="{% url 'business_dashboard' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}
