@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ business.nanme }} employees{% endblock %}
+        
+{% block extra_css %}
+    <style>
+        body { 
+            padding-top: 64px;
+            background-color: #f3f4f6;
+            min-height: 100vh; /* Ensure body takes up full viewport height */
+        }
+
+        .hero-section {
+            background: linear-gradient(to bottom, white, #f8f9fa);
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .content-wrapper {
+            min-height: calc(100vh - 64px - 300px); /* Subtract header and approximate footer height */
+            padding-bottom: 2rem;
+        }
+
+        .employee-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+            padding: 1.5rem; /* Increased padding */
+            height: 100%; /* Make all cards same height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .employee-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .employee-photo {
+            width: 100px; /* Increased from 80px */
+            height: 100px; /* Increased from 80px */
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .employee-info {
+            flex-grow: 1;
+        }
+
+        .employee-name {
+            font-size: 1.5rem; /* Larger font size */
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .employee-job {
+            font-size: 1.1rem; /* Larger font size */
+            color: #4B5563;
+            margin-bottom: 1rem;
+        }
+
+        .employee-contact {
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            margin-top: 0.75rem;
+        }
+
+        .add-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .add-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 5rem; /* Increased padding */
+            text-align: center;
+            margin: 3rem 0; /* Added margin */
+        }
+
+        .no-image {
+            width: 100px; /* Match photo size */
+            height: 100px; /* Match photo size */
+            background-color: #E5E7EB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9CA3AF;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem; /* Increased margin */
+            padding-top: 1rem;
+            border-top: 1px solid #E5E7EB;
+        }
+    </style>
+{% endblock %}
+
+{% block body_class %}{% endblock %}
+
+{% block content %}
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Employees</h2>
+            <a href="{% url 'add_employee' %}" class="add-button">
+                <i class="fas fa-plus mr-2"></i>Add new employee
+            </a>
+        </div>
+
+        {% if employees %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for employee in employees %}
+                <div class="employee-card">
+                    <div class="flex flex-col md:flex-row items-center md:items-start">
+                        {% if employee.photo %}
+                            <img src="{{ employee.photo.url }}" alt="{{ employee.name }}" class="employee-photo mb-4 md:mb-0">
+                        {% else %}
+                            <div class="no-image mb-4 md:mb-0">
+                                <i class="fas fa-user text-3xl"></i>
+                            </div>
+                        {% endif %}
+                        <div class="md:ml-4 text-center md:text-left employee-info">
+                            <h3 class="employee-name text-gray-900">{{ employee.name }}</h3>
+                            <p class="employee-job">{{ employee.job_description }}</p>
+                            <div class="employee-contact text-gray-500">
+                                <i class="fas fa-phone mr-2 text-primary"></i>
+                                <span>{{ employee.phone }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <a href="#" class="text-primary hover:text-primary-dark mr-4">
+                            <i class="fas fa-edit text-lg"></i>
+                        </a>
+                        <a href="#" class="text-red-500 hover:text-red-600">
+                            <i class="fas fa-trash text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="text-center">
+                <i class="fas fa-users text-primary text-5xl mb-4"></i>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No employees yet</h3>
+                <p class="text-gray-600 mb-6">Start building your team by adding employees to your business.</p>
+                <a href="{% url 'add_employee' %}" class="add-button">
+                    <i class="fas fa-plus mr-2"></i>Añadir Empleado
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
