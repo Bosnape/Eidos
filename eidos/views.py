@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from business.models import BusinessAccount
 
-def showEidos(request): 
+def showEidosHome(request): 
     return render(request, "home.html") 
 
 def showContactInfo(request): 
