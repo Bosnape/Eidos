@@ -63,12 +63,134 @@
         .edit-button:hover {
             background-color: var(--primary-dark);
         }
+
+        .action-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .action-button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .portfolio-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .portfolio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .portfolio-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .portfolio-add-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px dashed #e5e7eb;
+            overflow: hidden;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 310px;
+        }
+        
+        .portfolio-add-card:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 168, 150, 0.05);
+            cursor: pointer;
+        }
+        
+        .circle-add-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(0, 168, 150, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: rgba(0, 168, 150, 0.1);
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #E1306C;
+            color: white;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        
+        .social-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .social-btn i {
+            margin-right: 0.5rem;
+        }
     </style>
 {% endblock %}
 
 {% block body_class %}{% endblock %}
 
 {% block content %}
+    
     <!-- Hero Section with Business Information -->
     <section class="hero-section">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -77,14 +199,13 @@
                     <img src="{{ business.logo.url }}" alt="{{ business.business_name }} Logo" class="business-logo mr-8">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ business.name }}</h1>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-primary">
+                        <span class="inline-flex items-center px-12 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-primary">
                             <i class="fas fa-check-circle mr-2"></i>
-                            Verified Business
                         </span>
                     </div>
                 </div>
 
-                <div class="flex md:flex-col items-start gap-8">
+                <div class="flex flex-col items-start gap-6">
                     <div class="rounded-md shadow">
                         <a href="{% url 'manage_profile'%}" class="edit-button">
                             <i class="fas fa-edit mr-2"></i>Edit Profile
@@ -100,7 +221,38 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 border-t border-gray-200 pt-8">
+            <!-- Social Media Links -->
+            <div class="flex mb-8">
+                <div class="flex items-center space-x-3">
+                    {% if business.instagram %}
+                        <a href="{{ business.instagram }}" class="social-btn" target="_blank">
+                            <i class="fab fa-instagram"></i> Instagram
+                        </a>
+                    {% endif %}
+            
+                    {% if business.facebook %}
+                        <a href="{{ business.facebook }}" class="social-btn" target="_blank" style="background-color: #1877F2;">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </a>
+                    {% endif %}
+            
+                    {% if business.twitter %}
+                        <a href="{{ business.twitter }}" class="social-btn" target="_blank" style="background-color: #000;">
+                            <i class="fab fa-x-twitter">𝕏</i>
+                            <span>Twitter</span>
+                        </a>
+                    {% endif %}
+            
+                    {% if business.tiktok %}
+                    <a href="{{ business.tiktok }}" class="social-btn" target="_blank" style="background-color: #37455A;">
+                        <i class="fab fa-tiktok"></i>
+                        <span>Tiktok</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-gray-200 pt-8">
                 <div class="info-item">
                     <div class="info-icon">
                         <i class="fas fa-phone"></i>
@@ -132,46 +284,15 @@
                 </div>
             </div>
         </div>
-
-        <div class="flex justify-center items-center mt-4">
-            <div class="flex items-center space-x-3">
-                {% if business.instagram %}
-                    <a href=" {{ business.instagram }} " class="social-btn" target="_blank">
-                        <i class="fab fa-instagram"></i> Instagram
-                    </a>
-                {% endif %}
-        
-                {% if business.facebook %}
-                    <a href="{{ business.facebook }}" class="social-btn" target="_blank" style="background-color: #1877F2;">
-                        <i class="fab fa-facebook-f"></i> Facebook
-                    </a>
-                {% endif %}
-        
-                {% if business.twitter %}
-                    <a href="{{ business.twitter }}" class="social-btn" target="_blank" style="background-color: #000;">
-                        <i class="fab fa-x-twitter"></i>
-                        <span>X</span>
-                    </a>
-                {% endif %}
-        
-                {% if business.tiktok %}
-                <a href="{{ business.tiktok }}" class="social-btn" target="_blank" style="background-color: #000;">
-                    <i class="fab fa-tiktok"></i>
-                    <span>Tiktok</span>
-                </a>
-                {% endif %}
-            </div>
-        </div>
     </section>
-
-    <!-- Main Content -->
+    
+    <!-- Business Statistics -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div class="stats-card p-6">
                 <div class="flex items-center">
                     <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                        <i class="fas fa-calendar-check text-primary text-xl"></i>
+                        <i class="fas fa-calendar-check text-white text-xl"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Today's Appointments</p>
@@ -182,7 +303,7 @@
             <div class="stats-card p-6">
                 <div class="flex items-center">
                     <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                        <i class="fas fa-users text-primary text-xl"></i>
+                        <i class="fas fa-users text-white text-xl"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Total Clients</p>
@@ -193,7 +314,7 @@
             <div class="stats-card p-6">
                 <div class="flex items-center">
                     <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                        <i class="fas fa-star text-primary text-xl"></i>
+                        <i class="fas fa-star text-white text-xl"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Average Rating</p>
@@ -204,7 +325,7 @@
             <div class="stats-card p-6">
                 <div class="flex items-center">
                     <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                        <i class="fas fa-chart-line text-primary text-xl"></i>
+                        <i class="fas fa-chart-line text-white text-xl"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Monthly Revenue</p>
@@ -215,5 +336,42 @@
         </div>
     </div>
 
-    <div class="mt-16"></div>
+    <!-- Portfolio Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h2 class="section-title">Previous work</h2>
+        <div class="flex justify-between items-center mb-6">
+            <p class="text-gray-600">Showcase your best work to attract new clients</p>
+            <a href="{% url 'portfolio_list' %}" class="text-primary hover:text-primary-dark font-medium">
+                See all <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {% if portfolio_items %}
+                {% for item in portfolio_items|slice:":2" %}
+                <div class="portfolio-card">
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
+                        <p class="text-gray-600 text-sm mb-3">{{ item.description|truncatechars:60 }}</p>
+                        <div class="flex flex-wrap">
+                            {% for tag in item.tags.all %}
+                            <span class="badge">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+             
+            <!-- Button for adding work done -->
+            <a href="{% url 'add_portfolio' %}" class="portfolio-add-card">
+                <div class="circle-add-button">
+                    <i class="fas fa-plus text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Add work</h3>
+                <p class="text-gray-500 text-center max-w-xs px-4">Upload photos and details of your best projects</p>
+            </a>
+        </div>
+    </div>
 {% endblock %}
