@@ -46,3 +46,36 @@ class Service(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Employee(models.Model):
+    business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='employees', default=get_default_business)
+    name = models.CharField(max_length=100)
+    photo = models.ImageField(upload_to='employees/photos/', blank=True, null=True)
+    job_description = models.TextField()
+    phone = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.name} - {self.business.name}"
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    
+    def __str__(self):
+        return self.name
+
+class PortfolioItem(models.Model):
+    business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='portfolio_items', default=get_default_business)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    image = models.ImageField(upload_to='portfolio/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.title
+
+class PortfolioTag(models.Model):
+    portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE, related_name='tags')
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ('portfolio_item', 'tag')
