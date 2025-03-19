@@ -57,12 +57,6 @@ class Employee(models.Model):
     def __str__(self):
         return f"{self.name} - {self.business.name}"
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    
-    def __str__(self):
-        return self.name
-
 class PortfolioItem(models.Model):
     business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='portfolio_items', default=get_default_business)
     title = models.CharField(max_length=100)
@@ -72,10 +66,3 @@ class PortfolioItem(models.Model):
     
     def __str__(self):
         return self.title
-
-class PortfolioTag(models.Model):
-    portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE, related_name='tags')
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-    
-    class Meta:
-        unique_together = ('portfolio_item', 'tag')
