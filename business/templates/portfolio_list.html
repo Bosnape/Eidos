@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}{{ business.nanme }} portfolio{% endblock %}
+
+{% block extra_css %}
+    <style>      
+        body { 
+            padding-top: 64px;
+            background-color: #f3f4f6;
+        }
+
+        .business-logo {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-section {
+            background: linear-gradient(to bottom, white, #f8f9fa);
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .add-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .add-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .cancel-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .cancel-button:hover {
+            background-color: #e5e7eb;
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            text-align: center;
+        }
+
+        /* Estilos para los campos del formulario */
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: #f9fafb;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
+        }
+        
+        .portfolio-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.2s ease-in-out; 
+        }
+        
+        .portfolio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .portfolio-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: rgba(0, 168, 150, 0.1);
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body_class %}{% endblock %}
+
+{% block content %}
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Previous Works</h2>
+            <a href="{% url 'add_portfolio' %}" class="add-button">
+                <i class="fas fa-plus mr-2"></i>Add work
+            </a>
+        </div>
+
+        {% if portfolio_items %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for item in portfolio_items %}
+            <div class="portfolio-card">
+                <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
+                <div class="p-4">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
+                    <p class="text-gray-600 text-sm mb-3">{{ item.description|truncatechars:100 }}</p>
+                    <div class="flex flex-wrap">
+                        {% for tag in item.tags.all %}
+                        <span class="badge">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="flex justify-end p-4 pt-0">
+                    <a href="#" class="text-primary hover:text-primary-dark mr-3">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="#" class="text-red-500 hover:text-red-600">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="text-center">
+                <i class="fas fa-images text-primary text-5xl mb-4"></i>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No portfolio items yet</h3>
+                <p class="text-gray-600 mb-6">Showcase your best work to attract new clients.</p>
+                <a href="{% url 'add_portfolio' %}" class="add-button">
+                    <i class="fas fa-plus mr-2"></i>Add work
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
