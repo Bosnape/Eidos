@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import BusinessAccount, RegistrationSession, Service
+from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem
 
 Account = get_user_model()
 
@@ -71,8 +71,22 @@ class ServiceForm(forms.ModelForm):
     class Meta:
         model = Service
         fields = ['name', 'description', 'price', 'available', 'image']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 1}),
+            'price': forms.NumberInput(attrs={'step': '1'})
+        }
 
 class SocialMediaForm(forms.ModelForm):
     class Meta:
         model = BusinessAccount
         fields = ['instagram', 'facebook', 'twitter', 'tiktok']
+        
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['name', 'photo', 'job_description', 'phone']
+
+class PortfolioItemForm(forms.ModelForm):
+    class Meta:
+        model = PortfolioItem
+        fields = ['title', 'description', 'image']
