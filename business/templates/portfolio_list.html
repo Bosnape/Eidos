@@ -145,6 +145,15 @@
             margin-right: 0.5rem;
             margin-bottom: 0.5rem;
         }
+        
+        .empty-state {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 5rem; /* Increased padding */
+            text-align: center;
+            margin: 3rem 0; /* Added margin */
+        }
     </style>
 {% endblock %}
 
@@ -161,7 +170,7 @@
         </div>
 
         {% if portfolio_items %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for item in portfolio_items %}
             <div class="portfolio-card">
                 <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
