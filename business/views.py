@@ -4,8 +4,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import os
-from .models import BusinessAccount, RegistrationSession, Account, Service, Employee, PortfolioItem
+from .models import BusinessAccount, RegistrationSession, Account, Service, Employee, PortfolioItem, Appointment
 from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, ServiceForm, SocialMediaForm, EmployeeForm, PortfolioItemForm
+
+from datetime import datetime, timedelta
+from django.db.models import Sum, Avg
+
+from .appointment_charts import generateAllCharts
 
 def registerBusinessInfo(request):
     if request.user.is_authenticated:
@@ -134,15 +139,97 @@ def displayProfile(request, business_name):
 
 @login_required
 def provideDashboardSection(request):
+    """Main dashboard view that displays business statistics and charts"""
+    
     try:
         business = BusinessAccount.objects.get(user=request.user)
     except BusinessAccount.DoesNotExist:
-        # This shouldn't happen with normal flow, but handle edge case
         messages.error(request, "Business profile not found")
         return redirect('home')
     
-    portfolio_items = business.portfolio_items.all()        
-    return render(request, 'dashboard.html', {'business': business, 'portfolio_items': portfolio_items})
+    # Get statistics data with time-based summaries
+    stats_data = getDashboardStatisticsSummary(business)
+    
+    # Generate all charts using the utility function
+    charts = generateAllCharts(business)
+    
+    portfolio_items = business.portfolio_items.all()
+    context = {
+        'business': business,
+        'portfolio_items': portfolio_items,
+        'stats_data': stats_data,
+        'charts': charts,
+    }    
+    return render(request, 'dashboard.html', context)
+
+def getDashboardStatisticsSummary(business):
+    """Prepare all statistics data summaries for the dashboard"""
+    
+    today = datetime.today()
+    
+    start_of_month = today.replace(day=1)
+    # Limit end_of_month to today if today is before the actual end of month
+    end_of_month_full = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    end_of_month = min(today, end_of_month_full)
+    start_of_year = today.replace(month=1, day=1)
+    
+    # Get all appointments for this business
+    appointments = Appointment.objects.filter(business=business)
+    
+    # Daily statistics
+    today_appointments = appointments.filter(date=today)
+    daily_appointments_count = today_appointments.count()
+    daily_new_clients = today_appointments.filter(repeat_customer=False).count()
+    daily_avg_rating = today_appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0
+    daily_revenue = today_appointments.aggregate(sum=Sum('price'))['sum'] or 0
+    
+    # Monthly statistics
+    month_appointments = appointments.filter(date__gte=start_of_month, date__lte=end_of_month)
+    monthly_appointments_count = month_appointments.count()
+    monthly_new_clients = month_appointments.filter(repeat_customer=False).count()
+    monthly_avg_rating = month_appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0
+    monthly_revenue = month_appointments.aggregate(sum=Sum('price'))['sum'] or 0
+    
+    # Annual statistics
+    year_appointments = appointments.filter(date__gte=start_of_year, date__lte=today)
+    annual_appointments_count = year_appointments.count()
+    annual_total_clients = year_appointments.values('customer_email').distinct().count()
+    annual_avg_rating = year_appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0
+    annual_revenue = year_appointments.aggregate(sum=Sum('price'))['sum'] or 0
+    
+    # Basic stats for the top cards
+    todays_appointments = appointments.filter(date=today).count()
+    total_clients = appointments.values('customer_email').distinct().count()
+    avg_rating = appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0
+    monthly_revenue_basic = appointments.filter(date__gte=start_of_month, date__lte=end_of_month).aggregate(sum=Sum('price'))['sum'] or 0
+    
+    # Return the time-based summaries
+    return {
+        'daily_stats': {
+            'appointments': daily_appointments_count,
+            'new_clients': daily_new_clients,
+            'avg_rating': round(daily_avg_rating, 1),
+            'revenue': round(daily_revenue, 2),
+        },
+        'monthly_stats': {
+            'appointments': monthly_appointments_count,
+            'new_clients': monthly_new_clients,
+            'avg_rating': round(monthly_avg_rating, 1),
+            'revenue': round(monthly_revenue, 2),
+        },
+        'annual_stats': {
+            'appointments': annual_appointments_count,
+            'total_clients': annual_total_clients,
+            'avg_rating': round(annual_avg_rating, 1),
+            'revenue': round(annual_revenue, 2),
+        },
+        'basic_stats': {
+            'todays_appointments': todays_appointments,
+            'total_clients': total_clients,
+            'avg_rating': round(avg_rating, 1),
+            'monthly_revenue': monthly_revenue_basic,
+        },
+    }
 
 @login_required
 def manageProfile(request):
