@@ -100,6 +100,13 @@
             background-color: #e53e3e;
             color: white;
         }
+
+        .navbar-logo {
+            height: 45px;
+            width: auto;
+            max-height: 45px;
+            object-fit: contain;
+        }
     </style>
     {% endblock %}
     {% block extra_css %}{% endblock %}
@@ -111,7 +118,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <a href="{% url 'home' %}" class="text-2xl font-bold text-primary">Eidos</a>
+                    <a href="{% url 'home' %}" class="navbar-brand flex items-center">
+                        {% load static %}
+                        <img src="{% static 'images/logo.png' %}" alt="Eidos Logo" class="navbar-logo mr-2">
+                    </a>
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
                     {% if user.is_authenticated %}
