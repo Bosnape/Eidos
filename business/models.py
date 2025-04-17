@@ -66,3 +66,26 @@ class PortfolioItem(models.Model):
     
     def __str__(self):
         return self.title
+    
+class Appointment(models.Model):
+    business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='appointments', default=get_default_business)
+    date = models.DateField()
+    time = models.TimeField()
+    customer_name = models.CharField(max_length=100)
+    customer_email = models.EmailField(max_length=100) # Improved version: customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='appointments')
+    
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='appointments') # service = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    payment_method = models.CharField(max_length=20, choices=[
+        ("Cash", "Cash"), ("Card", "Card"), ("Online", "Online")
+    ])
+    duration_minutes = models.PositiveIntegerField()
+    barber = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='appointments') # barber_name = models.CharField(max_length=100)
+    
+    customer_satisfaction = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+    repeat_customer = models.BooleanField()
+    no_show = models.BooleanField()
+    status = models.CharField(max_length=20, choices=[('scheduled', 'Scheduled'), ('completed', 'Completed'), ('cancelled', 'Cancelled')], default='scheduled')
+
+    def __str__(self):
+        return f"Appointment for {self.customer_name} at {self.date} - {self.time}"
