@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem
+from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment
 
 class BusinessAccountAdmin(admin.ModelAdmin):
     list_display = ('name', 'user', 'phone')
@@ -21,8 +21,13 @@ class PortfolioItemAdmin(admin.ModelAdmin):
     list_display = ('title', 'business', 'created_at')
     search_fields = ('title', 'business__name')
 
+class AppointmentAdmin(admin.ModelAdmin):
+    list_display = ('service', 'business', 'date', 'time')
+    search_fields = ('service__name', 'business__name')
+
 admin.site.register(BusinessAccount, BusinessAccountAdmin)
 admin.site.register(RegistrationSession, RegistrationSessionAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(PortfolioItem, PortfolioItemAdmin)
+admin.site.register(Appointment, AppointmentAdmin)
