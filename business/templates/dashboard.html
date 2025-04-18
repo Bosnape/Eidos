@@ -3,948 +3,1036 @@
 {% block title %}Business Dashboard - Eidos{% endblock %}
 
 {% block extra_css %}
-    <style>
-        body { 
-            background-color: #f3f4f6;
-        }
+<style>
+    body { 
+        background-color: #f3f4f6;
+    }
 
-        .business-logo {
-            width: 160px;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+    .business-logo {
+        width: 160px;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-        .hero-section {
-            background: linear-gradient(to bottom, white, #f8f9fa);
-            border-bottom: 1px solid #e5e7eb;
-        }
+    .hero-section {
+        background: linear-gradient(to bottom, white, #f8f9fa);
+        border-bottom: 1px solid #e5e7eb;
+    }
 
-        .info-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 0;
-        }
+    .info-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+    }
 
-        .info-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0, 168, 150, 0.1);
-            color: var(--primary-color);
-            border-radius: 50%;
-            margin-right: 1rem;
-        }
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 168, 150, 0.1);
+        color: var(--primary-color);
+        border-radius: 50%;
+        margin-right: 1rem;
+    }
 
-        /* Stats card styling - reverted to original */
-        .stats-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease-in-out;
-        }
+    /* Stats card styling - reverted to original */
+    .stats-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+        padding: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
 
-        .stats-card:hover {
-            transform: translateY(-5px);
-        }
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
 
-        .edit-button {
-            padding: 0.5rem 1rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
+    .edit-button {
+        padding: 0.5rem 1rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
 
-        .edit-button:hover {
-            background-color: var(--primary-dark);
-        }
+    .edit-button:hover {
+        background-color: var(--primary-dark);
+    }
 
-        .action-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease-in-out;
-        }
-        
-        .action-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .action-button {
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            transition: background-color 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
+    .action-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .action-button {
+        padding: 0.75rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
 
-        .action-button:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        /* Improved section title */
-        .section-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #e5e7eb;
-            position: relative;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 80px;
-            height: 2px;
-            background-color: var(--primary-color);
-        }
-        
-        .portfolio-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: all 0.2s ease-in-out;
-        }
-        
-        .portfolio-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .portfolio-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        
-        .portfolio-add-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 2px dashed #e5e7eb;
-            overflow: hidden;
-            transition: all 0.2s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 310px;
-        }
-        
-        .portfolio-add-card:hover {
-            border-color: var(--primary-color);
-            background-color: rgba(0, 168, 150, 0.05);
-            cursor: pointer;
-        }
-        
-        .circle-add-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: rgba(0, 168, 150, 0.1);
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-        
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            background-color: rgba(0, 168, 150, 0.1);
-            color: var(--primary-color);
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
+    .action-button:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    /* Improved section title */
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+        position: relative;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 80px;
+        height: 2px;
+        background-color: var(--primary-color);
+    }
 
-        .social-btn {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            background-color: #E1306C;
-            color: white;
-            font-weight: 500;
-            transition: opacity 0.2s;
-        }
-        
-        .social-btn:hover {
-            opacity: 0.9;
-        }
-        
-        .social-btn i {
-            margin-right: 0.5rem;
-        }
+    i {
+        font-style: normal;
+    }
+    
+    .portfolio-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .portfolio-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .portfolio-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .portfolio-add-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 2px dashed #e5e7eb;
+        overflow: hidden;
+        transition: all 0.2s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 310px;
+    }
+    
+    .portfolio-add-card:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(0, 168, 150, 0.05);
+        cursor: pointer;
+    }
+    
+    .circle-add-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: rgba(0, 168, 150, 0.1);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background-color: rgba(0, 168, 150, 0.1);
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
 
-        /* Enhanced chart styles */
-        .chart-container {
-            position: relative;
-            height: 400px;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
+    .social-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        background-color: #E1306C;
+        color: white;
+        font-weight: 500;
+        transition: opacity 0.2s;
+    }
+    
+    .social-btn:hover {
+        opacity: 0.9;
+    }
+    
+    .social-btn i {
+        margin-right: 0.5rem;
+    }
 
-        .chart-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-            border-top: 4px solid var(--primary-color);
-        }
+    /* Enhanced chart styles */
+    .chart-container {
+        position: relative;
+        height: 320px; /* Reduced from 400px */
+        width: 100%;
+        transition: all 0.3s ease;
+    }
 
-        .chart-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
+    .chart-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.25rem; /* Reduced from 1.5rem */
+        margin-bottom: 1rem; /* Reduced from 1.5rem */
+        transition: all 0.3s ease;
+        border-top: 4px solid var(--primary-color);
+    }
 
-        .chart-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .chart-title i {
-            margin-right: 0.5rem;
-            color: var(--primary-color);
-        }
+    .chart-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
 
-        /* Improved time filter */
-        .time-filter {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-            background: #f9fafb;
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            border: 1px solid #e5e7eb;
-        }
+    .chart-title {
+        font-size: 1.125rem; /* Reduced from 1.25rem */
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.75rem; /* Reduced from 1rem */
+        display: flex;
+        align-items: center;
+    }
+    
+    .chart-title i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
 
-        .time-filter-btn {
-            padding: 0.5rem 1rem;
-            background-color: transparent;
-            border: none;
-            color: #6b7280;
-            font-weight: 500;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
-            flex: 1;
-            text-align: center;
-        }
+    /* Improved time filter */
+    .time-filter {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+        background: #f9fafb;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid #e5e7eb;
+    }
 
-        .time-filter-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    .time-filter-btn {
+        padding: 0.5rem 1rem;
+        background-color: transparent;
+        border: none;
+        color: #6b7280;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+        flex: 1;
+        text-align: center;
+    }
 
-        .time-filter-btn:hover:not(.active) {
-            background-color: #f3f4f6;
-            color: #374151;
-        }
+    .time-filter-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-        .stats-section {
-            display: none;
-        }
+    .time-filter-btn:hover:not(.active) {
+        background-color: #f3f4f6;
+        color: #374151;
+    }
 
-        .stats-section.active {
-            display: block;
-        }
-        
-        /* Add styles for matplotlib chart images */
-        .chart-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .chart-container:hover img {
-            transform: scale(1.02);
-        }
-        
-        /* Styles for the see more button */
-        .see-more-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 2rem auto;
-            padding: 0.75rem 2rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .see-more-btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .see-more-btn i {
-            margin-left: 0.5rem;
-            transition: transform 0.3s;
-        }
-        
-        .see-more-btn.active i {
-            transform: rotate(180deg);
-        }
-        
-        /* Hide charts section by default */
-        .charts-container {
-            display: none;
-        }
-        
-        .charts-container.visible {
-            display: block;
-        }
-        
-        /* Summary stats section */
-        .summary-stats {
-            display: none;
-        }
-        
-        .summary-stats.active {
-            display: grid;
-        }
-        
-        /* Improved chart buttons */
-        .chart-buttons {
-            display: none;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            justify-content: center;
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .chart-buttons.visible {
-            display: flex;
-        }
-        
-        .chart-button {
-            padding: 0.75rem 1.25rem;
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
-            color: #4b5563;
-            font-weight: 500;
-            border-radius: 0.5rem;
-            transition: all 0.2s;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-        
-        .chart-button i {
-            margin-right: 0.5rem;
-            font-size: 0.875rem;
-        }
-        
-        .chart-button:hover {
-            background-color: #f3f4f6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-        
-        .chart-button.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
+    .stats-section {
+        display: none;
+    }
 
-        /* See Everything button styling */
-        .see-everything-btn {
-            background-color: #f9fafb;
-            color: #4b5563;
-            border-color: #e5e7eb;
-            font-weight: 500;
-        }
+    .stats-section.active {
+        display: block;
+    }
+    
+    /* Add styles for matplotlib chart images */
+    .chart-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .chart-container:hover img {
+        transform: scale(1.02);
+    }
+    
+    /* Styles for the see more button */
+    .see-more-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2rem auto;
+        padding: 0.75rem 2rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+    }
+    
+    .see-more-btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .see-more-btn i {
+        margin-left: 0.5rem;
+        transition: transform 0.3s;
+    }
+    
+    .see-more-btn.active i {
+        transform: rotate(180deg);
+    }
+    
+    /* Hide charts section by default */
+    .charts-container {
+        display: none;
+    }
+    
+    .charts-container.visible {
+        display: block;
+    }
+    
+    /* Summary stats section */
+    .summary-stats {
+        display: none;
+    }
+    
+    .summary-stats.active {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    /* Improved chart buttons */
+    .chart-buttons {
+        display: none;
+        flex-wrap: wrap;
+        gap: 0.6rem; /* Reduced from 0.75rem */
+        justify-content: flex-start;
+        margin-bottom: 1rem; /* Reduced from 1.5rem */
+    }
+    
+    .chart-buttons.visible {
+        display: flex;
+    }
+    
+    .chart-button {
+        padding: 0.5rem 1rem; /* Reduced from 0.75rem 1.25rem */
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        color: #4b5563;
+        font-weight: 500;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem; /* Added smaller font size */
+    }
+    
+    .chart-button i {
+        margin-right: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .chart-button:hover {
+        background-color: #f3f4f6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .chart-button.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    /* Individual chart containers */
+    .individual-chart {
+        display: none;
+    }
+    
+    .individual-chart.visible {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        .see-everything-btn:hover {
-            background-color: #f3f4f6;
-            border-color: #d1d5db;
-        }
+    /* Make single charts bigger */
+    .individual-chart:not(#daily-all-charts):not(#monthly-all-charts):not(#annual-all-charts) .chart-container {
+        height: 400px; /* Reduced from 500px */
+    }
 
-        .see-everything-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-        
-        /* Individual chart containers */
-        .individual-chart {
-            display: none;
-        }
-        
-        .individual-chart.visible {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* Adjust the layout for the daily all charts view */
+    #daily-all-charts .grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
 
-        /* Make single charts bigger */
-        .individual-chart:not(#daily-all-charts):not(#monthly-all-charts):not(#annual-all-charts) .chart-container {
-            height: 500px;
-        }
+    /* Fix footer positioning */
+    .content-wrapper {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        flex-direction: column;
+    }
 
-        /* Adjust the layout for the daily all charts view */
-        #daily-all-charts .grid {
-            grid-template-columns: 1fr 1fr !important;
-        }
+    .main-content {
+        flex: 1;
+    }
 
-        /* Fix footer positioning */
-        .content-wrapper {
-            min-height: calc(100vh - 64px);
-            display: flex;
-            flex-direction: column;
-        }
+    footer {
+        margin-top: auto;
+    }
+    
+    /* Analytics header with description */
+    .analytics-header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.5rem; /* Reduced from 2rem */
+    }
+    
+    .analytics-description {
+        color: #6b7280;
+        max-width: 700px;
+        margin-bottom: 1rem; /* Reduced from 1.5rem */
+    }
+    
+    /* Chart grid layout improvements */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem; /* Reduced from 1.5rem */
+        margin-bottom: 1.5rem; /* Reduced from 2rem */
+    }
+    
+    /* Chart legend styling */
+    .chart-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem; /* Reduced from 1rem */
+        padding-top: 1rem; /* Reduced from 1rem */
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        color: #4b5563;
+    }
+    
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        margin-right: 0.5rem;
+    }
 
-        .main-content {
-            flex: 1;
-        }
+    /* Section description styling */
+    .section-description {
+        color: #6b7280;
+        margin-bottom: 1.5rem; /* Reduced from 1.5rem */
+        max-width: 800px;
+        line-height: 1.6;
+    }
 
-        footer {
-            margin-top: auto;
-        }
-        
-        /* Analytics header with description */
-        .analytics-header {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 2rem;
-        }
-        
-        .analytics-description {
-            color: #6b7280;
-            max-width: 700px;
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Chart grid layout improvements */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        /* Chart legend styling */
-        .chart-legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            font-size: 0.875rem;
-            color: #4b5563;
-        }
-        
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-            margin-right: 0.5rem;
-        }
+    .subsection-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
 
-        /* Section description styling */
-        .section-description {
-            color: #6b7280;
-            margin-bottom: 1.5rem;
-            max-width: 800px;
-            line-height: 1.6;
-        }
+    .subsection-title i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
 
-        .subsection-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-        }
+    /* New styles for the redesigned analytics section */
+    .analytics-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
 
-        .subsection-title i {
-            margin-right: 0.5rem;
-            color: var(--primary-color);
-        }
-    </style>
+    .analytics-tab {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #4b5563;
+        cursor: pointer;
+    }
+
+    .analytics-tab.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .analytics-tab i {
+        margin-right: 8px;
+    }
+
+    /* New layout styles for the mockup-like structure */
+    .analytics-layout {
+        display: flex;
+        gap: 1.5rem; /* Reduced from 1.5rem */
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.25rem; /* Reduced from 1.5rem */
+    }
+
+    .analytics-sidebar {
+        width: 320px; /* Increased from 280px */
+        flex-shrink: 0;
+    }
+
+    .analytics-content {
+        flex: 1;
+        max-width: calc(100% - 320px - 1.25rem); /* Adjusted to match sidebar width */
+    }
+
+    .analytics-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem; /* Reduced from 1.5rem */
+    }
+
+    .metric-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+
+    .metric-value {
+        font-size: 1.375rem; /* Increased from 1.25rem */
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .metric-icon {
+        width: 40px; /* Increased from 36px */
+        height: 40px; /* Increased from 36px */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 168, 150, 0.1);
+        color: var(--primary-color);
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        font-size: 1rem; /* Increased from 0.875rem */
+    }
+
+    .stats-card-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .stats-card-text {
+        flex: 1;
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize time filter buttons
-            const timeFilterBtns = document.querySelectorAll('.time-filter-btn');
-            const statsSections = document.querySelectorAll('.stats-section');
-            const summaryStatsSections = document.querySelectorAll('.summary-stats');
-            const chartButtonContainers = document.querySelectorAll('.chart-buttons');
-            const chartsContainers = document.querySelectorAll('.charts-container');
-            
-            // Track active chart for each section
-            const activeCharts = {
-                daily: null,
-                monthly: null,
-                annual: null
-            };
-            
-            // Initialize with daily stats active but no charts shown
-            document.getElementById('daily-summary').classList.add('active');
-            document.getElementById('daily-chart-buttons').classList.add('visible');
-            document.querySelector('.charts-container').classList.add('visible');
-            
-            timeFilterBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Remove active class from all buttons
-                    timeFilterBtns.forEach(b => b.classList.remove('active'));
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
-                    // Hide all chart button containers
-                    chartButtonContainers.forEach(container => container.classList.remove('visible'));
-                    // Show the selected chart button container
-                    document.getElementById(this.dataset.buttons).classList.add('visible');
-                    
-                    // Hide all summary sections
-                    summaryStatsSections.forEach(section => section.classList.remove('active'));
-                    // Show the selected summary section
-                    document.getElementById(this.dataset.summary).classList.add('active');
-                    
-                    // Hide all charts containers
-                    chartsContainers.forEach(container => container.classList.remove('visible'));
-                    
-                    // Show the charts container for the selected time frame
-                    const timeFrame = this.dataset.target.split('-')[0]; // 'daily', 'monthly', or 'annual'
-                    document.querySelectorAll('.charts-container').forEach((container, index) => {
-                        if (index === Array.from(timeFilterBtns).indexOf(this)) {
-                            container.classList.add('visible');
-                        }
-                    });
-                    
-                    // Hide all individual charts
-                    document.querySelectorAll('.individual-chart').forEach(chart => {
-                        chart.classList.remove('visible');
-                    });
-                    
-                    // Reset all chart buttons
-                    document.querySelectorAll('.chart-button').forEach(button => {
-                        button.classList.remove('active');
-                    });
-                    
-                    // If there was an active chart for this section, don't show it
-                    // We want no charts to be visible when switching time frames
-                    activeCharts[timeFrame] = null;
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize time filter buttons
+        const timeFilterBtns = document.querySelectorAll('.time-filter-btn');
+        const statsSections = document.querySelectorAll('.stats-section');
+        const summaryStatsSections = document.querySelectorAll('.summary-stats');
+        const chartButtonContainers = document.querySelectorAll('.chart-buttons');
+        const chartsContainers = document.querySelectorAll('.charts-container');
+        
+        // Track active chart for each section
+        const activeCharts = {
+            daily: null,
+            monthly: null,
+            annual: null
+        };
+        
+        // Initialize with daily stats active and first chart shown
+        document.getElementById('daily-summary').classList.add('active');
+        document.getElementById('daily-chart-buttons').classList.add('visible');
+        document.querySelector('.charts-container').classList.add('visible');
+        
+        // Show the first chart by default for daily
+        const firstDailyChart = document.querySelector('[data-section="daily"]');
+        if (firstDailyChart) {
+            const firstDailyChartId = firstDailyChart.dataset.chart;
+            document.getElementById(firstDailyChartId).classList.add('visible');
+            firstDailyChart.classList.add('active');
+            activeCharts.daily = firstDailyChartId;
+        }
+        
+        timeFilterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                timeFilterBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Hide all chart button containers
+                chartButtonContainers.forEach(container => container.classList.remove('visible'));
+                // Show the selected chart button container
+                document.getElementById(this.dataset.buttons).classList.add('visible');
+                
+                // Hide all summary sections
+                summaryStatsSections.forEach(section => section.classList.remove('active'));
+                // Show the selected summary section
+                document.getElementById(this.dataset.summary).classList.add('active');
+                
+                // Hide all charts containers
+                chartsContainers.forEach(container => container.classList.remove('visible'));
+                
+                // Show the charts container for the selected time frame
+                const timeFrame = this.dataset.target.split('-')[0]; // 'daily', 'monthly', or 'annual'
+                document.querySelectorAll('.charts-container').forEach((container, index) => {
+                    if (index === Array.from(timeFilterBtns).indexOf(this)) {
+                        container.classList.add('visible');
+                    }
                 });
-            });
-            
-            // Initialize chart buttons
-            const chartButtons = document.querySelectorAll('.chart-button');
-            
-            chartButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const targetSection = this.dataset.section;
-                    const targetChart = this.dataset.chart;
-                    
-                    // If this is the "See Everything" button
-                    if (this.classList.contains('see-everything-btn')) {
-                        // Hide any currently visible chart
-                        if (activeCharts[targetSection]) {
-                            document.getElementById(activeCharts[targetSection]).classList.remove('visible');
-                        }
-                        
-                        // Reset all button states for this section
-                        document.querySelectorAll(`.chart-button[data-section="${targetSection}"]`).forEach(button => {
-                            button.classList.remove('active');
-                        });
-                        
-                        const allChartsId = `${targetSection}-all-charts`;
-                        const allChartsElement = document.getElementById(allChartsId);
-                        
-                        // Toggle the all charts view
-                        if (activeCharts[targetSection] === allChartsId) {
-                            // Hide the all charts view
-                            allChartsElement.classList.remove('visible');
-                            this.classList.remove('active');
-                            activeCharts[targetSection] = null;
-                        } else {
-                            // Show the all charts view
-                            allChartsElement.classList.add('visible');
-                            this.classList.add('active');
-                            activeCharts[targetSection] = allChartsId;
-                        }
+                
+                // Hide all individual charts
+                document.querySelectorAll('.individual-chart').forEach(chart => {
+                    chart.classList.remove('visible');
+                });
+                
+                // Reset all chart buttons
+                document.querySelectorAll('.chart-button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                
+                // Show the first chart for the selected time frame
+                const firstChartBtn = document.querySelector(`[data-section="${timeFrame}"]`);
+                if (firstChartBtn) {
+                    const firstChartId = firstChartBtn.dataset.chart;
+                    document.getElementById(firstChartId).classList.add('visible');
+                    firstChartBtn.classList.add('active');
+                    activeCharts[timeFrame] = firstChartId;
+                }
+
+                // Update the analytics title based on the selected time frame
+                const analyticsTitle = document.querySelector('.analytics-title');
+                if (timeFrame === 'daily') {
+                    analyticsTitle.textContent = 'Daily Performance';
+                } else if (timeFrame === 'monthly') {
+                    analyticsTitle.textContent = 'Monthly Performance';
+                } else if (timeFrame === 'annual') {
+                    analyticsTitle.textContent = 'Annual Performance';
+                }
+
+                // Update the active tab in the new tab interface
+                document.querySelectorAll('.analytics-tab').forEach((tab, index) => {
+                    if (index === Array.from(timeFilterBtns).indexOf(this)) {
+                        tab.classList.add('active');
                     } else {
-                        // Hide any currently visible chart
-                        if (activeCharts[targetSection]) {
-                            document.getElementById(activeCharts[targetSection]).classList.remove('visible');
-                        }
-                        
-                        // Reset all button states for this section
-                        document.querySelectorAll(`.chart-button[data-section="${targetSection}"]`).forEach(button => {
-                            button.classList.remove('active');
-                        });
-                        
-                        const chartElement = document.getElementById(targetChart);
-                        
-                        // Toggle the selected chart
-                        if (activeCharts[targetSection] === targetChart) {
-                            // Hide the chart
-                            chartElement.classList.remove('visible');
-                            this.classList.remove('active');
-                            activeCharts[targetSection] = null;
-                        } else {
-                            // Show the chart
-                            chartElement.classList.add('visible');
-                            this.classList.add('active');
-                            activeCharts[targetSection] = targetChart;
-                        }
+                        tab.classList.remove('active');
                     }
                 });
             });
         });
-    </script>
+        
+        // Initialize chart buttons
+        const chartButtons = document.querySelectorAll('.chart-button');
+        
+        chartButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetSection = this.dataset.section;
+                const targetChart = this.dataset.chart;
+                
+                // Only proceed if this isn't already the active chart
+                if (activeCharts[targetSection] !== targetChart) {
+                    // Hide the currently active chart
+                    if (activeCharts[targetSection]) {
+                        document.getElementById(activeCharts[targetSection]).classList.remove('visible');
+                    }
+                    
+                    // Reset all button states for this section
+                    document.querySelectorAll(`.chart-button[data-section="${targetSection}"]`).forEach(button => {
+                        button.classList.remove('active');
+                    });
+                    
+                    // Show the selected chart
+                    document.getElementById(targetChart).classList.add('visible');
+                    this.classList.add('active');
+                    activeCharts[targetSection] = targetChart;
+                }
+            });
+        });
+
+        // Connect the new tab interface to the existing functionality
+        document.querySelectorAll('.analytics-tab').forEach((tab, index) => {
+            tab.addEventListener('click', function() {
+                // Trigger click on the corresponding time filter button
+                timeFilterBtns[index].click();
+            });
+        });
+    });
+</script>
 {% endblock %}
 
 {% block body_class %}{% endblock %}
 
 {% block content %}
-    <div class="content-wrapper">
-        <div class="main-content">
-            <!-- Hero Section with Business Information -->
-            <section class="hero-section">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
-                        <div class="flex items-center mb-6 md:mb-0">
-                            <img src="{{ business.logo.url }}" alt="{{ business.business_name }} Logo" class="business-logo mr-8">
-                            <div>
-                                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ business.name }}</h1>
-                                <span class="inline-flex items-center px-12 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-primary">
-                                    <i class="fas fa-check-circle mr-2"></i>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col items-start gap-6">
-                            <div class="rounded-md shadow">
-                                <a href="{% url 'manage_profile'%}" class="edit-button">
-                                    <i class="fas fa-edit mr-2"></i>Edit Profile
-                                </a>
-                            </div>
-
-                            <div class="rounded-md shadow">
-                                <a href="{% url 'update_social_media' %}" class="edit-button">
-                                    <i class="fas fa-edit mr-2"></i>
-                                    <span>Edit Social Media</span>
-                                </a>
-                            </div>
+<div class="content-wrapper">
+    <div class="main-content">
+        <!-- Hero Section with Business Information -->
+        <section class="hero-section">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
+                    <div class="flex items-center mb-6 md:mb-0">
+                        <img src="{{ business.logo.url }}" alt="{{ business.business_name }} Logo" class="business-logo mr-8">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ business.name }}</h1>
+                            <span class="inline-flex items-center px-12 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-check-circle mr-2"></i>
+                            </span>
                         </div>
                     </div>
 
-                    <!-- Social Media Links -->
-                    <div class="flex mb-8">
-                        <div class="flex items-center space-x-3">
-                            {% if business.instagram %}
-                                <a href="{{ business.instagram }}" class="social-btn" target="_blank">
-                                    <i class="fab fa-instagram"></i> Instagram
-                                </a>
-                            {% endif %}
-                    
-                            {% if business.facebook %}
-                                <a href="{{ business.facebook }}" class="social-btn" target="_blank" style="background-color: #1877F2;">
-                                    <i class="fab fa-facebook-f"></i> Facebook
-                                </a>
-                            {% endif %}
-                    
-                            {% if business.twitter %}
-                                <a href="{{ business.twitter }}" class="social-btn" target="_blank" style="background-color: #000;">
-                                    <i class="fab fa-x-twitter">𝕏</i>
-                                    <span>Twitter</span>
-                                </a>
-                            {% endif %}
-                    
-                            {% if business.tiktok %}
-                            <a href="{{ business.tiktok }}" class="social-btn" target="_blank" style="background-color: #37455A;">
-                                <i class="fab fa-tiktok"></i>
-                                <span>Tiktok</span>
+                    <div class="flex flex-col items-start gap-6">
+                        <div class="rounded-md shadow">
+                            <a href="{% url 'manage_profile'%}" class="edit-button">
+                                <i class="fas fa-edit mr-2"></i>Edit Profile
                             </a>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-gray-200 pt-8">
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-phone"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Phone Number</p>
-                                <p class="text-lg font-medium text-gray-900">{{ business.phone }}</p>
-                            </div>
                         </div>
 
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Email Address</p>
-                                <p class="text-lg font-medium text-gray-900">{{ business.email }}</p>
-                            </div>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Business Address</p>
-                                <p class="text-lg font-medium text-gray-900">{{ business.address }}</p>
-                            </div>
+                        <div class="rounded-md shadow">
+                            <a href="{% url 'update_social_media' %}" class="edit-button">
+                                <i class="fas fa-edit mr-2"></i>
+                                <span>Edit Social Media</span>
+                            </a>
                         </div>
                     </div>
                 </div>
-            </section>
+
+                <!-- Social Media Links -->
+                <div class="flex mb-8">
+                    <div class="flex items-center space-x-3">
+                        {% if business.instagram %}
+                            <a href="{{ business.instagram }}" class="social-btn" target="_blank">
+                                <i class="fab fa-instagram"></i> Instagram
+                            </a>
+                        {% endif %}
+                
+                        {% if business.facebook %}
+                            <a href="{{ business.facebook }}" class="social-btn" target="_blank" style="background-color: #1877F2;">
+                                <i class="fab fa-facebook-f"></i> Facebook
+                            </a>
+                        {% endif %}
+                
+                        {% if business.twitter %}
+                            <a href="{{ business.twitter }}" class="social-btn" target="_blank" style="background-color: #000;">
+                                <i class="fab fa-x-twitter">𝕏</i>
+                                <span>Twitter</span>
+                            </a>
+                        {% endif %}
+                
+                        {% if business.tiktok %}
+                        <a href="{{ business.tiktok }}" class="social-btn" target="_blank" style="background-color: #37455A;">
+                            <i class="fab fa-tiktok"></i>
+                            <span>Tiktok</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-gray-200 pt-8">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Phone Number</p>
+                            <p class="text-lg font-medium text-gray-900">{{ business.phone }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Email Address</p>
+                            <p class="text-lg font-medium text-gray-900">{{ business.email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Business Address</p>
+                            <p class="text-lg font-medium text-gray-900">{{ business.address }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Business Statistics - REDESIGNED to match mockup layout while keeping original styling -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Business Analytics Title and Description -->
+            <h2 class="section-title">Business Analytics</h2>
+            <p class="section-description">Track your business performance metrics and identify growth opportunities with these analytics tools.</p>
             
-            <!-- Business Statistics -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-                <div class="analytics-header">
-                    <h2 class="section-title">Business Analytics</h2>
-                    <p class="analytics-description">
-                        Track your business performance with real-time metrics and insights.
-                    </p>
+            <!-- Analytics Tabs -->
+            <div class="analytics-tabs">
+                <div class="analytics-tab active">
+                    <i class="fas fa-calendar-day"></i> Daily
                 </div>
-                
-                <!-- Time Filter - Redesigned with icons -->
-                <div class="time-filter">
-                    <button class="time-filter-btn active" data-target="daily-stats" data-summary="daily-summary" data-buttons="daily-chart-buttons">
-                        <i class="fas fa-calendar-day mr-2"></i>Daily
-                    </button>
-                    <button class="time-filter-btn" data-target="monthly-stats" data-summary="monthly-summary" data-buttons="monthly-chart-buttons">
-                        <i class="fas fa-calendar-week mr-2"></i>Monthly
-                    </button>
-                    <button class="time-filter-btn" data-target="annual-stats" data-summary="annual-summary" data-buttons="annual-chart-buttons">
-                        <i class="fas fa-calendar-alt mr-2"></i>Annual
-                    </button>
+                <div class="analytics-tab">
+                    <i class="far fa-calendar"></i> Monthly
                 </div>
-                
-                <!-- Daily Summary Section -->
-                <div class="mb-8">
-                    <div id="daily-summary" class="summary-stats active grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-calendar-check text-white text-xl"></i>
+                <div class="analytics-tab">
+                    <i class="far fa-calendar-alt"></i> Annual
+                </div>
+            </div>
+
+            <!-- Hidden original time filter (for functionality) -->
+            <div class="time-filter" style="display: none;">
+                <button class="time-filter-btn active" data-target="daily-stats" data-summary="daily-summary" data-buttons="daily-chart-buttons">
+                    <i class="fas fa-calendar-day mr-2"></i>Daily
+                </button>
+                <button class="time-filter-btn" data-target="monthly-stats" data-summary="monthly-summary" data-buttons="monthly-chart-buttons">
+                    <i class="fas fa-calendar-week mr-2"></i>Monthly
+                </button>
+                <button class="time-filter-btn" data-target="annual-stats" data-summary="annual-summary" data-buttons="annual-chart-buttons">
+                    <i class  data-summary="annual-summary" data-buttons="annual-chart-buttons">
+                    <i class="fas fa-calendar-alt mr-2"></i>Annual
+                </button>
+            </div>
+
+            <!-- Analytics Layout - Sidebar with metrics on left, content on right -->
+            <div class="analytics-layout">
+                <!-- Left Sidebar with Metrics -->
+                <div class="analytics-sidebar">
+                    <!-- Daily Summary -->
+                    <div id="daily-summary" class="summary-stats active">
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-calendar-check"></i>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Today's Appointments</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.daily_stats.appointments }}</p>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Today's Appointments</div>
+                                    <div class="metric-value">{{ stats_data.daily_stats.appointments }}</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-users text-white text-xl"></i>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-user-plus"></i>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">New Clients Today</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.daily_stats.new_clients }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-star text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Today's Rating</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.daily_stats.avg_rating }}</p>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">New Clients Today</div>
+                                    <div class="metric-value">{{ stats_data.daily_stats.new_clients }}</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-chart-line text-white text-xl"></i>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-star"></i>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Today's Revenue</p>
-                                    <p class="text-2xl font-bold text-gray-900">${{ stats_data.daily_stats.revenue }}</p>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Today's Rating</div>
+                                    <div class="metric-value">{{ stats_data.daily_stats.avg_rating }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Today's Revenue</div>
+                                    <div class="metric-value">${{ stats_data.daily_stats.revenue }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Summary (hidden by default) -->
+                    <div id="monthly-summary" class="summary-stats">
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Month's Appointments</div>
+                                    <div class="metric-value">{{ stats_data.monthly_stats.appointments }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">New Clients This Month</div>
+                                    <div class="metric-value">{{ stats_data.monthly_stats.new_clients }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Month's Avg Rating</div>
+                                    <div class="metric-value">{{ stats_data.monthly_stats.avg_rating }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Monthly Revenue</div>
+                                    <div class="metric-value">${{ stats_data.monthly_stats.revenue }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Annual Summary (hidden by default) -->
+                    <div id="annual-summary" class="summary-stats">
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Year's Appointments</div>
+                                    <div class="metric-value">{{ stats_data.annual_stats.appointments }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Total Clients This Year</div>
+                                    <div class="metric-value">{{ stats_data.annual_stats.total_clients }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Year's Avg Rating</div>
+                                    <div class="metric-value">{{ stats_data.annual_stats.avg_rating }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-card-content">
+                                <div class="metric-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stats-card-text">
+                                    <div class="metric-label">Annual Revenue</div>
+                                    <div class="metric-value">${{ stats_data.annual_stats.revenue }}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Monthly Summary Section -->
-                <div class="mb-8">
-                    <div id="monthly-summary" class="summary-stats grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-calendar-check text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Month's Appointments</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.monthly_stats.appointments }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-users text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">New Clients This Month</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.monthly_stats.new_clients }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-star text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Month's Avg Rating</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.monthly_stats.avg_rating }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-chart-line text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Monthly Revenue</p>
-                                    <p class="text-2xl font-bold text-gray-900">${{ stats_data.monthly_stats.revenue }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Right Content Area -->
+                <div class="analytics-content">
+                    <!-- Title and Chart Options -->
+                    <h2 class="analytics-title">Daily Performance</h2>
 
-                <!-- Annual Summary Section -->
-                <div class="mb-8">
-                    <div id="annual-summary" class="summary-stats grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-calendar-check text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Year's Appointments</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.annual_stats.appointments }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-users text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Total Clients This Year</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.annual_stats.total_clients }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-star text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Year's Avg Rating</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ stats_data.annual_stats.avg_rating }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stats-card p-6">
-                            <div class="flex items-center">
-                                <div class="rounded-full bg-primary bg-opacity-10 p-3 mr-4">
-                                    <i class="fas fa-chart-line text-white text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Annual Revenue</p>
-                                    <p class="text-2xl font-bold text-gray-900">${{ stats_data.annual_stats.revenue }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Daily Charts Section -->
-                <div class="mb-8">
-                    <!-- Chart Buttons for Daily -->
+                    <!-- Chart Buttons - Daily -->
                     <div id="daily-chart-buttons" class="chart-buttons visible">
-                        <button class="chart-button" data-section="daily" data-chart="daily-time-slot-chart">
+                        <button class="chart-button active" data-section="daily" data-chart="daily-time-slot-chart">
                             <i class="fas fa-clock"></i> Appointments by Time
                         </button>
                         <button class="chart-button" data-section="daily" data-chart="daily-customer-type-chart">
                             <i class="fas fa-user-friends"></i> Customer Types
                         </button>
-                        <button class="chart-button see-everything-btn" data-section="daily" data-chart="daily-all-charts">
-                            <i class="fas fa-th-large"></i> See Everything
-                        </button>
                     </div>
-                </div>
-                
-                <!-- Monthly Charts Section -->
-                <div class="mb-8">
-                    <!-- Chart Buttons for Monthly -->
+
+                    <!-- Chart Buttons - Monthly (hidden by default) -->
                     <div id="monthly-chart-buttons" class="chart-buttons">
-                        <button class="chart-button" data-section="monthly" data-chart="monthly-revenue-chart">
+                        <button class="chart-button active" data-section="monthly" data-chart="monthly-revenue-chart">
                             <i class="fas fa-dollar-sign"></i> Revenue
                         </button>
                         <button class="chart-button" data-section="monthly" data-chart="monthly-appointments-chart">
@@ -962,17 +1050,11 @@
                         <button class="chart-button" data-section="monthly" data-chart="monthly-no-show-chart">
                             <i class="fas fa-user-slash"></i> No-shows
                         </button>
-                        <button class="chart-button see-everything-btn" data-section="monthly" data-chart="monthly-all-charts">
-                            <i class="fas fa-th-large"></i> See Everything
-                        </button>
                     </div>
-                </div>
-                
-                <!-- Annual Charts Section -->
-                <div class="mb-8">
-                    <!-- Chart Buttons for Annual -->
+
+                    <!-- Chart Buttons - Annual (hidden by default) -->
                     <div id="annual-chart-buttons" class="chart-buttons">
-                        <button class="chart-button" data-section="annual" data-chart="annual-revenue-chart">
+                        <button class="chart-button active" data-section="annual" data-chart="annual-revenue-chart">
                             <i class="fas fa-chart-line"></i> Revenue Trend
                         </button>
                         <button class="chart-button" data-section="annual" data-chart="annual-services-chart">
@@ -990,296 +1072,158 @@
                         <button class="chart-button" data-section="annual" data-chart="annual-rating-chart">
                             <i class="fas fa-star"></i> Rating Trends
                         </button>
-                        <button class="chart-button see-everything-btn" data-section="annual" data-chart="annual-all-charts">
-                            <i class="fas fa-th-large"></i> See Everything
-                        </button>
                     </div>
-                </div>
-                
-                <!-- Individual Charts for Daily - Improved styling -->
-                <div class="charts-container visible">
-                    <!-- Daily Time Slot Chart -->
-                    <div id="daily-time-slot-chart" class="individual-chart" data-section="daily">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-clock"></i> Appointments by Time Slot</h3>
-                            <p class="text-gray-500 mb-4">See when your business is busiest throughout the day</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.time_slot_chart }}" alt="Appointments by Time Slot" class="img-fluid">
-                            </div>
-                            <div class="chart-legend">
-                                <div class="legend-item">
-                                    <div class="legend-color" style="background-color: #00a896;"></div>
-                                    <span>Appointments</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Daily Customer Type Chart -->
-                    <div id="daily-customer-type-chart" class="individual-chart" data-section="daily">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-user-friends"></i> New vs Repeat Customers</h3>
-                            <p class="text-gray-500 mb-4">Track the balance between new and returning clients</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.customer_type_chart }}" alt="New vs Repeat Customers" class="img-fluid">
-                            </div>
-                            <div class="chart-legend">
-                                <div class="legend-item">
-                                    <div class="legend-color" style="background-color: #00a896;"></div>
-                                    <span>New Customers</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color" style="background-color: #007f6e;"></div>
-                                    <span>Repeat Customers</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Daily All Charts -->
-                    <div id="daily-all-charts" class="individual-chart" data-section="daily">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Individual Charts for Daily -->
+                    <div class="charts-container visible">
+                        <!-- Daily Time Slot Chart -->
+                        <div id="daily-time-slot-chart" class="individual-chart visible" data-section="daily">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-clock"></i> Appointments by Time Slot</h3>
                                 <p class="text-gray-500 mb-4">See when your business is busiest throughout the day</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.time_slot_chart }}" alt="Appointments by Time Slot" class="img-fluid">
                                 </div>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #00a896;"></div>
+                                        <span>Appointments</span>
+                                    </div>
+                                </div>
                             </div>
-                            
+                        </div>
+                        
+                        <!-- Daily Customer Type Chart -->
+                        <div id="daily-customer-type-chart" class="individual-chart" data-section="daily">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-user-friends"></i> New vs Repeat Customers</h3>
                                 <p class="text-gray-500 mb-4">Track the balance between new and returning clients</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.customer_type_chart }}" alt="New vs Repeat Customers" class="img-fluid">
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Individual Charts for Monthly - Improved styling -->
-                <div class="charts-container">
-                    <!-- Monthly Revenue Chart -->
-                    <div id="monthly-revenue-chart" class="individual-chart" data-section="monthly">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-dollar-sign"></i> Revenue by Day</h3>
-                            <p class="text-gray-500 mb-4">Track your daily revenue performance throughout the month</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.revenue_by_day_chart }}" alt="Revenue by Day" class="img-fluid">
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #00a896;"></div>
+                                        <span>New Customers</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #007f6e;"></div>
+                                        <span>Repeat Customers</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Monthly Appointments Chart -->
-                    <div id="monthly-appointments-chart" class="individual-chart" data-section="monthly">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-calendar-check"></i> Appointments per Day</h3>
-                            <p class="text-gray-500 mb-4">Monitor booking patterns throughout the month</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.appointments_by_day_chart }}" alt="Appointments per Day" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Monthly Top Services Chart -->
-                    <div id="monthly-top-services-chart" class="individual-chart" data-section="monthly">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-list-ol"></i> Top Services This Month</h3>
-                            <p class="text-gray-500 mb-4">Identify your most popular services</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.top_services_month_chart }}" alt="Top Services This Month" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Monthly Barber Performance Chart -->
-                    <div id="monthly-barber-chart" class="individual-chart" data-section="monthly">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-user-tie"></i> Staff Performance</h3>
-                            <p class="text-gray-500 mb-4">Compare revenue generation across your team</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.barber_performance_chart }}" alt="Staff Performance" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Monthly Satisfaction Chart -->
-                    <div id="monthly-satisfaction-chart" class="individual-chart" data-section="monthly">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-smile"></i> Average Satisfaction per Day</h3>
-                            <p class="text-gray-500 mb-4">Track customer satisfaction trends</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.satisfaction_by_day_chart }}" alt="Average Satisfaction per Day" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Monthly No-show Rate Chart -->
-                    <div id="monthly-no-show-chart" class="individual-chart" data-section="monthly">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-user-slash"></i> No-show Rate by Day</h3>
-                            <p class="text-gray-500 mb-4">Identify patterns in appointment no-shows</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.no_show_rate_chart }}" alt="No-show Rate by Day" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Monthly All Charts - Improved grid layout -->
-                    <div id="monthly-all-charts" class="individual-chart" data-section="monthly">
-                        <div class="charts-grid mb-8">
+                    <!-- Individual Charts for Monthly -->
+                    <div class="charts-container">
+                        <!-- Monthly Revenue Chart -->
+                        <div id="monthly-revenue-chart" class="individual-chart visible" data-section="monthly">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-dollar-sign"></i> Revenue by Day</h3>
+                                <p class="text-gray-500 mb-4">Track your daily revenue performance throughout the month</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.revenue_by_day_chart }}" alt="Revenue by Day" class="img-fluid">
                                 </div>
                             </div>
-                            
+                        </div>
+                        
+                        <!-- Monthly Appointments Chart -->
+                        <div id="monthly-appointments-chart" class="individual-chart" data-section="monthly">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-calendar-check"></i> Appointments per Day</h3>
+                                <p class="text-gray-500 mb-4">Monitor booking patterns throughout the month</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.appointments_by_day_chart }}" alt="Appointments per Day" class="img-fluid">
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="charts-grid mb-8">
+                        <!-- Monthly Top Services Chart -->
+                        <div id="monthly-top-services-chart" class="individual-chart" data-section="monthly">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-list-ol"></i> Top Services This Month</h3>
+                                <p class="text-gray-500 mb-4">Identify your most popular services</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.top_services_month_chart }}" alt="Top Services This Month" class="img-fluid">
                                 </div>
                             </div>
-                            
+                        </div>
+                        
+                        <!-- Monthly Barber Performance Chart -->
+                        <div id="monthly-barber-chart" class="individual-chart" data-section="monthly">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-user-tie"></i> Staff Performance</h3>
+                                <p class="text-gray-500 mb-4">Compare revenue generation across your team</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.barber_performance_chart }}" alt="Staff Performance" class="img-fluid">
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="charts-grid">
+                        <!-- Monthly Satisfaction Chart -->
+                        <div id="monthly-satisfaction-chart" class="individual-chart" data-section="monthly">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-smile"></i> Average Satisfaction per Day</h3>
+                                <p class="text-gray-500 mb-4">Track customer satisfaction trends</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.satisfaction_by_day_chart }}" alt="Average Satisfaction per Day" class="img-fluid">
                                 </div>
                             </div>
-                            
+                        </div>
+                        
+                        <!-- Monthly No-show Rate Chart -->
+                        <div id="monthly-no-show-chart" class="individual-chart" data-section="monthly">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-user-slash"></i> No-show Rate by Day</h3>
+                                <p class="text-gray-500 mb-4">Identify patterns in appointment no-shows</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.no_show_rate_chart }}" alt="No-show Rate by Day" class="img-fluid">
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Individual Charts for Annual - Improved styling -->
-                <div class="charts-container">
-                    <!-- Annual Revenue Chart -->
-                    <div id="annual-revenue-chart" class="individual-chart" data-section="annual">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-chart-line"></i> Monthly Revenue Trend</h3>
-                            <p class="text-gray-500 mb-4">Track your revenue performance throughout the year</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.monthly_revenue_chart }}" alt="Monthly Revenue Trend" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
                     
-                    <!-- Annual Services Chart -->
-                    <div id="annual-services-chart" class="individual-chart" data-section="annual">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-award"></i> Most Booked Services</h3>
-                            <p class="text-gray-500 mb-4">Identify your most popular services for the year</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.top_services_year_chart }}" alt="Most Booked Services" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Annual Barber Chart -->
-                    <div id="annual-barber-chart" class="individual-chart" data-section="annual">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-trophy"></i> Annual Staff Leaderboard</h3>
-                            <p class="text-gray-500 mb-4">Compare annual performance across your team</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.barber_leaderboard_chart }}" alt="Annual Staff Leaderboard" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Annual Clients Chart -->
-                    <div id="annual-clients-chart" class="individual-chart" data-section="annual">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-users"></i> New vs Returning Clients</h3>
-                            <p class="text-gray-500 mb-4">Track client acquisition and retention throughout the year</p>
-                            <div class="chart-container">
-                                {% if charts.client_types_chart %}
-                                    <img src="{{ charts.client_types_chart }}" alt="New vs Returning Clients" class="img-fluid">
-                                {% else %}
-                                    <div class="flex items-center justify-center h-full">
-                                        <p class="text-gray-500">Chart data not available</p>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Annual No-show Rate Chart -->
-                    <div id="annual-no-show-chart" class="individual-chart" data-section="annual">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-user-slash"></i> No-show Rate by Month</h3>
-                            <p class="text-gray-500 mb-4">Identify seasonal patterns in appointment no-shows</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.no_show_rate_year_chart }}" alt="No-show Rate by Month" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Annual Rating Chart -->
-                    <div id="annual-rating-chart" class="individual-chart" data-section="annual">
-                        <div class="chart-card">
-                            <h3 class="chart-title"><i class="fas fa-star"></i> Average Rating by Month</h3>
-                            <p class="text-gray-500 mb-4">Track customer satisfaction trends throughout the year</p>
-                            <div class="chart-container">
-                                <img src="{{ charts.monthly_rating_chart }}" alt="Average Rating by Month" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Annual All Charts -->
-                    <div id="annual-all-charts" class="individual-chart" data-section="annual">
-                        <div class="charts-grid mb-8">
+                    <!-- Individual Charts for Annual -->
+                    <div class="charts-container">
+                        <!-- Annual Revenue Chart -->
+                        <div id="annual-revenue-chart" class="individual-chart visible" data-section="annual">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-chart-line"></i> Monthly Revenue Trend</h3>
+                                <p class="text-gray-500 mb-4">Track your revenue performance throughout the year</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.monthly_revenue_chart }}" alt="Monthly Revenue Trend" class="img-fluid">
                                 </div>
                             </div>
-                            
+                        </div>
+                        
+                        <!-- Annual Services Chart -->
+                        <div id="annual-services-chart" class="individual-chart" data-section="annual">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-award"></i> Most Booked Services</h3>
+                                <p class="text-gray-500 mb-4">Identify your most popular services for the year</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.top_services_year_chart }}" alt="Most Booked Services" class="img-fluid">
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="charts-grid mb-8">
+                        <!-- Annual Barber Chart -->
+                        <div id="annual-barber-chart" class="individual-chart" data-section="annual">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-trophy"></i> Annual Staff Leaderboard</h3>
+                                <p class="text-gray-500 mb-4">Compare annual performance across your team</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.barber_leaderboard_chart }}" alt="Annual Staff Leaderboard" class="img-fluid">
                                 </div>
                             </div>
-                            
+                        </div>
+                        
+                        <!-- Annual Clients Chart -->
+                        <div id="annual-clients-chart" class="individual-chart" data-section="annual">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-users"></i> New vs Returning Clients</h3>
+                                <p class="text-gray-500 mb-4">Track client acquisition and retention throughout the year</p>
                                 <div class="chart-container">
                                     {% if charts.client_types_chart %}
                                         <img src="{{ charts.client_types_chart }}" alt="New vs Returning Clients" class="img-fluid">
@@ -1292,16 +1236,22 @@
                             </div>
                         </div>
                         
-                        <div class="charts-grid">
+                        <!-- Annual No-show Rate Chart -->
+                        <div id="annual-no-show-chart" class="individual-chart" data-section="annual">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-user-slash"></i> No-show Rate by Month</h3>
+                                <p class="text-gray-500 mb-4">Identify seasonal patterns in appointment no-shows</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.no_show_rate_year_chart }}" alt="No-show Rate by Month" class="img-fluid">
                                 </div>
                             </div>
-                            
+                        </div>
+                        
+                        <!-- Annual Rating Chart -->
+                        <div id="annual-rating-chart" class="individual-chart" data-section="annual">
                             <div class="chart-card">
                                 <h3 class="chart-title"><i class="fas fa-star"></i> Average Rating by Month</h3>
+                                <p class="text-gray-500 mb-4">Track customer satisfaction trends throughout the year</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.monthly_rating_chart }}" alt="Average Rating by Month" class="img-fluid">
                                 </div>
@@ -1310,45 +1260,46 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Portfolio Section -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <h2 class="section-title">Previous work</h2>
-                <div class="flex justify-between items-center mb-6">
-                    <p class="text-gray-600">Showcase your best work to attract new clients</p>
-                    <a href="{% url 'portfolio_list' %}" class="text-primary hover:text-primary-dark font-medium">
-                        See all <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
-                </div>
+        <!-- Portfolio Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h2 class="section-title">Previous work</h2>
+            <div class="flex justify-between items-center mb-6">
+                <p class="text-gray-600">Showcase your best work to attract new clients</p>
+                <a href="{% url 'portfolio_list' %}" class="text-primary hover:text-primary-dark font-medium">
+                    See all <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    {% if portfolio_items %}
-                        {% for item in portfolio_items|slice:":2" %}
-                        <div class="portfolio-card">
-                            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
-                            <div class="p-4">
-                                <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
-                                <p class="text-gray-600 text-sm mb-3">{{ item.description|truncatechars:60 }}</p>
-                                <div class="flex flex-wrap">
-                                    {% for tag in item.tags.all %}
-                                    <span class="badge">{{ tag.name }}</span>
-                                    {% endfor %}
-                                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                {% if portfolio_items %}
+                    {% for item in portfolio_items|slice:":2" %}
+                    <div class="portfolio-card">
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
+                            <p class="text-gray-600 text-sm mb-3">{{ item.description|truncatechars:60 }}</p>
+                            <div class="flex flex-wrap">
+                                {% for tag in item.tags.all %}
+                                <span class="badge">{{ tag.name }}</span>
+                                {% endfor %}
                             </div>
                         </div>
-                        {% endfor %}
-                    {% endif %}
-                    
-                    <!-- Button for adding work done -->
-                    <a href="{% url 'add_portfolio' %}" class="portfolio-add-card">
-                        <div class="circle-add-button">
-                            <i class="fas fa-plus text-2xl"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">Add work</h3>
-                        <p class="text-gray-500 text-center max-w-xs px-4">Upload photos and details of your best projects</p>
-                    </a>
-                </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <!-- Button for adding work done -->
+                <a href="{% url 'add_portfolio' %}" class="portfolio-add-card">
+                    <div class="circle-add-button">
+                        <i class="fas fa-plus text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Add work</h3>
+                    <p class="text-gray-500 text-center max-w-xs px-4">Upload photos and details of your best projects</p>
+                </a>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
