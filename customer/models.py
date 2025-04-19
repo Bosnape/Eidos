@@ -12,3 +12,8 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def delete(self, *args, **kwargs):
+        # Delete all records related to this client
+        self.user.appointment_set.all().delete()  # Example of removing related citations
+        super().delete(*args, **kwargs)
