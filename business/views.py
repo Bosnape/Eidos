@@ -1,16 +1,24 @@
 import uuid
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from django.contrib import messages
 import os
-from .models import BusinessAccount, RegistrationSession, Account, Service, Employee, PortfolioItem, Appointment
-from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, ServiceForm, SocialMediaForm, EmployeeForm, PortfolioItemForm
+from .models import BusinessAccount, RegistrationSession, Account, Service, Employee, PortfolioItem, Appointment, Customer
+from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, ServiceForm, SocialMediaForm, EmployeeForm, PortfolioItemForm, CustomerUserForm
 
 from datetime import datetime, timedelta
 from django.db.models import Sum, Avg
 
 from .appointment_charts import generateAllCharts
+from .forms import AppointmentForm
+from eidos.models import Account
+from .forms import AppointmentForm
+from decimal import Decimal
+
+Account = get_user_model()
 
 def registerBusinessInfo(request):
     if request.user.is_authenticated:
@@ -41,7 +49,6 @@ def registerBusinessUser(request):
     if request.user.is_authenticated:
         return redirect('business_dashboard')
     
-    # Check if user has completed phase 1
     session_key = request.session.get('registration_session_key')
     if not session_key:
         messages.error(request, "Please complete the first phase of registration")
@@ -62,6 +69,10 @@ def registerBusinessUser(request):
                 password=form.cleaned_data['password1']
             )
             
+            # Marcar la cuenta como negocio
+            user.is_business = True
+            user.save()
+            
             # Create business account
             business = BusinessAccount(
                 name=reg_session.name,
@@ -71,11 +82,8 @@ def registerBusinessUser(request):
                 user=user
             )
             
-            # Handle logo upload
             if reg_session.logo:
                 business.logo = reg_session.logo
-                # Note: In production, you would want to move the file from 
-                # temp directory to the final directory
             
             business.save()
             
@@ -93,29 +101,43 @@ def registerBusinessUser(request):
     return render(request, 'register_credentials.html', {'form': form})
 
 def loginBusiness(request):
+    # If the user is already authenticated, redirect appropriately
     if request.user.is_authenticated:
-        return redirect('business_dashboard')
-        
+        if hasattr(request.user, 'businessaccount'):
+            return redirect('business_dashboard')
+        elif hasattr(request.user, 'customerprofile'):
+            return redirect('userAppointments')
+        else:
+            return redirect('search_business')
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             user = authenticate(request, email=email, password=password)
-            
+
             if user is not None:
                 login(request, user)
                 messages.success(request, "Welcome back!")
-                
-                # Redirect to the page the user was trying to access, or dashboard
-                next_page = request.GET.get('next', 'business_dashboard')
-                return redirect(next_page)
+
+                if hasattr(user, 'businessaccount'):
+                    return redirect('business_dashboard')
+
+                elif hasattr(user, 'customer'):
+                    return redirect('userAppointments')
+
+                else:
+                    messages.error(request, "This account is not associated with any valid profile.")
+                    return redirect('search_business')
+
             else:
                 messages.error(request, "Invalid email or password.")
     else:
         form = LoginForm()
-    
+
     return render(request, 'login.html', {'form': form})
+
 
 @login_required
 def logoutBusiness(request):
@@ -404,3 +426,72 @@ def addPortfolio(request):
     
     return render(request, 'add_portfolio.html', {'business': business, 'form': form})
 
+def register_choice(request):
+    return render(request, 'register_choice.html')
+
+def register_customer(request):
+    Account = get_user_model()
+
+    if request.method == 'POST':
+        form = CustomerUserForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password1']
+            user = Account.objects.create_user(email=email, password=password)
+            
+            user.is_customer = True
+            user.save()
+
+            customer = Customer.objects.create(
+                user=user,
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                identification=form.cleaned_data['identification']
+            )
+
+            return redirect('login')
+    else:
+        form = CustomerUserForm()
+
+    return render(request, 'register_customer.html', {'form': form})
+
+@login_required
+def userAppointments(request):
+    appointments = []  # Temporal, para evitar error.
+    return render(request, 'user_appointments.html', {'appointments': appointments})
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Appointment, BusinessAccount
+from .forms import AppointmentForm
+
+def book_appointment(request, business_id):
+    try:
+        business = BusinessAccount.objects.get(id=business_id)
+    except BusinessAccount.DoesNotExist:
+        return render(request, 'error.html', {'message': 'Business not found'})  
+
+    services = Service.objects.filter(business=business)  # Obtener los servicios asociados al negocio
+
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.business = business
+            appointment.customer = request.user.customer
+            appointment.service = form.cleaned_data['service'] 
+            appointment.price = appointment.service.price 
+            appointment.customer_satisfaction = 3 #Temporal
+            appointment.repeat_customer = False #Temporal
+            appointment.no_show = False #Temporal
+            appointment.save()
+            return redirect('userAppointments')
+    else:
+        form = AppointmentForm()
+        form.fields['service'].queryset = services  # Filtrar los servicios en el formulario
+
+    return render(request, 'book_appointment.html', {
+        'form': form,
+        'business': business,
+        'services': services,  # Pasar los servicios al template
+    })

@@ -1,5 +1,6 @@
 from django.db import models
 from eidos.models import Account
+from django.conf import settings
 
 class BusinessAccount(models.Model):
     # Business model to store additional business information
@@ -75,11 +76,11 @@ class Appointment(models.Model):
     customer_email = models.EmailField(max_length=100) # Improved version: customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='appointments')
     
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='appointments') # service = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20, choices=[
         ("Cash", "Cash"), ("Card", "Card"), ("Online", "Online")
     ])
-    duration_minutes = models.PositiveIntegerField()
+    duration_minutes = models.PositiveIntegerField(null=True, blank=True)
     barber = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='appointments') # barber_name = models.CharField(max_length=100)
     
     customer_satisfaction = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
@@ -89,3 +90,12 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"Appointment for {self.customer_name} at {self.date} - {self.time}"
+
+class Customer(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    identification = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"

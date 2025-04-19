@@ -7,6 +7,9 @@ urlpatterns = [
     path('signup/account-credentials/', views.registerBusinessUser, name="register_UBusiness"),
     path('login/', views.loginBusiness, name='login'),
     path('logout/', views.logoutBusiness, name='logout'),
+
+    path('register/', views.register_choice, name='register_choice'),  # Elección cliente o negocio
+    path('register/customer/', views.register_customer, name='register_customer'),  # Cliente
     
     # Dashboard and manage profile
     path('dashboard/', views.provideDashboardSection, name="business_dashboard"),
@@ -31,4 +34,8 @@ urlpatterns = [
     
     # Display business profile to the public 
     path('<str:business_name>/', views.displayProfile, name="business_profile"),
+
+    # Appontment booking
+    path('book-appointment/<int:business_id>/', views.book_appointment, name='book_appointment'),
+    path('appointments/', views.userAppointments, name='userAppointments'),
 ]
