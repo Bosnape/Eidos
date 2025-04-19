@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment, Customer
+from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment
+from customer.models import Customer
 
 class BusinessAccountAdmin(admin.ModelAdmin):
     list_display = ('name', 'user', 'phone')
