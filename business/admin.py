@@ -26,14 +26,9 @@ class AppointmentAdmin(admin.ModelAdmin):
     list_display = ('service', 'business', 'date', 'time')
     search_fields = ('service__name', 'business__name')
 
-class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'identification', 'user')
-    search_fields = ('first_name', 'last_name', 'identification', 'user__email')
-
 admin.site.register(BusinessAccount, BusinessAccountAdmin)
 admin.site.register(RegistrationSession, RegistrationSessionAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(PortfolioItem, PortfolioItemAdmin)
 admin.site.register(Appointment, AppointmentAdmin)
-admin.site.register(Customer, CustomerAdmin)
