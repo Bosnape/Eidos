@@ -426,9 +426,11 @@ def addPortfolio(request):
     
     return render(request, 'add_portfolio.html', {'business': business, 'form': form})
 
+# Para mostrar la vista de elección de registro
 def register_choice(request):
     return render(request, 'register_choice.html')
 
+# Registro para clientes
 def register_customer(request):
     Account = get_user_model()
 
@@ -455,6 +457,7 @@ def register_customer(request):
 
     return render(request, 'register_customer.html', {'form': form})
 
+# Para mostrar el listado de citas del cliente
 @login_required
 def userAppointments(request):
     appointments = []  # Temporal, para evitar error.
@@ -465,6 +468,7 @@ from django.contrib import messages
 from .models import Appointment, BusinessAccount
 from .forms import AppointmentForm
 
+# Para mostrar la vista de reserva de citas
 def book_appointment(request, business_id):
     try:
         business = BusinessAccount.objects.get(id=business_id)
