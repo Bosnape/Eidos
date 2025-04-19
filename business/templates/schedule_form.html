@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if is_edit %}Edit{% else %}Create{% endif %} Schedule - {{ business.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body { 
+        background-color: #f3f4f6;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .shift-card {
+        background: white;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .shift-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .shift-card-active {
+        background-color: rgba(0, 168, 150, 0.05);
+        border-color: var(--primary-color);
+    }
+    
+    .action-button {
+        padding: 0.75rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .action-button:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .action-button-secondary {
+        padding: 0.75rem 1.5rem;
+        background-color: white;
+        color: #6b7280;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .action-button-secondary:hover {
+        background-color: #f9fafb;
+        border-color: #9ca3af;
+    }
+    
+    .form-input {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        ring: 2px;
+        ring-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .form-select {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+    }
+    
+    .form-select:focus {
+        outline: none;
+        ring: 2px;
+        ring-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .form-checkbox {
+        width: 1rem;
+        height: 1rem;
+        color: var(--primary-color);
+        border: 1px solid #d1d5db;
+        border-radius: 0.25rem;
+        transition: all 0.2s;
+    }
+    
+    .form-checkbox:focus {
+        outline: none;
+        ring: 2px;
+        ring-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6">
+        <a href="{% url 'schedule_list' %}" class="text-primary hover:text-primary-dark flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Schedules
+        </a>
+    </div>
+
+    <div class="form-card">
+        <div class="p-6 border-b border-gray-200">
+            <h1 class="section-title mb-0">
+                {% if is_edit %}
+                    Edit Schedule for {{ schedule.employee.name }}
+                {% else %}
+                    Create New Staff Schedule
+                {% endif %}
+            </h1>
+            <p class="text-gray-600">Define regular working hours for your staff members</p>
+        </div>
+
+        <form method="post" class="p-6">
+            {% csrf_token %}
+            
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Schedule Information</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ schedule_form.employee.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Employee
+                        </label>
+                        {{ schedule_form.employee.errors }}
+                        {{ schedule_form.employee }}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ schedule_form.is_active.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Status
+                        </label>
+                        <div class="flex items-center mt-2">
+                            {{ schedule_form.is_active.errors }}
+                            {{ schedule_form.is_active }}
+                            <span class="ml-2 text-sm text-gray-600">Active</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ schedule_form.start_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Start Date
+                        </label>
+                        {{ schedule_form.start_date.errors }}
+                        {{ schedule_form.start_date }}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ schedule_form.end_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            End Date (Optional)
+                        </label>
+                        {{ schedule_form.end_date.errors }}
+                        {{ schedule_form.end_date }}
+                        <p class="text-xs text-gray-500 mt-1">Leave blank for ongoing schedules</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Weekly Shifts</h2>
+                <p class="text-sm text-gray-600 mb-4">Define the regular working hours for each day of the week.</p>
+                
+                {{ shift_formset.management_form }}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for form in shift_formset %}
+                        <div class="shift-card p-4 {% if form.instance.pk %}shift-card-active{% endif %}">
+                            {{ form.id }}
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.day_of_week.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Day
+                                </label>
+                                {{ form.day_of_week.errors }}
+                                {{ form.day_of_week}}
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="{{ form.start_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Start Time
+                                    </label>
+                                    {{ form.start_time.errors }}
+                                    {{ form.start_time }}
+                                </div>
+                                
+                                <div>
+                                    <label for="{{ form.end_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                        End Time
+                                    </label>
+                                    {{ form.end_time.errors }}
+                                    {{ form.end_time}}
+                                </div>
+                            </div>
+                            
+                            {% if shift_formset.can_delete %}
+                                <div class="mt-3 flex items-center">
+                                    {{ form.DELETE }}
+                                    <label for="{{ form.DELETE.id_for_label }}" class="ml-2 text-sm text-red-600">
+                                        Delete this shift
+                                    </label>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                {% if shift_formset.non_form_errors %}
+                    <div class="mt-4 p-3 bg-red-50 text-red-700 rounded">
+                        {{ shift_formset.non_form_errors }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <a href="{% url 'schedule_list' %}" class="action-button-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="action-button">
+                    {% if is_edit %}Update{% else %}Create{% endif %} Schedule
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add custom styling to form elements
+        const selectFields = document.querySelectorAll('select');
+        selectFields.forEach(field => {
+            field.classList.add('form-select');
+        });
+        
+        const inputFields = document.querySelectorAll('input[type="date"], input[type="time"]');
+        inputFields.forEach(field => {
+            field.classList.add('form-input');
+        });
+        
+        const checkboxFields = document.querySelectorAll('input[type="checkbox"]');
+        checkboxFields.forEach(field => {
+            field.classList.add('form-checkbox');
+        });
+    });
+</script>
+{% endblock %}

@@ -1311,6 +1311,102 @@
                 </div>
             </div>
 
+        <!-- Staff Management Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h2 class="section-title">Staff Management</h2>
+            <div class="flex justify-between items-center mb-6">
+                <p class="text-gray-600">Manage your staff schedules, availability, and appointments</p>
+                <a href="{% url 'employee_list' %}" class="text-primary hover:text-primary-dark font-medium">
+                    View all staff <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Staff Calendar Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-calendar-week text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Staff Calendar</h3>
+                        <p class="text-gray-600 text-sm mb-4">View and manage your staff's schedules in a weekly calendar format</p>
+                        <a href="{% url 'staff_calendar' %}" class="action-button">
+                            <i class="fas fa-calendar-alt mr-2"></i>View Calendar
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Schedules Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-clock text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Staff Schedules</h3>
+                        <p class="text-gray-600 text-sm mb-4">Create and manage regular working hours for your staff members</p>
+                        <a href="{% url 'schedule_list' %}" class="action-button">
+                            <i class="fas fa-list-alt mr-2"></i>Manage Schedules
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Availability Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-user-clock text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Staff Availability</h3>
+                        <p class="text-gray-600 text-sm mb-4">Set days when your staff members are unavailable for appointments</p>
+                        <a href="{% url 'manage_availability' %}" class="action-button">
+                            <i class="fas fa-calendar-check mr-2"></i>Manage Availability
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Staff Appointments Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-calendar-plus text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Staff Appointments</h3>
+                        <p class="text-gray-600 text-sm mb-4">Manage client appointments with your staff members</p>
+                        <a href="{% url 'manage_staff_appointments' %}" class="action-button">
+                            <i class="fas fa-calendar-alt mr-2"></i>Manage Appointments
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Add Employee Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-user-plus text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Add Staff</h3>
+                        <p class="text-gray-600 text-sm mb-4">Add new staff members to your business profile</p>
+                        <a href="{% url 'add_employee' %}" class="action-button">
+                            <i class="fas fa-plus mr-2"></i>Add Employee
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Create Schedule Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-plus-circle text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Create Schedule</h3>
+                        <p class="text-gray-600 text-sm mb-4">Create a new work schedule for your staff members</p>
+                        <a href="{% url 'create_schedule' %}" class="action-button">
+                            <i class="fas fa-plus mr-2"></i>Create Schedule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
             <!-- Portfolio Section -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <h2 class="section-title">Previous work</h2>
