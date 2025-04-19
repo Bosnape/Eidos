@@ -1,4 +1,0 @@
-*.pyc
-*.env
-.env
-/api_keys.env
