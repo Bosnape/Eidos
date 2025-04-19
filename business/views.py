@@ -6,16 +6,16 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
 import os
-from .models import BusinessAccount, RegistrationSession, Account, Service, Employee, PortfolioItem, Appointment, Customer
-from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, ServiceForm, SocialMediaForm, EmployeeForm, PortfolioItemForm, CustomerUserForm
+from .models import BusinessAccount, RegistrationSession, Account, Service, Employee, PortfolioItem, Appointment
+from customer.models import Customer
+from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, ServiceForm, SocialMediaForm, EmployeeForm, PortfolioItemForm
 
 from datetime import datetime, timedelta
 from django.db.models import Sum, Avg
 
 from .appointment_charts import generateAllCharts
-from .forms import AppointmentForm
+from customer.forms import AppointmentForm
 from eidos.models import Account
-from .forms import AppointmentForm
 from decimal import Decimal
 
 Account = get_user_model()
@@ -100,7 +100,7 @@ def registerBusinessUser(request):
     
     return render(request, 'register_credentials.html', {'form': form})
 
-def loginBusiness(request):
+def login_view(request):
     # If the user is already authenticated, redirect appropriately
     if request.user.is_authenticated:
         if hasattr(request.user, 'businessaccount'):
@@ -425,77 +425,3 @@ def addPortfolio(request):
         form = PortfolioItemForm()
     
     return render(request, 'add_portfolio.html', {'business': business, 'form': form})
-
-# Para mostrar la vista de elección de registro
-def register_choice(request):
-    return render(request, 'register_choice.html')
-
-# Registro para clientes
-def register_customer(request):
-    Account = get_user_model()
-
-    if request.method == 'POST':
-        form = CustomerUserForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password1']
-            user = Account.objects.create_user(email=email, password=password)
-            
-            user.is_customer = True
-            user.save()
-
-            customer = Customer.objects.create(
-                user=user,
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-                identification=form.cleaned_data['identification']
-            )
-
-            return redirect('login')
-    else:
-        form = CustomerUserForm()
-
-    return render(request, 'register_customer.html', {'form': form})
-
-# Para mostrar el listado de citas del cliente
-@login_required
-def userAppointments(request):
-    appointments = []  # Temporal, para evitar error.
-    return render(request, 'user_appointments.html', {'appointments': appointments})
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Appointment, BusinessAccount
-from .forms import AppointmentForm
-
-# Para mostrar la vista de reserva de citas
-def book_appointment(request, business_id):
-    try:
-        business = BusinessAccount.objects.get(id=business_id)
-    except BusinessAccount.DoesNotExist:
-        return render(request, 'error.html', {'message': 'Business not found'})  
-
-    services = Service.objects.filter(business=business)  # Obtener los servicios asociados al negocio
-
-    if request.method == 'POST':
-        form = AppointmentForm(request.POST)
-        if form.is_valid():
-            appointment = form.save(commit=False)
-            appointment.business = business
-            appointment.customer = request.user.customer
-            appointment.service = form.cleaned_data['service'] 
-            appointment.price = appointment.service.price 
-            appointment.customer_satisfaction = 3 #Temporal
-            appointment.repeat_customer = False #Temporal
-            appointment.no_show = False #Temporal
-            appointment.save()
-            return redirect('userAppointments')
-    else:
-        form = AppointmentForm()
-        form.fields['service'].queryset = services  # Filtrar los servicios en el formulario
-
-    return render(request, 'book_appointment.html', {
-        'form': form,
-        'business': business,
-        'services': services,  # Pasar los servicios al template
-    })
