@@ -102,6 +102,8 @@ def book_appointment(request, business_id):
 def must_be_logged_in(request):
     return render(request, 'must_be_logged_in.html')
 
+
+# View to cancel an appointment
 @require_POST
 @login_required
 def cancel_appointment(request, appointment_id):
