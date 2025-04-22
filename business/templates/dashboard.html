@@ -461,8 +461,8 @@
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
-        margin-top: 1rem; /* Reduced from 1rem */
-        padding-top: 1rem; /* Reduced from 1rem */
+        margin-top: 1rem;
+        padding-top: 1rem; 
         border-top: 1px solid #e5e7eb;
     }
     
@@ -591,6 +591,27 @@
 
     .stats-card-text {
         flex: 1;
+    }
+
+    .summary-section {
+        background-color: #f9fafb;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .summary-section h4 {
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+    }
+
+    .summary-section ul {
+        margin-top: 0.5rem;
+    }
+
+    .summary-section li {
+        margin-bottom: 0.25rem;
+        color: #4b5563;
     }
 </style>
 {% endblock %}
@@ -729,6 +750,87 @@
                 timeFilterBtns[index].click();
             });
         });
+        
+        // Summary section functionality
+        const generateBtn = document.getElementById('generateSummaryBtn');
+        const summaryContainer = document.getElementById('summaryContainer');
+        const summarySection = document.querySelector('.ai-summary-section');
+        
+        function updateSummaryVisibility() {
+            const isMonthlyView = document.querySelector('.time-filter-btn.active').textContent.includes('Monthly');
+            summarySection.style.display = isMonthlyView ? 'block' : 'none';
+        }
+        
+        // Initial visibility check
+        updateSummaryVisibility();
+        
+        // Update visibility when time filter changes
+        document.querySelectorAll('.time-filter-btn').forEach(btn => {
+            btn.addEventListener('click', updateSummaryVisibility);
+        });
+        
+        if (generateBtn) {
+            generateBtn.addEventListener('click', function() {
+                // Show loading state
+                generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing...';
+                generateBtn.disabled = true;
+                
+                // Make AJAX request to get the summary
+                fetch(window.location.pathname + '?generate_summary=true', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.summary) {
+                        // Build the HTML for the summary
+                        let summaryHtml = '<div class="space-y-6">';
+                        
+                        data.summary.forEach(section => {
+                            summaryHtml += `
+                                <div class="summary-section">
+                                    <h4 class="font-bold text-lg mb-3 text-primary flex items-center">
+                                        ${section.title === "Performance Overview" ? 
+                                            '<i class="fas fa-chart-bar mr-2"></i>' : 
+                                            '<i class="fas fa-lightbulb mr-2"></i>'}
+                                        ${section.title}
+                                    </h4>
+                                    <ul class="list-disc pl-5 space-y-2">`;
+                            
+                            section.items.forEach(item => {
+                                summaryHtml += `<li class="text-gray-700">${item}</li>`;
+                            });
+                            
+                            summaryHtml += `</ul></div>`;
+                        });
+                        
+                        summaryHtml += '</div>';
+                        summaryContainer.innerHTML = summaryHtml;
+                    } else {
+                        summaryContainer.innerHTML = `
+                            <div class="text-center py-8">
+                                <i class="fas fa-exclamation-triangle text-gray-300 text-4xl mb-4"></i>
+                                <p class="text-gray-500">Could not generate insights. Please try again.</p>
+                            </div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    summaryContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-exclamation-triangle text-gray-300 text-4xl mb-4"></i>
+                            <p class="text-gray-500">An error occurred while generating insights.</p>
+                        </div>`;
+                })
+                .finally(() => {
+                    // Reset button state
+                    generateBtn.innerHTML = '<i class="fas fa-magic mr-2"></i> Generate Insights';
+                    generateBtn.disabled = false;
+                });
+            });
+        }
     });
 </script>
 {% endblock %}
@@ -833,7 +935,7 @@
             </div>
         </section>
         
-        <!-- Business Statistics - REDESIGNED to match mockup layout while keeping original styling -->
+        <!-- Business Statistics -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Business Analytics Title and Description -->
             <h2 class="section-title">Business Analytics</h2>
@@ -842,13 +944,13 @@
             <!-- Analytics Tabs -->
             <div class="analytics-tabs">
                 <div class="analytics-tab active">
-                    <i class="fas fa-calendar-day"></i> Daily
+                    <i class="fas fa-calendar-day"></i> Day
                 </div>
                 <div class="analytics-tab">
-                    <i class="far fa-calendar"></i> Monthly
+                    <i class="far fa-calendar"></i> Month
                 </div>
                 <div class="analytics-tab">
-                    <i class="far fa-calendar-alt"></i> Annual
+                    <i class="far fa-calendar-alt"></i> Year
                 </div>
             </div>
 
@@ -1044,6 +1146,9 @@
                         <button class="chart-button" data-section="monthly" data-chart="monthly-barber-chart">
                             <i class="fas fa-user-tie"></i> Staff Performance
                         </button>
+                        <button class="chart-button" data-section="monthly" data-chart="monthly-customer-type-chart">
+                            <i class="fas fa-user-friends"></i> Customer Types
+                        </button>
                         <button class="chart-button" data-section="monthly" data-chart="monthly-satisfaction-chart">
                             <i class="fas fa-smile"></i> Satisfaction
                         </button>
@@ -1063,8 +1168,8 @@
                         <button class="chart-button" data-section="annual" data-chart="annual-barber-chart">
                             <i class="fas fa-trophy"></i> Staff Leaderboard
                         </button>
-                        <button class="chart-button" data-section="annual" data-chart="annual-clients-chart">
-                            <i class="fas fa-users"></i> Client Types
+                        <button class="chart-button" data-section="annual" data-chart="annual-customer-type-chart">
+                            <i class="fas fa-user-friends"></i> Customer Types
                         </button>
                         <button class="chart-button" data-section="annual" data-chart="annual-no-show-chart">
                             <i class="fas fa-user-slash"></i> No-show Trends
@@ -1084,12 +1189,14 @@
                                 <div class="chart-container">
                                     <img src="{{ charts.time_slot_chart }}" alt="Appointments by Time Slot" class="img-fluid">
                                 </div>
+                                <!-- To implement later 
                                 <div class="chart-legend">
                                     <div class="legend-item">
                                         <div class="legend-color" style="background-color: #00a896;"></div>
                                         <span>Appointments</span>
                                     </div>
                                 </div>
+                                -->
                             </div>
                         </div>
                         
@@ -1099,8 +1206,9 @@
                                 <h3 class="chart-title"><i class="fas fa-user-friends"></i> New vs Repeat Customers</h3>
                                 <p class="text-gray-500 mb-4">Track the balance between new and returning clients</p>
                                 <div class="chart-container">
-                                    <img src="{{ charts.customer_type_chart }}" alt="New vs Repeat Customers" class="img-fluid">
+                                    <img src="{{ charts.customer_type_day_chart }}" alt="New vs Repeat Customers" class="img-fluid">
                                 </div>
+                                <!-- To implement later
                                 <div class="chart-legend">
                                     <div class="legend-item">
                                         <div class="legend-color" style="background-color: #00a896;"></div>
@@ -1111,6 +1219,7 @@
                                         <span>Repeat Customers</span>
                                     </div>
                                 </div>
+                                -->
                             </div>
                         </div>
                     </div>
@@ -1157,6 +1266,17 @@
                                 <p class="text-gray-500 mb-4">Compare revenue generation across your team</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.barber_performance_chart }}" alt="Staff Performance" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monthly Customer Type Chart -->
+                        <div id="monthly-customer-type-chart" class="individual-chart" data-section="monthly">
+                            <div class="chart-card">
+                                <h3 class="chart-title"><i class="fas fa-user-friends"></i> New vs Repeat Customers</h3>
+                                <p class="text-gray-500 mb-4">Track client acquisition and retention throughout the month</p>
+                                <div class="chart-container">
+                                    <img src="{{ charts.customer_type_month_chart }}" alt="New vs Repeat Customers" class="img-fluid">
                                 </div>
                             </div>
                         </div>
@@ -1219,14 +1339,14 @@
                             </div>
                         </div>
                         
-                        <!-- Annual Clients Chart -->
-                        <div id="annual-clients-chart" class="individual-chart" data-section="annual">
+                        <!-- Annual Customer Type Chart -->
+                        <div id="annual-customer-type-chart" class="individual-chart" data-section="annual">
                             <div class="chart-card">
-                                <h3 class="chart-title"><i class="fas fa-users"></i> New vs Returning Clients</h3>
+                                <h3 class="chart-title"><i class="fas fa-user-friends"></i> New vs Repeat Customers</h3>
                                 <p class="text-gray-500 mb-4">Track client acquisition and retention throughout the year</p>
                                 <div class="chart-container">
-                                    {% if charts.client_types_chart %}
-                                        <img src="{{ charts.client_types_chart }}" alt="New vs Returning Clients" class="img-fluid">
+                                    {% if charts.customer_type_year_chart %}
+                                        <img src="{{ charts.customer_type_year_chart }}" alt="New vs Repeat Customers" class="img-fluid">
                                     {% else %}
                                         <div class="flex items-center justify-center h-full">
                                             <p class="text-gray-500">Chart data not available</p>
@@ -1257,6 +1377,27 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI-Powered Performance Insights -->
+            <div class="ai-summary-section mt-12" style="display: none;">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-robot text-primary mr-3"></i>
+                        AI-Powered Monthly Insights
+                    </h3>
+                    <button id="generateSummaryBtn" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center text-sm">
+                        <i class="fas fa-magic mr-2"></i>
+                        Generate Insights
+                    </button>
+                </div>
+                
+                <div id="summaryContainer" class="bg-white p-6 rounded-lg shadow-md border-t-4 border-primary">
+                    <div class="text-center py-8">
+                        <i class="fas fa-chart-pie text-gray-300 text-4xl mb-4"></i>
+                        <p class="text-gray-500">Get AI-powered analysis of your monthly performance metrics</p>
                     </div>
                 </div>
             </div>
