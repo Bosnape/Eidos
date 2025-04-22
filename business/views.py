@@ -1,4 +1,5 @@
 import uuid
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,11 +7,13 @@ from django.contrib import messages
 import os
 from .models import BusinessAccount, RegistrationSession, Account, Service, Employee, PortfolioItem, Appointment
 from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, ServiceForm, SocialMediaForm, EmployeeForm, PortfolioItemForm
+from .appointment_charts import generateAllCharts
 
 from datetime import datetime, timedelta
 from django.db.models import Sum, Avg
-
-from .appointment_charts import generateAllCharts
+from openai import OpenAI
+from dotenv import load_dotenv
+import re
 
 def registerBusinessInfo(request):
     if request.user.is_authenticated:
@@ -150,8 +153,21 @@ def provideDashboardSection(request):
     # Get statistics data with time-based summaries
     stats_data = getDashboardStatisticsSummary(business)
     
-    # Generate all charts using the utility function
+    # Generate all charts for the dashboard
     charts = generateAllCharts(business)
+    
+    # Initialize monthly_summary as None
+    monthly_summary = None
+    
+    # Check if summary was requested (button clicked)
+    if request.GET.get('generate_summary') == 'true':
+        monthly_summary = getBusinessMonthlySummary(business)
+        
+        # If this is an AJAX request, return JSON
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'summary': monthly_summary
+            })
     
     portfolio_items = business.portfolio_items.all()
     context = {
@@ -159,6 +175,7 @@ def provideDashboardSection(request):
         'portfolio_items': portfolio_items,
         'stats_data': stats_data,
         'charts': charts,
+        'monthly_summary': monthly_summary,
     }    
     return render(request, 'dashboard.html', context)
 
@@ -168,6 +185,7 @@ def getDashboardStatisticsSummary(business):
     today = datetime.today()
     
     start_of_month = today.replace(day=1)
+    
     # Limit end_of_month to today if today is before the actual end of month
     end_of_month_full = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
     end_of_month = min(today, end_of_month_full)
@@ -197,12 +215,6 @@ def getDashboardStatisticsSummary(business):
     annual_avg_rating = year_appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0
     annual_revenue = year_appointments.aggregate(sum=Sum('price'))['sum'] or 0
     
-    # Basic stats for the top cards
-    todays_appointments = appointments.filter(date=today).count()
-    total_clients = appointments.values('customer_email').distinct().count()
-    avg_rating = appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0
-    monthly_revenue_basic = appointments.filter(date__gte=start_of_month, date__lte=end_of_month).aggregate(sum=Sum('price'))['sum'] or 0
-    
     # Return the time-based summaries
     return {
         'daily_stats': {
@@ -223,13 +235,133 @@ def getDashboardStatisticsSummary(business):
             'avg_rating': round(annual_avg_rating, 1),
             'revenue': round(annual_revenue, 2),
         },
-        'basic_stats': {
-            'todays_appointments': todays_appointments,
-            'total_clients': total_clients,
-            'avg_rating': round(avg_rating, 1),
-            'monthly_revenue': monthly_revenue_basic,
-        },
     }
+    
+def getBusinessMonthlySummary(business):
+    """Get monthly summary of appointments for the business using openAI"""
+    
+    appointments = Appointment.objects.filter(business=business)
+    
+    # Get this month's data
+    today = datetime.today()
+    
+    start_of_month = today.replace(day=1)
+    end_of_month_full = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    end_of_month = min(today, end_of_month_full)
+    
+    this_month_appointments = appointments.filter(date__gte=start_of_month, date__lte=end_of_month)
+    this_month_appointments_count = this_month_appointments.count()
+    
+    this_month_new_clients = this_month_appointments.filter(repeat_customer=False).count()
+    this_month_repeat_clients = this_month_appointments.filter(repeat_customer=True).count()
+    if this_month_new_clients > 0:
+        this_month_repeat_new_ratio = f"{this_month_repeat_clients}:{this_month_new_clients}"
+    else:
+        this_month_repeat_new_ratio = "N/A"
+    
+    this_month_avg_rating = this_month_appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0
+    this_month_revenue = this_month_appointments.aggregate(sum=Sum('price'))['sum'] or 0
+    this_month_no_shows = this_month_appointments.filter(no_show=True).count()
+    this_month_no_show_rate = round((this_month_no_shows / this_month_appointments_count * 100) if this_month_appointments_count > 0 else 0, 1)
+    
+    # Get last month's data
+    last_month_start = (start_of_month - timedelta(days=1)).replace(day=1)
+    last_month_end = start_of_month - timedelta(days=1)  
+    
+    last_month_appointments = appointments.filter(date__gte=last_month_start, date__lte=last_month_end)
+    last_month_appointments_count = last_month_appointments.count()
+    
+    last_month_new_clients = last_month_appointments.filter(repeat_customer=False).count()
+    last_month_repeat_clients = last_month_appointments.filter(repeat_customer=True).count()
+    if last_month_new_clients > 0:
+        last_month_repeat_new_ratio = f"{last_month_repeat_clients}:{last_month_new_clients}"
+    else:
+        last_month_repeat_new_ratio = "N/A"
+        
+    last_month_avg_rating = last_month_appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0
+    last_month_revenue = last_month_appointments.aggregate(sum=Sum('price'))['sum'] or 0
+    last_month_no_shows = last_month_appointments.filter(no_show=True).count()
+    last_month_no_show_rate = round((last_month_no_shows / last_month_appointments_count * 100) if last_month_appointments_count > 0 else 0, 1)
+    
+    load_dotenv('api_keys.env')
+    client = OpenAI(api_key=os.environ.get('openai_apikey'))
+    
+    instruction = (
+        "Compare this month's performance with last month's using these metrics: "
+        "Appointments, New Clients, Repeat Clients, Repeat/New Ratio, Rating, No Shows, "
+        "No Show Rate, and Revenue. First, describe how the metrics changed (avoid the use of 'versus'). "
+        "Then, provide a concise summary in bullet points highlighting key changes, improvements, or issues. "
+        "Keep it clear, useful, and business-owner friendly. Start each section with the titles: "
+        "'Performance Overview:' and 'Key Insights:' exactly as written, and do not provide any other title/section. Here is the data:\n"
+    )
+    
+    data = (
+        "\nThis month: \n"
+        f"Appointments: {this_month_appointments_count}\n"
+        f"New Clients: {this_month_new_clients}\n"
+        f"Repeat Clients: {this_month_repeat_clients}\n"
+        f"Repeat/New Ratio: {this_month_repeat_new_ratio}\n"
+        f"Rating: {this_month_avg_rating}\n"
+        f"No Shows: {this_month_no_shows}\n"
+        f"No Show Rate: {this_month_no_show_rate}%\n"
+        f"Revenue: {this_month_revenue}\n"
+        
+        "\nLast month:\n"
+        f"Appointments: {last_month_appointments_count}\n"
+        f"New Clients: {last_month_new_clients}\n"
+        f"Repeat Clients: {last_month_repeat_clients}\n"
+        f"Repeat/New Ratio: {last_month_repeat_new_ratio}\n"
+        f"Rating: {last_month_avg_rating}\n"
+        f"No Shows: {last_month_no_shows}\n"
+        f"No Show Rate: {last_month_no_show_rate}%\n"
+        f"Revenue: {last_month_revenue}\n"
+    )
+    
+    prompt = (
+        f"{instruction}"
+        f"{data}"
+    )
+    
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=400,
+        temperature=0,
+    )
+    content  = response.choices[0].message.content.strip()
+    
+    # Parse the response into sections using regex
+    sections = []
+    pattern = r'(Performance Overview:|Key Insights:)(.*?)(?=(Performance Overview:|Key Insights:|$))'
+    matches = re.findall(pattern, content, re.DOTALL)
+    
+    for match in matches:
+        title = match[0].replace(':', '').strip()
+        items_text = match[1].strip()
+        
+        # Extract bullet points or split lines
+        items = []
+        if '-' in items_text:
+            # Handle bullet points
+            items = [item.strip() for item in items_text.split('-') if item.strip()]
+        else:
+            # Handle line breaks
+            items = [item.strip() for item in items_text.split('\n') if item.strip()]
+        
+        sections.append({
+            'title': title,
+            'items': items
+        })
+        print(f"Title: {title}, Items: {items}")
+    
+    # Fallback if parsing fails
+    if not sections:
+        sections = [{
+            'title': 'Monthly Analysis',
+            'items': [content]
+        }]
+        
+    return sections
 
 @login_required
 def manageProfile(request):
