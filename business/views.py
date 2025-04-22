@@ -77,8 +77,6 @@ def registerBusinessUser(request):
             # Handle logo upload
             if reg_session.logo:
                 business.logo = reg_session.logo
-                # Note: In production, you would want to move the file from 
-                # temp directory to the final directory
             
             business.save()
             
@@ -156,19 +154,38 @@ def provideDashboardSection(request):
     # Generate all charts for the dashboard
     charts = generateAllCharts(business)
     
-    # Initialize monthly_summary as None
+     # Initialize summaries as None
     monthly_summary = None
+    annual_summary = None
     
     # Check if summary was requested (button clicked)
     if request.GET.get('generate_summary') == 'true':
-        monthly_summary = getBusinessMonthlySummary(business)
-        
-        # If this is an AJAX request, return JSON
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({
-                'summary': monthly_summary
-            })
-    
+        time_frame = request.GET.get('time_frame', 'monthly')
+        try:
+            if time_frame == 'annual':
+                annual_summary = getBusinessAnnualSummary(business)
+                # Clear any existing monthly summary
+                monthly_summary = None
+            else:
+                monthly_summary = getBusinessMonthlySummary(business)
+                # Clear any existing annual summary
+                annual_summary = None
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'summary': annual_summary if time_frame == 'annual' else monthly_summary,
+                    'time_frame': time_frame,
+                    'status': 'success'
+                })
+                
+        except Exception as e:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'status': 'error',
+                    'message': str(e)
+                }, status=500)
+            messages.error(request, f"Error generating insights: {str(e)}")
+     
     portfolio_items = business.portfolio_items.all()
     context = {
         'business': business,
@@ -176,7 +193,9 @@ def provideDashboardSection(request):
         'stats_data': stats_data,
         'charts': charts,
         'monthly_summary': monthly_summary,
+        'annual_summary': annual_summary,
     }    
+     
     return render(request, 'dashboard.html', context)
 
 def getDashboardStatisticsSummary(business):
@@ -360,7 +379,155 @@ def getBusinessMonthlySummary(business):
             'title': 'Monthly Analysis',
             'items': [content]
         }]
+    
+    return sections
+
+def getBusinessAnnualSummary(business):
+    """Get month-by-month annual summary of appointments for the business using openAI"""
+    
+    appointments = Appointment.objects.filter(business=business)
+    today = datetime.today()
+    current_year = today.year
+    
+    # Prepare month-by-month data
+    monthly_data = []
+    for month in range(1, today.month + 1):
+        month_start = datetime(current_year, month, 1).date()
+        if month < 12:
+            month_end = datetime(current_year, month + 1, 1).date() - timedelta(days=1)
+        else:
+            month_end = datetime(current_year, 12, 31).date()
         
+        # Limit end date to today for current month
+        if month == today.month:
+            month_end = min(today.date(), month_end)
+        
+        month_appointments = appointments.filter(date__gte=month_start, date__lte=month_end)
+        month_count = month_appointments.count()
+        
+        monthly_data.append({
+            'month': month_start.strftime("%B"),
+            'appointments': month_count,
+            'new_clients': month_appointments.filter(repeat_customer=False).count(),
+            'repeat_clients': month_appointments.filter(repeat_customer=True).count(),
+            'avg_rating': month_appointments.filter(customer_satisfaction__gt=0).aggregate(avg=Avg('customer_satisfaction'))['avg'] or 0,
+            'revenue': month_appointments.aggregate(sum=Sum('price'))['sum'] or 0,
+            'no_shows': month_appointments.filter(no_show=True).count(),
+            'no_show_rate': round((month_appointments.filter(no_show=True).count() / month_count * 100) if month_count > 0 else 0, 1)
+        })
+    
+    # Calculate year-to-date totals
+    ytd_appointments = sum(m['appointments'] for m in monthly_data)
+    ytd_new_clients = sum(m['new_clients'] for m in monthly_data)
+    ytd_repeat_clients = sum(m['repeat_clients'] for m in monthly_data)
+    ytd_revenue = sum(m['revenue'] for m in monthly_data)
+    ytd_no_shows = sum(m['no_shows'] for m in monthly_data)
+    
+    # Calculate averages
+    months_with_ratings = [m for m in monthly_data if m['avg_rating'] > 0]
+    ytd_avg_rating = round(sum(m['avg_rating'] for m in months_with_ratings) / len(months_with_ratings), 1) if months_with_ratings else 0
+    ytd_no_show_rate = round((ytd_no_shows / ytd_appointments * 100) if ytd_appointments > 0 else 0, 1)
+    
+    load_dotenv('api_keys.env')
+    client = OpenAI(api_key=os.environ.get('openai_apikey'))
+    
+    instruction = (
+        "Provide a month-by-month overview of business performance for the current year up to today. "
+        "Analyze trends in these metrics: Appointments, New Clients, Repeat Clients, Rating, Revenue, and No-show Rate. "
+        "Highlight any significant monthly patterns or anomalies. For each month, create a subtitle with the month name followed by a colon. "
+        "Then, summarize the year-to-date performance and key takeaways. "
+        "Keep the analysis concise and actionable for a business owner. "
+        "Start each section with these exact titles: "
+        "'Month-by-Month Analysis:' and 'Year-to-Date Summary:', and do not provide any other title/section. Here is the data:\n\n"
+        f"Current Year: {current_year} (Data through {today.strftime('%B %d')})\n\n"
+        "Monthly Data:\n"
+    )
+    
+    # Add monthly data to prompt
+    monthly_data_text = ""
+    for month in monthly_data:
+        monthly_data_text += (
+            f"{month['month']}:\n"
+            f"  Appointments: {month['appointments']}\n"
+            f"  New Clients: {month['new_clients']}\n"
+            f"  Repeat Clients: {month['repeat_clients']}\n"
+            f"  Avg Rating: {month['avg_rating']}\n"
+            f"  Revenue: ${month['revenue']:.2f}\n"
+            f"  No-show Rate: {month['no_show_rate']}%\n\n"
+        )
+    
+    # Add YTD summary to prompt
+    ytd_text = (
+        "\nYear-to-Date Totals:\n"
+        f"Total Appointments: {ytd_appointments}\n"
+        f"New Clients: {ytd_new_clients}\n"
+        f"Repeat Clients: {ytd_repeat_clients}\n"
+        f"Avg Rating: {ytd_avg_rating}\n"
+        f"Total Revenue: ${ytd_revenue:.2f}\n"
+        f"No-show Rate: {ytd_no_show_rate}%\n"
+    )
+    
+    prompt = (
+        f"{instruction}"
+        f"{monthly_data_text}"
+        f"{ytd_text}"
+    )
+    
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=500,  # Increased for more detailed analysis
+        temperature=0,
+    )
+    content = response.choices[0].message.content.strip()
+    
+    # Parse the response into sections
+    sections = []
+    current_section = None
+    current_subsection = None
+    
+    for line in content.split('\n'):
+        line = line.strip()
+        if not line:
+            continue
+            
+        # Check for section title
+        if line.endswith('Analysis:') or line.endswith('Summary:'):
+            if current_section:
+                if current_subsection:
+                    current_section['subsections'].append(current_subsection)
+                sections.append(current_section)
+            current_section = {
+                'title': line.replace(':', ''),
+                'subsections': []
+            }
+            current_subsection = None
+            
+        # Check for subtitle (month name)
+        elif line.endswith(':'):
+            if current_subsection and current_section:
+                current_section['subsections'].append(current_subsection)
+            current_subsection = {
+                'title': line.replace(':', '').strip(),
+                'items': []
+            }
+            
+        # Check for bullet points
+        elif line.startswith('-'):
+            if current_subsection:
+                current_subsection['items'].append(line[1:].strip())
+            elif current_section:
+                # Handle items that belong to the section directly (like in Year-to-Date Summary)
+                if 'items' not in current_section:
+                    current_section['items'] = []
+                current_section['items'].append(line[1:].strip())
+    
+    # Add any remaining sections/subsections
+    if current_subsection and current_section:
+        current_section['subsections'].append(current_subsection)
+    if current_section:
+        sections.append(current_section)
+    
     return sections
 
 @login_required
