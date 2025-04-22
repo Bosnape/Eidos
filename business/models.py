@@ -86,6 +86,6 @@ class Appointment(models.Model):
     repeat_customer = models.BooleanField()
     no_show = models.BooleanField()
     status = models.CharField(max_length=20, choices=[('scheduled', 'Scheduled'), ('completed', 'Completed'), ('cancelled', 'Cancelled')], default='scheduled')
-
+    
     def __str__(self):
         return f"Appointment for {self.customer_name} at {self.date} - {self.time}"
