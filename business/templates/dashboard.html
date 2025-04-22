@@ -625,6 +625,9 @@
         const summaryStatsSections = document.querySelectorAll('.summary-stats');
         const chartButtonContainers = document.querySelectorAll('.chart-buttons');
         const chartsContainers = document.querySelectorAll('.charts-container');
+        const generateBtn = document.getElementById('generateSummaryBtn');
+        const summaryContainer = document.getElementById('summaryContainer');
+        const summarySection = document.querySelector('.ai-summary-section');
         
         // Track active chart for each section
         const activeCharts = {
@@ -647,6 +650,94 @@
             activeCharts.daily = firstDailyChartId;
         }
         
+        // Function to display summary
+        function displaySummary(summary, timeFrame) {
+            const insightsTitle = document.getElementById('insightsTitle');
+            
+            insightsTitle.textContent = timeFrame === 'annual' ? 
+                'AI-Powered Annual Insights' : 'AI-Powered Monthly Insights';
+            
+            // Build the HTML for the summary
+            let summaryHtml = '<div class="space-y-6">';
+            
+            summary.forEach(section => {
+                summaryHtml += `
+                    <div class="summary-section">
+                        <h4 class="font-bold text-lg mb-3 text-primary flex items-center">
+                            ${section.title.includes("Performance") ? 
+                                '<i class="fas fa-chart-bar mr-2"></i>' : 
+                                section.title.includes("Analysis") ?
+                                '<i class="fas fa-calendar-alt mr-2"></i>' :
+                                '<i class="fas fa-lightbulb mr-2"></i>'}
+                            ${section.title}
+                        </h4>`;
+                
+                // Handle both subsections and direct items
+                if (section.subsections && section.subsections.length > 0) {
+                    section.subsections.forEach(subsection => {
+                        summaryHtml += `
+                            <div class="subsection mt-3">
+                                <h5 class="font-semibold text-gray-800 mb-2">${subsection.title}</h5>`;
+                        
+                        if (subsection.items && subsection.items.length > 0) {
+                            summaryHtml += `<ul class="list-disc pl-5 space-y-1">`;
+                            subsection.items.forEach(item => {
+                                summaryHtml += `<li class="text-gray-700">${item}</li>`;
+                            });
+                            summaryHtml += `</ul>`;
+                        }
+                        
+                        summaryHtml += `</div>`;
+                    });
+                }
+                
+                if (section.items && section.items.length > 0) {
+                    summaryHtml += `<ul class="list-disc pl-5 space-y-2">`;
+                    section.items.forEach(item => {
+                        summaryHtml += `<li class="text-gray-700">${item}</li>`;
+                    });
+                    summaryHtml += `</ul>`;
+                }
+                
+                summaryHtml += `</div>`;
+            });
+            
+            summaryHtml += '</div>';
+            summaryContainer.innerHTML = summaryHtml;
+        }
+        
+        // Function to update summary visibility
+        function updateSummaryVisibility() {
+            const activeBtn = document.querySelector('.time-filter-btn.active');
+            const isMonthlyView = activeBtn.textContent.includes('Monthly');
+            const isAnnualView = activeBtn.textContent.includes('Annual');
+            
+            summarySection.style.display = (isMonthlyView || isAnnualView) ? 'block' : 'none';
+            
+            // Update title based on current view
+            const insightsTitle = document.getElementById('insightsTitle');
+            const currentTimeFrame = isAnnualView ? 'annual' : isMonthlyView ? 'monthly' : null;
+            
+            if (currentTimeFrame) {
+                insightsTitle.textContent = isAnnualView ? 
+                    'AI-Powered Annual Insights' : 'AI-Powered Monthly Insights';
+                
+                // Check for stored summary for current time frame
+                const storedSummary = sessionStorage.getItem(`ai_summary_${currentTimeFrame}`);
+                if (storedSummary) {
+                    displaySummary(JSON.parse(storedSummary), currentTimeFrame);
+                } else {
+                    // Show prompt to generate summary
+                    summaryContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-chart-pie text-gray-300 text-4xl mb-4"></i>
+                            <p class="text-gray-500">Click "Generate Insights" for ${currentTimeFrame} analysis</p>
+                        </div>`;
+                }
+            }
+        }
+        
+        // Time filter button click handler
         timeFilterBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 // Remove active class from all buttons
@@ -712,6 +803,9 @@
                         tab.classList.remove('active');
                     }
                 });
+                
+                // Update summary visibility
+                updateSummaryVisibility();
             });
         });
         
@@ -751,32 +845,18 @@
             });
         });
         
-        // Summary section functionality
-        const generateBtn = document.getElementById('generateSummaryBtn');
-        const summaryContainer = document.getElementById('summaryContainer');
-        const summarySection = document.querySelector('.ai-summary-section');
-        
-        function updateSummaryVisibility() {
-            const isMonthlyView = document.querySelector('.time-filter-btn.active').textContent.includes('Monthly');
-            summarySection.style.display = isMonthlyView ? 'block' : 'none';
-        }
-        
-        // Initial visibility check
-        updateSummaryVisibility();
-        
-        // Update visibility when time filter changes
-        document.querySelectorAll('.time-filter-btn').forEach(btn => {
-            btn.addEventListener('click', updateSummaryVisibility);
-        });
-        
         if (generateBtn) {
             generateBtn.addEventListener('click', function() {
                 // Show loading state
                 generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing...';
                 generateBtn.disabled = true;
                 
+                // Determine current time frame
+                const currentTimeFrame = document.querySelector('.time-filter-btn.active').dataset.target.split('-')[0]; // 'daily', 'monthly', or 'annual'
+                const timeFrameForSummary = currentTimeFrame === 'annual' ? 'annual' : 'monthly';
+                
                 // Make AJAX request to get the summary
-                fetch(window.location.pathname + '?generate_summary=true', {
+                fetch(window.location.pathname + `?generate_summary=true&time_frame=${timeFrameForSummary}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
@@ -785,35 +865,11 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.summary) {
-                        // Build the HTML for the summary
-                        let summaryHtml = '<div class="space-y-6">';
+                        // Store the summary in sessionStorage with time frame key
+                        sessionStorage.setItem(`ai_summary_${data.time_frame}`, JSON.stringify(data.summary));
                         
-                        data.summary.forEach(section => {
-                            summaryHtml += `
-                                <div class="summary-section">
-                                    <h4 class="font-bold text-lg mb-3 text-primary flex items-center">
-                                        ${section.title === "Performance Overview" ? 
-                                            '<i class="fas fa-chart-bar mr-2"></i>' : 
-                                            '<i class="fas fa-lightbulb mr-2"></i>'}
-                                        ${section.title}
-                                    </h4>
-                                    <ul class="list-disc pl-5 space-y-2">`;
-                            
-                            section.items.forEach(item => {
-                                summaryHtml += `<li class="text-gray-700">${item}</li>`;
-                            });
-                            
-                            summaryHtml += `</ul></div>`;
-                        });
-                        
-                        summaryHtml += '</div>';
-                        summaryContainer.innerHTML = summaryHtml;
-                    } else {
-                        summaryContainer.innerHTML = `
-                            <div class="text-center py-8">
-                                <i class="fas fa-exclamation-triangle text-gray-300 text-4xl mb-4"></i>
-                                <p class="text-gray-500">Could not generate insights. Please try again.</p>
-                            </div>`;
+                        // Display the summary
+                        displaySummary(data.summary, data.time_frame);
                     }
                 })
                 .catch(error => {
@@ -830,6 +886,19 @@
                     generateBtn.disabled = false;
                 });
             });
+        }
+
+        // Initial visibility check
+        updateSummaryVisibility();
+    });
+
+    // Clear summaries only when the page is completely reloaded or navigated away
+    window.addEventListener('beforeunload', function(event) {
+        // Only clear if this is a page reload or navigation
+        if (event.currentTarget.performance.navigation.type === PerformanceNavigation.TYPE_RELOAD ||
+            event.currentTarget.performance.navigation.type === PerformanceNavigation.TYPE_NAVIGATE) {
+            sessionStorage.removeItem('ai_summary_monthly');
+            sessionStorage.removeItem('ai_summary_annual');
         }
     });
 </script>
@@ -963,7 +1032,6 @@
                     <i class="fas fa-calendar-week mr-2"></i>Monthly
                 </button>
                 <button class="time-filter-btn" data-target="annual-stats" data-summary="annual-summary" data-buttons="annual-chart-buttons">
-                    <i class  data-summary="annual-summary" data-buttons="annual-chart-buttons">
                     <i class="fas fa-calendar-alt mr-2"></i>Annual
                 </button>
             </div>
@@ -1386,7 +1454,7 @@
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-gray-900 flex items-center">
                         <i class="fas fa-robot text-primary mr-3"></i>
-                        AI-Powered Monthly Insights
+                        <span id="insightsTitle">AI-Powered Annual Insights</span>
                     </h3>
                     <button id="generateSummaryBtn" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center text-sm">
                         <i class="fas fa-magic mr-2"></i>
@@ -1395,12 +1463,79 @@
                 </div>
                 
                 <div id="summaryContainer" class="bg-white p-6 rounded-lg shadow-md border-t-4 border-primary">
-                    <div class="text-center py-8">
-                        <i class="fas fa-chart-pie text-gray-300 text-4xl mb-4"></i>
-                        <p class="text-gray-500">Get AI-powered analysis of your monthly performance metrics</p>
-                    </div>
+                    {% if request.GET.time_frame == 'annual' and annual_summary %}
+                        <div class="space-y-8">
+                            {% for section in annual_summary %}
+                                <div class="summary-section">
+                                    <h4 class="font-bold text-lg mb-4 text-primary flex items-center">
+                                        {% if section.title == "Month-by-Month Analysis" %}
+                                            <i class="fas fa-calendar-alt mr-2"></i>
+                                        {% elif section.title == "Year-to-Date Summary" %}
+                                            <i class="fas fa-chart-line mr-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-lightbulb mr-2"></i>
+                                        {% endif %}
+                                        {{ section.title }}
+                                    </h4>
+                                    
+                                    {% if section.subsections %}
+                                        <div class="space-y-4 ml-4">
+                                            {% for subsection in section.subsections %}
+                                                <div class="subsection">
+                                                    <h5 class="font-semibold text-gray-800 mb-2">{{ subsection.title }}</h5>
+                                                    {% if subsection.items %}
+                                                        <ul class="list-disc pl-5 space-y-1">
+                                                            {% for item in subsection.items %}
+                                                                <li class="text-gray-700">{{ item }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if section.items %}
+                                        <ul class="list-disc pl-5 space-y-1 mt-4">
+                                            {% for item in section.items %}
+                                                <li class="text-gray-700">{{ item }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% elif not request.GET.time_frame and monthly_summary %}
+                        <div class="space-y-8">
+                            {% for section in monthly_summary %}
+                                <div class="summary-section">
+                                    <h4 class="font-bold text-lg mb-4 text-primary flex items-center">
+                                        {% if section.title == "Performance Overview" %}
+                                            <i class="fas fa-chart-bar mr-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-lightbulb mr-2"></i>
+                                        {% endif %}
+                                        {{ section.title }}
+                                    </h4>
+                                    
+                                    {% if section.items %}
+                                        <ul class="list-disc pl-5 space-y-1">
+                                            {% for item in section.items %}
+                                                <li class="text-gray-700">{{ item }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-chart-pie text-gray-300 text-4xl mb-4"></i>
+                            <p class="text-gray-500">Get AI-powered analysis of your performance metrics</p>
+                        </div>
+                    {% endif %}
                 </div>
-            </div>
+            </div>    
         </div>
 
         <!-- Portfolio Section -->
