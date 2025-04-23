@@ -1,6 +1,10 @@
 from django.contrib import admin
+<<<<<<< HEAD
 from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment
 from customer.models import Customer
+=======
+from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment,  Schedule, Shift, Availability, StaffAppointment
+>>>>>>> sofi
 
 class BusinessAccountAdmin(admin.ModelAdmin):
     list_display = ('name', 'user', 'phone')
@@ -31,4 +35,24 @@ admin.site.register(RegistrationSession, RegistrationSessionAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(PortfolioItem, PortfolioItemAdmin)
+<<<<<<< HEAD
 admin.site.register(Appointment, AppointmentAdmin)
+=======
+admin.site.register(Appointment, AppointmentAdmin)
+
+class StaffAppointmentAdmin(admin.ModelAdmin):
+    list_display = ['title', 'get_employee_name', 'date', 'start_time', 'status']
+    list_filter = ['date', 'status', 'employee']
+    search_fields = ['title', 'notes']
+
+    def get_employee_name(self, obj):
+        return obj.employee.name
+    get_employee_name.short_description = 'Empleado'
+
+admin.site.register(StaffAppointment, StaffAppointmentAdmin)
+
+# Para los modelos de horarios
+admin.site.register(Schedule)
+admin.site.register(Shift)
+admin.site.register(Availability)
+>>>>>>> sofi
