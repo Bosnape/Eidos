@@ -1,28 +1,17 @@
 import uuid
-<<<<<<< HEAD
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, get_user_model
-=======
 import os
 from datetime import datetime, timedelta
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
->>>>>>> sofi
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
-<<<<<<< HEAD
-import os
 from .models import BusinessAccount, RegistrationSession, Account, Service, Employee, PortfolioItem, Appointment
-from customer.models import Customer
 from .forms import BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, ServiceForm, SocialMediaForm, EmployeeForm, PortfolioItemForm
-=======
 from django.db import models, transaction
-from django.db.models import Q, Sum, Avg
+from django.db.models import Sum, Avg
 from django.utils import timezone
->>>>>>> sofi
 
 from .models import (
     BusinessAccount, RegistrationSession, Account, Service, 
@@ -447,9 +436,6 @@ def addPortfolio(request):
     else:
         form = PortfolioItemForm()
     
-<<<<<<< HEAD
-    return render(request, 'add_portfolio.html', {'business': business, 'form': form})
-=======
     return render(request, 'add_portfolio.html', {'business': business, 'form': form})
 
 @login_required
@@ -937,4 +923,3 @@ def delete_staff_appointment(request, appointment_id):
     }
     
     return render(request, 'confirm_delete_staff_appointment.html', context)
->>>>>>> sofi

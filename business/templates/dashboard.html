@@ -1262,17 +1262,6 @@
             </div>
         </div>
 
-<<<<<<< HEAD
-        <!-- Portfolio Section -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h2 class="section-title">Previous work</h2>
-            <div class="flex justify-between items-center mb-6">
-                <p class="text-gray-600">Showcase your best work to attract new clients</p>
-                <a href="{% url 'portfolio_list' %}" class="text-primary hover:text-primary-dark font-medium">
-                    See all <i class="fas fa-arrow-right ml-1"></i>
-                </a>
-            </div>
-=======
         <!-- Staff Management Section -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h2 class="section-title">Staff Management</h2>
@@ -1369,44 +1358,43 @@
                 </div>
             </div>
         </div>
-            <!-- Portfolio Section -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <h2 class="section-title">Previous work</h2>
-                <div class="flex justify-between items-center mb-6">
-                    <p class="text-gray-600">Showcase your best work to attract new clients</p>
-                    <a href="{% url 'portfolio_list' %}" class="text-primary hover:text-primary-dark font-medium">
-                        See all <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
-                </div>
->>>>>>> sofi
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                {% if portfolio_items %}
-                    {% for item in portfolio_items|slice:":2" %}
-                    <div class="portfolio-card">
-                        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
-                        <div class="p-4">
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
-                            <p class="text-gray-600 text-sm mb-3">{{ item.description|truncatechars:60 }}</p>
-                            <div class="flex flex-wrap">
-                                {% for tag in item.tags.all %}
-                                <span class="badge">{{ tag.name }}</span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% endif %}
-                
-                <!-- Button for adding work done -->
-                <a href="{% url 'add_portfolio' %}" class="portfolio-add-card">
-                    <div class="circle-add-button">
-                        <i class="fas fa-plus text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Add work</h3>
-                    <p class="text-gray-500 text-center max-w-xs px-4">Upload photos and details of your best projects</p>
+        
+        <!-- Portfolio Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h2 class="section-title">Previous work</h2>
+            <div class="flex justify-between items-center mb-6">
+                <p class="text-gray-600">Showcase your best work to attract new clients</p>
+                <a href="{% url 'portfolio_list' %}" class="text-primary hover:text-primary-dark font-medium">
+                    See all <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {% if portfolio_items %}
+                {% for item in portfolio_items|slice:":2" %}
+                <div class="portfolio-card">
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
+                        <p class="text-gray-600 text-sm mb-3">{{ item.description|truncatechars:60 }}</p>
+                        <div class="flex flex-wrap">
+                            {% for tag in item.tags.all %}
+                            <span class="badge">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Button for adding work done -->
+            <a href="{% url 'add_portfolio' %}" class="portfolio-add-card">
+                <div class="circle-add-button">
+                    <i class="fas fa-plus text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Add work</h3>
+                <p class="text-gray-500 text-center max-w-xs px-4">Upload photos and details of your best projects</p>
+            </a>
         </div>
     </div>
 </div>

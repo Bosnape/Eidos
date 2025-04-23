@@ -1,13 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-<<<<<<< HEAD
 from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment
-=======
 from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Schedule, Shift, Availability, StaffAppointment
-from django.forms import inlineformset_factory, modelformset_factory
-
->>>>>>> sofi
 
 Account = get_user_model()
 

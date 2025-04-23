@@ -1,11 +1,8 @@
 from django.db import models
 from eidos.models import Account
-<<<<<<< HEAD
 from django.conf import settings
-=======
 from django.utils import timezone
 import datetime
->>>>>>> sofi
 
 class BusinessAccount(models.Model):
     # Business model to store additional business information

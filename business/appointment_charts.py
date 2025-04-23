@@ -35,6 +35,7 @@ def generateTimeSlotChart(business):
         
     # Get appointments for the specified date
     appointments = Appointment.objects.filter(business=business, date=today)
+    print(appointments.count())
     
     # Extract hour from time and count appointments per hour
     hours = appointments.annotate(hour=ExtractHour('time')).values('hour').annotate(count=Count('id')).order_by('hour')
