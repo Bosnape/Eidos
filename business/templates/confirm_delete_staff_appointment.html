@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Eliminación - Eidos{% endblock %}
+
+{% block extra_css %}
+<style>
+    body { 
+        background-color: #f3f4f6;
+    }
+    
+    .page-header {
+        background: linear-gradient(to bottom, white, #f8f9fa);
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .confirm-container {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+        background-color: #f3f4f6;
+        color: #4b5563;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e5e7eb;
+    }
+    
+    .btn-danger {
+        background-color: #ef4444;
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background-color: #dc2626;
+    }
+    
+    .warning-icon {
+        font-size: 3rem;
+        color: #f59e0b;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Confirmar Eliminación</h1>
+                <p class="mt-2 text-gray-600">Esta acción no se puede deshacer</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="confirm-container p-8 text-center">
+        <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">¿Estás seguro?</h2>
+        
+        <p class="text-gray-600 mb-6">
+            Estás a punto de eliminar la cita <strong>"{{ appointment.title }}"</strong> 
+            para <strong>{{ appointment.employee.name }}</strong> 
+            del día <strong>{{ appointment.date|date:"d/m/Y" }}</strong>.
+            Esta acción no se puede deshacer.
+        </p>
+        
+        <div class="flex justify-center space-x-4 mt-8">
+            <a href="{% url 'manage_staff_appointments' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i>Cancelar
+            </a>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt mr-2"></i>Eliminar Cita
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Eidos - Login Required{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+        <!-- Warning Icon -->
+        <div class="flex justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.5 14.73a1 1 0 00.86 1.5h17.7a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.72 0z" />
+            </svg>
+        </div>
+        <!-- Title -->
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">You must be logged in</h2>
+        <!-- Message -->
+        <p class="text-gray-600 mb-6">
+            To book an appointment, please log in or create a client account.
+        </p>
+        <!-- Buttons -->
+        <div class="space-y-3">
+            <!-- If the user is not authenticated, show the register button -->
+            <a href="{% url 'register_customer' %}" class="block w-full bg-primary text-white py-2 rounded-lg font-medium hover:opacity-90 transition">
+                Register as a Client
+            </a>
+            <!-- Button to log in (this is the login button that shows up only if the user is not logged in) -->
+            <a href="{% url 'login' %}" class="block w-full border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition">
+                Log In
+            </a>
+            <a href="{% url 'home' %}" class="block w-full border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition">
+                Return to Homepage
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

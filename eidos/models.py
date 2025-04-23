@@ -27,6 +27,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(verbose_name="date joined", auto_now_add=True)
+    is_business = models.BooleanField(default=False)
+    is_customer = models.BooleanField(default=False)
    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

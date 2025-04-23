@@ -51,7 +51,7 @@ def generateTimeSlotChart(business):
     
     # Create the plot
     plt.figure(figsize=(12, 8))
-    bars = plt.bar(hour_labels, hour_counts, color=PRIMARY_COLOR)
+    plt.bar(hour_labels, hour_counts, color=PRIMARY_COLOR)
     
     plt.title('Appointments by Time Slot', fontsize=18)
     plt.xlabel('Time of Day', fontsize=14)

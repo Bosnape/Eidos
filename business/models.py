@@ -1,5 +1,8 @@
 from django.db import models
 from eidos.models import Account
+from django.conf import settings
+from django.utils import timezone
+import datetime
 
 class BusinessAccount(models.Model):
     # Business model to store additional business information
@@ -67,6 +70,7 @@ class PortfolioItem(models.Model):
     def __str__(self):
         return self.title
     
+# Mantenemos el modelo Appointment original
 class Appointment(models.Model):
     business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='appointments', default=get_default_business)
     date = models.DateField()
@@ -75,11 +79,11 @@ class Appointment(models.Model):
     customer_email = models.EmailField(max_length=100) # Improved version: customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='appointments')
     
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='appointments') # service = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20, choices=[
         ("Cash", "Cash"), ("Card", "Card"), ("Online", "Online")
     ])
-    duration_minutes = models.PositiveIntegerField()
+    duration_minutes = models.PositiveIntegerField(null=True, blank=True)
     barber = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='appointments') # barber_name = models.CharField(max_length=100)
     
     customer_satisfaction = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
@@ -89,3 +93,84 @@ class Appointment(models.Model):
     
     def __str__(self):
         return f"Appointment for {self.customer_name} at {self.date} - {self.time}"
+    
+class Schedule(models.Model):
+    """Model for staff work schedules"""
+    business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, default=get_default_business)
+    employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='schedules')
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.employee.name}'s Schedule ({self.start_date} to {self.end_date or 'ongoing'})"
+
+class Shift(models.Model):
+    """Model for individual work shifts within a schedule"""
+    DAYS_OF_WEEK = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+    
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name='shifts')
+    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    
+    def __str__(self):
+        return f"{self.get_day_of_week_display()}: {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
+    
+    class Meta:
+        ordering = ['day_of_week', 'start_time']
+        unique_together = ['schedule', 'day_of_week']
+
+class Availability(models.Model):
+    """Model for recording when staff is not available"""
+    employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='availability')
+    date = models.DateField()
+    is_available = models.BooleanField(default=True)
+    reason = models.CharField(max_length=255, blank=True, null=True)
+    
+    def __str__(self):
+        status = "Available" if self.is_available else "Unavailable"
+        return f"{self.employee.name}: {status} on {self.date}"
+    
+    class Meta:
+        verbose_name_plural = "Availabilities"
+        unique_together = ['employee', 'date']
+
+class StaffAppointment(models.Model):
+    STATUS_CHOICES = (
+        ('scheduled', 'Programada'),
+        ('completed', 'Completada'),
+        ('cancelled', 'Cancelada'),
+        ('pending', 'Pendiente'),
+    )
+    
+    business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='staff_appointments')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='staff_appointments')
+    title = models.CharField(max_length=200, blank=True, null=True)
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    notes = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
+    
+    @property
+    def duration(self):
+        """Calcula la duración en minutos entre la hora de inicio y fin"""
+        start_datetime = datetime.combine(datetime.today(), self.start_time)
+        end_datetime = datetime.combine(datetime.today(), self.end_time)
+        duration = end_datetime - start_datetime
+        return int(duration.total_seconds() / 60)
+    
+    def __str__(self):
+        return f"{self.title} - {self.employee.name} ({self.date})"
+    
