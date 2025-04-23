@@ -21,11 +21,6 @@
     
     .btn {
         padding: 0.75rem 1.5rem;
-        border-radius: 0.375rem;0,0,0.1);
-    }
-    
-    .btn {
-        padding: 0.75rem 1.5rem;
         border-radius: 0.375rem;
         font-weight: 500;
         transition: all 0.2s;
@@ -90,9 +85,9 @@
         <h2 class="text-2xl font-bold text-gray-900 mb-4">¿Estás seguro?</h2>
         
         <p class="text-gray-600 mb-6">
-            Estás a punto de eliminar la cita <strong>"{{ appointment.title }}"</strong> 
-            para <strong>{{ appointment.employee.name }}</strong> 
-            del día <strong>{{ appointment.date|date:"d/m/Y" }}</strong>.
+            Estás a punto de eliminar la cita para el cliente <strong>"{{ appointment.customer_name }}"</strong> 
+            con <strong>{{ appointment.barber.name }}</strong> 
+            del día <strong>{{ appointment.date|date:"d/m/Y" }}</strong> a las <strong>{{ appointment.time|time:"H:i" }}</strong>.
             Esta acción no se puede deshacer.
         </p>
         
@@ -109,4 +104,4 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

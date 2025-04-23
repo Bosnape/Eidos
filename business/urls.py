@@ -1,11 +1,13 @@
 from django.urls import path
 from . import views
+from eidos.views import register_choice
+
 
 urlpatterns = [
     # Sign up and login
     path('signup/account-info/', views.registerBusinessInfo, name="register_IBusiness"),
     path('signup/account-credentials/', views.registerBusinessUser, name="register_UBusiness"),
-    path('login/', views.loginBusiness, name='login'),
+    path('login/', views.login_view, name='login'),
     path('logout/', views.logoutBusiness, name='logout'),
     
     # Dashboard and manage profile
@@ -48,6 +50,11 @@ urlpatterns = [
     # Manage staff appointments
     path('dashboard/staff-appointments/', views.manage_staff_appointments, name='manage_staff_appointments'),
     path('dashboard/staff-appointments/create/', views.create_staff_appointment, name='create_staff_appointment'),
-    #path('dashboard/staff-appointments/<int:appointment_id>/edit/', views.edit_staff_appointment, name='edit_staff_appointment'),
-    #path('dashboard/staff-appointments/<int:appointment_id>/delete/', views.delete_staff_appointment, name='delete_staff_appointment'),
+    path('dashboard/staff-appointments/<int:appointment_id>/edit/', views.edit_staff_appointment, name='edit_staff_appointment'),
+    path('dashboard/staff-appointments/<int:appointment_id>/delete/', views.delete_staff_appointment, name='delete_staff_appointment'),
+
+    path('signup/', views.signup_redirect_to_choice, name='signup_redirect'),
+    path('signup/choice/', register_choice, name='register_choice'),
+
+
 ]

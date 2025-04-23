@@ -14,3 +14,7 @@ def searchBusiness(request):
     else:
         businesses = BusinessAccount.objects.all()
     return render(request, 'search_business.html', {'searchTerm': searchTerm, 'businesses': businesses})
+
+
+def register_choice(request):
+    return render(request, 'register_choice.html')

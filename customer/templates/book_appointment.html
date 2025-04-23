@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment - Eidos{% endblock %}
+
+{% block extra_css %}
+    <style>
+        body {
+            padding-top: 64px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="date"],
+        select,
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: #f9fafb;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="date"]:focus,
+        select:focus,
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .appointment-container {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            transition: all 0.2s;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1rem;
+            min-height: calc(100vh - 64px - 80px);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="appointment-container">
+        <h2>Book an Appointment at {{ business.name }}</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_service">Select a Service</label>
+                <select id="id_service" name="service" required>
+                    {% for service in services %}
+                        <option value="{{ service.id }}" data-price="{{ service.price }}">{{ service.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Service Price:</label>
+                <div id="price-display" class="form-input" style="background-color: #f3f4f6;">$0.00</div>
+                <input type="hidden" name="price" id="price-hidden" value="">
+            </div>
+
+            <div class="form-group">
+                <label for="id_barber">Select a Barber</label>
+                {{ form.barber }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_date">Select a Date</label>
+                <input type="date" name="date" id="id_date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_time">Select a Time</label>
+                <select id="id_time" name="time" required>
+                    <option value="">Select a barber and date first</option>
+                </select>
+                <div id="time-loading" style="display: none;">
+                    <span class="loading-spinner"></span> Loading available times...
+                </div>
+                <div id="time-error" class="error-message" style="display: none;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_payment_method">Payment Method</label>
+                {{ form.payment_method }}
+            </div>
+
+            <button type="submit" class="btn-primary">Confirm Appointment</button>
+        </form>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const serviceSelect = document.getElementById('id_service');
+        const priceDisplay = document.getElementById('price-display');
+        const priceHidden = document.getElementById('price-hidden');
+        const barberSelect = document.getElementById('id_barber');
+        const dateInput = document.getElementById('id_date');
+        const timeSelect = document.getElementById('id_time');
+        const timeLoading = document.getElementById('time-loading');
+        const timeError = document.getElementById('time-error');
+        
+        // Evento cuando se selecciona un servicio
+        serviceSelect.addEventListener('change', function () {
+            const selectedOption = serviceSelect.selectedOptions[0];
+            const price = selectedOption.getAttribute('data-price') || "0.00";
+            priceDisplay.innerText = `$${price}`; // Muestra el precio
+            priceHidden.value = price; // Asigna el valor al campo oculto
+        });
+        
+        // Mostrar el precio si ya hay algo seleccionado
+        serviceSelect.dispatchEvent(new Event('change'));
+        
+        // Función para actualizar los horarios disponibles
+        function updateAvailableTimes() {
+            const barberId = barberSelect.value;
+            const date = dateInput.value;
+            
+            // Resetear el select de horarios
+            timeSelect.innerHTML = '<option value="">Select a barber and date first</option>';
+            
+            if (!barberId || !date) {
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            timeLoading.style.display = 'block';
+            timeError.style.display = 'none';
+            
+            // Realizar petición AJAX para obtener horarios disponibles
+            fetch(`?employee_id=${barberId}&date=${date}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                timeLoading.style.display = 'none';
+                timeSelect.innerHTML = '';
+                
+                if (data.message) {
+                    const messageOption = document.createElement('option');
+                    messageOption.disabled = true;
+                    messageOption.textContent = data.message;
+                    timeSelect.appendChild(messageOption);
+                }
+                
+                if (data.available_times && data.available_times.length === 0) {
+                    const noTimesOption = document.createElement('option');
+                    noTimesOption.value = "";
+                    noTimesOption.textContent = "No available times";
+                    timeSelect.appendChild(noTimesOption);
+                    return;
+                }
+                
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = "Select a time";
+                timeSelect.appendChild(defaultOption);
+                
+                if (data.available_times) {
+                    data.available_times.forEach(time => {
+                        const option = document.createElement('option');
+                        option.value = time;
+                        option.textContent = time;
+                        timeSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                timeLoading.style.display = 'none';
+                timeError.style.display = 'block';
+                timeError.textContent = 'Error loading available times. Please try again.';
+            });
+        }
+        
+        // Actualizar horarios cuando cambia el empleado o la fecha
+        barberSelect.addEventListener('change', updateAvailableTimes);
+        dateInput.addEventListener('change', updateAvailableTimes);
+        
+        // Establecer fecha mínima como hoy
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const formattedToday = `${yyyy}-${mm}-${dd}`;
+        dateInput.setAttribute('min', formattedToday);
+    });
+</script>
+{% endblock %}
+

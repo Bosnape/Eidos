@@ -103,7 +103,7 @@
                         <span>{{ business.address }}</span>
                     </div>
                 </div>
-                <a href="#book-appointment" class="inline-flex items-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                <a href="{% url 'book_appointment' business.id %}" class="inline-flex items-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
                     Book Appointment
                 </a>
             </div>

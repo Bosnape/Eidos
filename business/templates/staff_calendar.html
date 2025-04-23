@@ -270,10 +270,14 @@
                         
                         <!-- Actions -->
                         <div class="mt-1 flex space-x-2">
-                            <a href="{% url 'manage_availability' employee_data.employee.id %}" class="action-icon" title="Manage Availability">
+                                {% if employee_data.barber.id %}
+                                <a href="{% url 'manage_availability' employee_data.barber.id %}">Gestionar disponibilidad</a>
+                                {% else %}
+                                    <span>Sin ID</span>
+                                {% endif %}
                                 <i class="fas fa-calendar-check"></i>
                             </a>
-                            <a href="{% url 'create_appointment' %}?employee={{ employee_data.employee.id }}&date={{ day.date|date:'Y-m-d' }}" class="action-icon" title="Add Appointment">
+                            <a href="{% url 'create_staff_appointment' %}?employee={{ employee_data.employee.id }}&date={{ day.date|date:'Y-m-d' }}" class="action-icon" title="Add Appointment">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </div>
@@ -322,10 +326,10 @@
             </div>
             <h3 class="text-lg font-bold text-gray-900 mb-2">Appointments</h3>
             <p class="text-gray-600 text-sm mb-4">Manage client appointments with your staff</p>
-            <a href="{% url 'manage_appointments' %}" class="action-button-secondary w-full">
+            <a href="{% url 'manage_staff_appointments' %}" class="action-button-secondary w-full">
                 <i class="fas fa-calendar-alt mr-2"></i>Manage Appointments
             </a>
         </div>
-    </div>
+    </div> 
 </div>
 {% endblock %}
