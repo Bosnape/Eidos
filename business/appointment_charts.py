@@ -93,7 +93,13 @@ def generateCustomerTypesChart(business, period='day'):
                     wedgeprops={'edgecolor': 'white', 'linewidth': 1.5})
             plt.legend(loc="upper right", bbox_to_anchor=(1.0, 0.9))
         else:
-            plt.text(0.5, 0.5, 'No customer data available', horizontalalignment='center', verticalalignment='center')
+            # Create an empty pie chart with "No Data" label
+            labels = ['No Data']
+            counts = [1]
+            colors = ['#dddddd']  # Light gray color for empty state
+            plt.pie(counts, labels=labels, colors=colors,
+                wedgeprops={'edgecolor': 'white', 'linewidth': 1.5})
+            plt.legend(loc="upper right", bbox_to_anchor=(1.0, 0.9))
         
         plt.title('New vs Repeat Customers - Today', fontsize=18)
         plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
