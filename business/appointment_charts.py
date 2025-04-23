@@ -696,31 +696,3 @@ def generateNoShowChart(business, period='month'):
     plt.close()
     
     return chart_image
-
-def generateAllCharts(business):
-    """Generate all charts for the dashboard"""
-    
-    charts = {
-        # Daily charts
-        'time_slot_chart': generateTimeSlotChart(business),
-        'customer_type_day_chart': generateCustomerTypesChart(business, 'day'),
-        
-        # Monthly charts
-        'revenue_by_day_chart': generateRevenueChart(business, 'month'),
-        'appointments_by_day_chart': generateAppointmentsByDayChart(business),
-        'top_services_month_chart': generateTopServicesChart(business, 'month'),
-        'barber_performance_chart': generateBarberPerformanceChart(business, 'month'),
-        'satisfaction_by_day_chart': generateSatisfactionChart(business, 'month'),
-        'no_show_rate_chart': generateNoShowChart(business, 'month'),
-        'customer_type_month_chart': generateCustomerTypesChart(business, 'month'),
-        
-        # Annual charts
-        'monthly_revenue_chart': generateRevenueChart(business, 'year'),
-        'top_services_year_chart': generateTopServicesChart(business, 'year'),
-        'barber_leaderboard_chart': generateBarberPerformanceChart(business, 'year'),
-        'no_show_rate_year_chart': generateNoShowChart(business, 'year'),
-        'monthly_rating_chart': generateSatisfactionChart(business, 'year'),
-        'customer_type_year_chart': generateCustomerTypesChart(business, 'year'),
-    }
-    
-    return charts
