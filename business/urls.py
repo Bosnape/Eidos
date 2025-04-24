@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from eidos.views import register_choice
+
 
 urlpatterns = [
     # Sign up and login
@@ -48,6 +50,6 @@ urlpatterns = [
     # Manage staff appointments
     path('dashboard/staff-appointments/', views.manage_staff_appointments, name='manage_staff_appointments'),
     path('dashboard/staff-appointments/create/', views.create_staff_appointment, name='create_staff_appointment'),
-    #path('dashboard/staff-appointments/<int:appointment_id>/edit/', views.edit_staff_appointment, name='edit_staff_appointment'),
-    #path('dashboard/staff-appointments/<int:appointment_id>/delete/', views.delete_staff_appointment, name='delete_staff_appointment'),
+    path('dashboard/staff-appointments/<int:appointment_id>/edit/', views.edit_staff_appointment, name='edit_staff_appointment'),
+    path('dashboard/staff-appointments/<int:appointment_id>/delete/', views.delete_staff_appointment, name='delete_staff_appointment'),
 ]
