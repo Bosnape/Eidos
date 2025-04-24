@@ -71,29 +71,75 @@ class PortfolioItem(models.Model):
         return self.title
     
 # Mantenemos el modelo Appointment original
+#  Appointment modified for integration
 class Appointment(models.Model):
     business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='appointments', default=get_default_business)
     date = models.DateField()
     time = models.TimeField()
-    customer_name = models.CharField(max_length=100)
-    customer_email = models.EmailField(max_length=100) # Improved version: customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='appointments')
+    customer = models.ForeignKey('customer.Customer',  on_delete=models.CASCADE, related_name='appointments', null=True, blank=True)
+    customer_name = models.CharField(max_length=100, blank=True, null=True)
+    customer_email = models.EmailField(max_length=100, blank=True, null=True)
     
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='appointments') # service = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='appointments')
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     payment_method = models.CharField(max_length=20, choices=[
         ("Cash", "Cash"), ("Card", "Card"), ("Online", "Online")
     ])
-    duration_minutes = models.PositiveIntegerField(null=True, blank=True)
-    barber = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='appointments') # barber_name = models.CharField(max_length=100)
+    duration_minutes = models.PositiveIntegerField(default=30)
+    barber = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='appointments')
     
-    customer_satisfaction = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
-    repeat_customer = models.BooleanField()
-    no_show = models.BooleanField()
+    customer_satisfaction = models.IntegerField(null=True, blank=True)
+    repeat_customer = models.BooleanField(default=False)
+    no_show = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=[('scheduled', 'Scheduled'), ('completed', 'Completed'), ('cancelled', 'Cancelled')], default='scheduled')
+
+def clean(self):
+    from django.core.exceptions import ValidationError
+
+    if not self.time:
+        raise ValidationError("Debes seleccionar una hora válida para la cita.")
+
+    # Verificar que el empleado esté disponible en la fecha y hora seleccionada
+    day_of_week = self.date.weekday()
+    shifts = Shift.objects.filter(
+        schedule__employee=self.barber,
+        schedule__is_active=True,
+        schedule__start_date__lte=self.date,
+        schedule__end_date__gte=self.date,
+        day_of_week=day_of_week
+    )
     
+    # Verificar disponibilidad específica para esa fecha
+    availability = Availability.objects.filter(
+        employee=self.barber,
+        date=self.date
+    ).first()
+    
+    if availability and not availability.is_available:
+        raise ValidationError(f"El empleado no está disponible en esta fecha: {availability.reason}")
+        
+    # Verificar conflictos con otras citas
+    end_time = (datetime.datetime.combine(datetime.date.today(), self.time) + 
+                datetime.timedelta(minutes=self.duration_minutes)).time()
+
+    conflicting_appointments = Appointment.objects.filter(
+        barber=self.barber,
+        date=self.date,
+        status='scheduled'
+    ).exclude(id=self.id)
+
+    for appointment in conflicting_appointments:
+        app_end_time = (datetime.datetime.combine(datetime.date.today(), appointment.time) + 
+                       datetime.timedelta(minutes=appointment.duration_minutes)).time()
+        
+        if (self.time <= appointment.time < end_time) or \
+           (appointment.time <= self.time < app_end_time):
+            raise ValidationError("Hay un conflicto con otra cita programada.")
+
     def __str__(self):
-        return f"Appointment for {self.customer_name} at {self.date} - {self.time}"
-    
+        return f"Appointment for {self.customer_name} at {self.date} - {self.time}"    
+
+
 class Schedule(models.Model):
     """Model for staff work schedules"""
     business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, default=get_default_business)
@@ -146,31 +192,3 @@ class Availability(models.Model):
         verbose_name_plural = "Availabilities"
         unique_together = ['employee', 'date']
 
-class StaffAppointment(models.Model):
-    STATUS_CHOICES = (
-        ('scheduled', 'Programada'),
-        ('completed', 'Completada'),
-        ('cancelled', 'Cancelada'),
-        ('pending', 'Pendiente'),
-    )
-    
-    business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='staff_appointments')
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='staff_appointments')
-    title = models.CharField(max_length=200, blank=True, null=True)
-    date = models.DateField()
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    notes = models.TextField(blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
-    
-    @property
-    def duration(self):
-        """Calcula la duración en minutos entre la hora de inicio y fin"""
-        start_datetime = datetime.combine(datetime.today(), self.start_time)
-        end_datetime = datetime.combine(datetime.today(), self.end_time)
-        duration = end_datetime - start_datetime
-        return int(duration.total_seconds() / 60)
-    
-    def __str__(self):
-        return f"{self.title} - {self.employee.name} ({self.date})"
-    

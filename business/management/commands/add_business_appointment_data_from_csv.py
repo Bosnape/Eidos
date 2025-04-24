@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = "Add fake data to a business from a CSV file"
 
     def handle(self, *args, **kwargs):
-        csv_file = 'sample1.csv' # Remember to change this to the correct path
+        csv_file = 'sample.csv' # Remember to change this to the correct path
 
         if not os.path.exists(csv_file):
             self.stderr.write(f"CSV file '{csv_file}' not found.")

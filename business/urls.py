@@ -22,7 +22,7 @@ urlpatterns = [
     path('dashboard/social-media/', views.updateSocialMedia, name='update_social_media'),
     
     # Manage employees
-    path('dashboard/employees/', views.listEmployee, name="employee_list"),
+    path('dashboard/employees/', views.listEmployees, name="employee_list"),
     path('dashboard/employees/add/', views.addEmployee, name="add_employee"),
 
     # Manage portfolio
@@ -33,21 +33,21 @@ urlpatterns = [
     path('<str:business_name>/', views.displayProfile, name="business_profile"),
 
     # Manage schedules
-    path('dashboard/schedules/', views.schedule_list, name='schedule_list'),
-    path('dashboard/schedules/create/', views.create_schedule, name='create_schedule'),
-    path('dashboard/schedules/<int:schedule_id>/edit/', views.edit_schedule, name='edit_schedule'),
-    path('dashboard/schedules/<int:schedule_id>/delete/', views.delete_schedule, name='delete_schedule'),
+    path('dashboard/schedules/', views.listSchedules, name='schedule_list'),
+    path('dashboard/schedules/create/', views.createSchedule, name='create_schedule'),
+    path('dashboard/schedules/<int:schedule_id>/edit/', views.editSchedule, name='edit_schedule'),
+    path('dashboard/schedules/<int:schedule_id>/delete/', views.deleteSchedule, name='delete_schedule'),
 
     # Manage availability
-    path('dashboard/availability/', views.manage_availability, name='manage_availability'),
-    path('dashboard/availability/<int:employee_id>/', views.manage_availability, name='manage_availability'),
+    path('dashboard/availability/', views.manageAvailability, name='manage_availability'),
+    path('dashboard/availability/<int:employee_id>/', views.manageAvailability, name='manage_availability'),
 
     # Staff calendar
-    path('dashboard/calendar/', views.staff_calendar, name='staff_calendar'),
+    path('dashboard/calendar/', views.displayStaffCalendar, name='staff_calendar'),
 
     # Manage staff appointments
-    path('dashboard/staff-appointments/', views.manage_staff_appointments, name='manage_staff_appointments'),
-    path('dashboard/staff-appointments/create/', views.create_staff_appointment, name='create_staff_appointment'),
-    #path('dashboard/staff-appointments/<int:appointment_id>/edit/', views.edit_staff_appointment, name='edit_staff_appointment'),
-    #path('dashboard/staff-appointments/<int:appointment_id>/delete/', views.delete_staff_appointment, name='delete_staff_appointment'),
+    path('dashboard/staff-appointments/', views.manageStaffAppointments, name='manage_staff_appointments'),
+    path('dashboard/staff-appointments/create/', views.createStaffAppointment, name='create_staff_appointment'),
+    path('dashboard/staff-appointments/<int:appointment_id>/edit/', views.editStaffAppointment, name='edit_staff_appointment'),
+    path('dashboard/staff-appointments/<int:appointment_id>/delete/', views.deleteStaffAppointment, name='delete_staff_appointment'),
 ]

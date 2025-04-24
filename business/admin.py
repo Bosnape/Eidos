@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment
-from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment,  Schedule, Shift, Availability, StaffAppointment
+from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Appointment,  Schedule, Shift, Availability
 
 class BusinessAccountAdmin(admin.ModelAdmin):
     list_display = ('name', 'user', 'phone')
@@ -23,19 +23,11 @@ class PortfolioItemAdmin(admin.ModelAdmin):
     search_fields = ('title', 'business__name')
 
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ('service', 'business', 'date', 'time')
-    search_fields = ('service__name', 'business__name')
+    list_display = ('customer_name', 'barber', 'service', 'date', 'time', 'status')
+    list_filter = ['date', 'status', 'barber', 'service']
+    search_fields = ('customer_name', 'customer_email', 'barber__name', 'service__name')
+    readonly_fields = ('created_at', 'updated_at') if hasattr(Appointment, 'created_at') else ()
 
-class StaffAppointmentAdmin(admin.ModelAdmin):
-    list_display = ['title', 'get_employee_name', 'date', 'start_time', 'status']
-    list_filter = ['date', 'status', 'employee']
-    search_fields = ['title', 'notes']
-
-    def get_employee_name(self, obj):
-        return obj.employee.name
-    get_employee_name.short_description = 'Empleado'
-
-admin.site.register(StaffAppointment, StaffAppointmentAdmin)
 admin.site.register(BusinessAccount, BusinessAccountAdmin)
 admin.site.register(RegistrationSession, RegistrationSessionAdmin)
 admin.site.register(Service, ServiceAdmin)

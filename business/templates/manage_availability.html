@@ -418,7 +418,9 @@
     }
     
     function closeAvailabilityModal() {
-        document.getElementById('availability-modal').classList.add('hidden');
-    }
+    const modal = document.getElementById("availability-modal");
+    modal.classList.add("hidden");
+}
+
 </script>
 {% endblock %}
