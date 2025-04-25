@@ -26,7 +26,7 @@
         .search-input:focus {
             outline: none;
             border-color: var(--primary-dark);
-            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.3);
+            box-shadow: 0 0 0 3px #00a8964d;
         }
         .search-btn {
             position: absolute;
@@ -113,10 +113,10 @@
                                         <span>4.8 (124 reviews)</span>
                                     </div>
                                 </div>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-primary">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-white">
                                     <i class="fas fa-check-circle mr-1"></i>
                                     Verified
-                                </span>
+                                </span>                                
                             </div>
                             <div class="space-y-2 mb-4">
                                 <p class="flex items-center text-gray-600">
@@ -139,11 +139,14 @@
                                         20+ services
                                     </span>
                                 </div>
-                                <a href="{% url 'business_profile' business.name %}" 
-                                class="inline-flex items-center px-4 py-2 border border-primary text-sm font-medium rounded-md text-primary hover:bg-primary hover:text-white transition-colors duration-200">
-                                    View Details
-                                    <i class="fas fa-arrow-right ml-2"></i>
-                                </a>
+                                <button
+                                class="inline-flex items-center px-4 py-2 border border-primary text-sm font-medium rounded-md text-primary transition-colors duration-200"
+                                style="color: #007f6e; border-color: #007f6e;"
+                                onmouseover="this.style.backgroundColor='rgba(0,168,150,0.6)'; this.style.color='white';"
+                                onmouseout="this.style.backgroundColor='transparent'; this.style.color='#00a896';"
+                                >
+                                View Details
+                                </button>
                             </div>
                         </div>
                     </div>
