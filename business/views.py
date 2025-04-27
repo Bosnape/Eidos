@@ -13,6 +13,7 @@ from django.db import models, transaction
 from django.db.models import Sum, Avg
 from django.utils import timezone
 from .appointment_charts import *
+from django import forms
 
 from .models import (
     BusinessAccount, RegistrationSession, Account, Service, 
@@ -910,7 +911,6 @@ def listSchedules(request):
         'schedules': schedules
     })
 
-# FR05.6 - Staff availability registration
 @login_required
 def manageAvailability(request, employee_id=None):
     try:
@@ -919,40 +919,61 @@ def manageAvailability(request, employee_id=None):
         messages.error(request, "Business profile not found")
         return redirect('home')
     
-    # If employee_id is provided, get that specific employee
+    # Manejo de redirección si no hay empleados
+    employees = Employee.objects.filter(business=business)
+    if not employees.exists():
+        messages.warning(request, "You need to add employees before managing availability")
+        return redirect('employee_list')
+    
+    # Si se proporciona employee_id, obtener ese empleado específico
     if employee_id:
-        employee = get_object_or_404(Employee, id=employee_id, business=business)
-        employees = [employee]
+        try:
+            employee = Employee.objects.get(id=employee_id, business=business)
+        except Employee.DoesNotExist:
+            messages.error(request, "Employee not found")
+            return redirect('manage_availability')
     else:
-        # Otherwise, get all employees for this business
-        employees = Employee.objects.filter(business=business)
-        if not employees:
-            messages.warning(request, "You need to add employees before managing availability")
-            return redirect('employee_list')
         employee = employees.first()
     
-    # Get date range for calendar (current month)
+    # Get year and month from query parameters
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+    
     today = timezone.now().date()
-    start_date = today.replace(day=1)
+    
+    # Set start_date based on year and month parameters if provided
+    if year and month:
+        try:
+            year = int(year)
+            month = int(month)
+            start_date = date(year, month, 1)
+        except (ValueError, TypeError):
+            # Fall back to current month if invalid parameters
+            start_date = today.replace(day=1)
+    else:
+        # Use current month if no parameters
+        start_date = today.replace(day=1)
+    
+    # Calcular fecha final del mes
     if start_date.month == 12:
         end_date = start_date.replace(year=start_date.year + 1, month=1, day=1) - timedelta(days=1)
     else:
         end_date = start_date.replace(month=start_date.month + 1, day=1) - timedelta(days=1)
     
-    # Get all availabilities for this employee in the date range
+    # Obtener todas las disponibilidades para este empleado en el rango de fechas
     availabilities = Availability.objects.filter(
         employee=employee,
         date__range=[start_date, end_date]
     )
     
-    # Create a calendar data structure
+    # Crear estructura de datos para el calendario
     calendar_data = []
     current_date = start_date
     while current_date <= end_date:
-        # Find availability for this date if it exists
+        # Buscar disponibilidad para esta fecha si existe
         availability = availabilities.filter(date=current_date).first()
         
-        # Get the employee's schedule for this day of the week
+        # Obtener el horario del empleado para este día de la semana
         day_of_week = current_date.weekday()
         shifts = Shift.objects.filter(
             schedule__employee=employee,
@@ -964,7 +985,7 @@ def manageAvailability(request, employee_id=None):
             models.Q(schedule__end_date__gte=current_date)
         )
         
-        # Add this date to the calendar
+        # Agregar esta fecha al calendario
         calendar_data.append({
             'date': current_date,
             'day_name': current_date.strftime('%a'),
@@ -975,137 +996,145 @@ def manageAvailability(request, employee_id=None):
         
         current_date += timedelta(days=1)
     
-    # Handle form submission for updating availability
+    # Manejar envío del formulario para actualizar disponibilidad
     if request.method == 'POST':
         date_str = request.POST.get('date')
         is_available = request.POST.get('is_available') == 'true'
         reason = request.POST.get('reason', '')
         
-        try:
-            date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        if not date_str:
+            messages.error(request, "No se proporcionó una fecha válida")
+            return redirect('manage_availability', employee_id=employee.id)
             
-            # Update or create availability record
+        try:
+            selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            
+            # Actualizar o crear registro de disponibilidad
             availability, created = Availability.objects.update_or_create(
                 employee=employee,
-                date=date,
+                date=selected_date,
                 defaults={'is_available': is_available, 'reason': reason}
             )
             
-            messages.success(request, f"Availability for {employee.name} on {date} updated successfully!")
-            return redirect('manage_availability', employee_id=employee.id)
+            messages.success(request, f"Disponibilidad actualizada para {employee.name} el {selected_date}")
             
+            # Redirect back to the same month view
+            redirect_url = reverse('manage_availability', kwargs={'employee_id': employee.id} if employee_id else {})
+            if year and month:
+                redirect_url += f"?year={start_date.year}&month={start_date.month}"
+            return redirect(redirect_url)
+            
+        except ValueError:
+            messages.error(request, "Formato de fecha inválido")
+            return redirect('manage_availability', employee_id=employee.id)
         except Exception as e:
-            messages.error(request, f"Error updating availability: {str(e)}")
+            messages.error(request, f"Error actualizando disponibilidad: {str(e)}")
+            return redirect('manage_availability', employee_id=employee.id)
     
+    # Renderizar la plantilla con los datos necesarios
     return render(request, 'manage_availability.html', {
         'business': business,
         'employee': employee,
         'employees': employees,
         'calendar_data': calendar_data,
-        'month_name': start_date.strftime('%B %Y')
+        'month_name': start_date.strftime('%B %Y'),
+        'current_year': start_date.year,
+        'current_month': start_date.month
     })
 
-# View for calendar display of all staff schedules
 @login_required
 def displayStaffCalendar(request):
     """
-    Vista para mostrar el calendario de citas del personal.
+    Vista para mostrar el calendario de citas del personal con disponibilidad.
     """
     business = get_object_or_404(BusinessAccount, user=request.user)
-
-    # Obtener la fecha actual o la fecha proporcionada en la URL
+    
+    # Manejo de fechas
     date_str = request.GET.get('date')
-    if date_str:
-        try:
-            current_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        except ValueError:
-            current_date = date.today()
-    else:
-        current_date = date.today()
-
-    # Calcular el inicio y fin de la semana
+    current_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else date.today()
+    
+    # Calcular semana
     week_start = current_date - timedelta(days=current_date.weekday())
     week_end = week_start + timedelta(days=6)
-
-    # Calcular la semana anterior y siguiente
     prev_week = week_start - timedelta(days=7)
     next_week = week_start + timedelta(days=7)
-
-    # Obtener todos los empleados (barberos) del negocio
-    barbers = Employee.objects.filter(business=business)
-
-    # Preparar los datos del calendario
+    
+    # Obtener empleados con sus fotos
+    employees = Employee.objects.filter(business=business).select_related('business')
+    
+    # Pre-cargar datos relacionados para mejor performance
+    schedules = Schedule.objects.filter(
+        employee__in=employees,
+        is_active=True,
+        start_date__lte=week_end
+    ).filter(
+        models.Q(end_date__isnull=True) | 
+        models.Q(end_date__gte=week_start)
+    ).select_related('employee')
+    
+    shifts = Shift.objects.filter(
+        schedule__in=schedules
+    ).select_related('schedule', 'schedule__employee')
+    
+    availabilities = Availability.objects.filter(
+        employee__in=employees,
+        date__range=[week_start, week_end]
+    ).select_related('employee')
+    
+    appointments = Appointment.objects.filter(
+        barber__in=employees,
+        date__range=[week_start, week_end]
+    ).order_by('date', 'time').select_related('barber', 'service')
+    
+    # Estructura de datos optimizada
     calendar_data = {
-        'days': [],
+        'days': [{
+            'date': week_start + timedelta(days=i),
+            'day_name': (week_start + timedelta(days=i)).strftime('%A'),
+            'is_today': (week_start + timedelta(days=i)) == date.today()
+        } for i in range(7)],
         'employees': []
     }
-
-    # Generar los días de la semana
-    for i in range(7):
-        day_date = week_start + timedelta(days=i)
-        calendar_data['days'].append({
-            'date': day_date,
-            'day_name': day_date.strftime('%A'),
-            'is_today': day_date == date.today()
-        })
-
-    # Generar los datos para cada barbero
-    for barber in barbers:
-        barber_data = {
-            'barber': barber,
-            'days': []
+    
+    for employee in employees:
+        employee_data = {
+            'employee': employee,
+            'days': [],
+            'photo_url': employee.photo.url if employee.photo else None
         }
-
-        # Obtener los horarios del barbero (Schedule)
-        schedules = Schedule.objects.filter(employee=barber, is_active=True)
-
-        for i in range(7):
-            day_date = week_start + timedelta(days=i)
-
-            # Filtrar turnos activos para ese día
-            shifts = Shift.objects.filter(
-                schedule__in=schedules,
-                day_of_week=day_date.weekday()
-            )
-
-            # Obtener disponibilidad explícita (si existe)
-            availability = Availability.objects.filter(
-                employee=barber,
-                date=day_date
-            ).first()
-
-            # Obtener citas para ese día
-            appointments = Appointment.objects.filter(
-                barber=barber,
-                date=day_date
-            ).order_by('time')
-
-            # Determinar si está disponible (por defecto True)
+        
+        for day in calendar_data['days']:
+            day_shifts = [s for s in shifts if s.schedule.employee == employee and s.day_of_week == day['date'].weekday()]
+            day_availability = next((a for a in availabilities if a.employee == employee and a.date == day['date']), None)
+            day_appointments = [a for a in appointments if a.barber == employee and a.date == day['date']]
+            
             is_available = True
-            if availability and not availability.is_available:
+            if day_availability and not day_availability.is_available:
                 is_available = False
-
-            barber_data['days'].append({
-                'date': day_date,
-                'shifts': shifts,
-                'availability': availability,
-                'appointments': appointments,
+            
+            employee_data['days'].append({
+                'date': day['date'],
+                'shifts': day_shifts,
+                'availability': day_availability,
+                'appointments': day_appointments,
                 'is_available': is_available
             })
-
-        calendar_data['employees'].append(barber_data)
-
+        
+        calendar_data['employees'].append(employee_data)
+    
     context = {
         'business': business,
         'calendar_data': calendar_data,
-        'week_start': week_start,
+        'week_start': week_start, 
         'week_end': week_end,
         'prev_week': prev_week,
         'next_week': next_week,
-        'today': date.today()
+        'today': date.today(),
+        'current_date': current_date,
     }
-
+    
     return render(request, 'staff_calendar.html', context)
+
 
 # View for managing appointments
 @login_required
@@ -1150,15 +1179,154 @@ def manageAppointments(request):
         'end_date': end_date_str
     })
 
-# View for creating a new appointment
 @login_required
 def createStaffAppointment(request):
     """
     Vista para crear una nueva cita.
     Utiliza el modelo Appointment existente.
     """
+    from customer.models import Customer
+    from django.db.models import Q
+    import datetime
+    
     business = get_object_or_404(BusinessAccount, user=request.user)
 
+    # Manejar solicitudes AJAX para búsqueda de clientes
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Endpoint para buscar clientes
+        if 'search_customer' in request.GET:
+            query = request.GET.get('search_customer', '')
+            customers = []
+            
+            if query:
+                customers = Customer.objects.filter(
+                    Q(first_name__icontains=query) | 
+                    Q(last_name__icontains=query) | 
+                    Q(user__email__icontains=query)
+                )[:20]
+            else:
+                customers = Customer.objects.all().order_by('-id')[:50]
+            
+            results = []
+            for customer in customers:
+                results.append({
+                    'id': customer.id,
+                    'name': f"{customer.first_name} {customer.last_name}",
+                    'email': customer.user.email
+                })
+            
+            return JsonResponse({'customers': results})
+        
+        # Endpoint para obtener horarios disponibles
+        elif 'get_available_times' in request.GET:
+            employee_id = request.GET.get('employee_id')
+            date_str = request.GET.get('date')
+            
+            if not employee_id or not date_str:
+                return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
+            
+            try:
+                employee = Employee.objects.get(id=employee_id)
+                selected_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+                
+                # 1. Verificar si el empleado tiene un horario para este día
+                day_of_week = selected_date.weekday()
+                shifts = Shift.objects.filter(
+                    schedule__employee=employee,
+                    schedule__is_active=True,
+                    schedule__start_date__lte=selected_date,
+                    day_of_week=day_of_week
+                )
+                
+                # Filtrar por end_date si no es None
+                shifts = shifts.filter(
+                    Q(schedule__end_date__gte=selected_date) | 
+                    Q(schedule__end_date__isnull=True)
+                )
+                
+                if not shifts.exists():
+                    return JsonResponse({
+                        'available_times': [],
+                        'message': f'El empleado no trabaja los {["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"][day_of_week]}'
+                    })
+                
+                # 2. Verificar disponibilidad específica para esa fecha
+                availability = Availability.objects.filter(
+                    employee=employee,
+                    date=selected_date
+                ).first()
+                
+                if availability and not availability.is_available:
+                    return JsonResponse({
+                        'available_times': [],
+                        'message': f'El empleado no está disponible en esta fecha: {availability.reason}'
+                    })
+                
+                # 3. Obtener citas existentes para ese día
+                existing_appointments = Appointment.objects.filter(
+                    barber=employee,
+                    date=selected_date,
+                    status='scheduled'
+                )
+                
+                # 4. Generar slots de tiempo disponibles en intervalos de 30 minutos
+                available_times = []
+                
+                for shift in shifts:
+                    current_time = shift.start_time
+                    end_time = shift.end_time
+                    
+                    # Crear slots de 30 minutos
+                    while current_time < end_time:
+                        # Verificar si este horario está disponible (no hay citas que se superpongan)
+                        slot_end_time = (datetime.datetime.combine(datetime.date.today(), current_time) + 
+                                        datetime.timedelta(minutes=30)).time()
+                        
+                        is_available = True
+                        for appointment in existing_appointments:
+                            app_end_time = (datetime.datetime.combine(datetime.date.today(), appointment.time) + 
+                                          datetime.timedelta(minutes=appointment.duration_minutes)).time()
+                            
+                            # Verificar si hay superposición
+                            if (current_time <= appointment.time < slot_end_time) or \
+                               (appointment.time <= current_time < app_end_time):
+                                is_available = False
+                                break
+                        
+                        if is_available:
+                            available_times.append(current_time.strftime('%H:%M'))
+                        
+                        # Avanzar al siguiente slot de 30 minutos
+                        current_time = (datetime.datetime.combine(datetime.date.today(), current_time) + 
+                                       datetime.timedelta(minutes=30)).time()
+                
+                return JsonResponse({
+                    'available_times': available_times,
+                    'message': '' if available_times else 'No hay horarios disponibles para esta fecha'
+                })
+                
+            except Employee.DoesNotExist:
+                return JsonResponse({'error': 'Empleado no encontrado'}, status=404)
+            except ValueError:
+                return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
+        
+        # Endpoint para obtener información del servicio
+        elif 'get_service_info' in request.GET:
+            service_id = request.GET.get('service_id')
+            
+            if not service_id:
+                return JsonResponse({'error': 'ID de servicio no proporcionado'}, status=400)
+            
+            try:
+                service = Service.objects.get(id=service_id)
+                return JsonResponse({
+                    'price': str(service.price),
+                    'duration_minutes': 30  # Duración fija de 30 minutos
+                })
+            except Service.DoesNotExist:
+                return JsonResponse({'error': 'Servicio no encontrado'}, status=404)
+
+    # Procesamiento normal del formulario (no AJAX)
     # Prellenar con barbero y fecha si se proporcionan en la URL
     initial_data = {}
     if request.GET.get('barber'):
@@ -1173,8 +1341,27 @@ def createStaffAppointment(request):
             if appointment.barber.business != business:
                 messages.error(request, 'El barbero seleccionado no pertenece a este negocio.')
                 return redirect('manage_staff_appointments')
+            
+            # Verificar si se seleccionó un cliente existente
+            customer = None
+            customer_id = request.POST.get('selected_customer_id')
+            
+            if customer_id:
+                try:
+                    customer = Customer.objects.get(id=customer_id)
+                except Customer.DoesNotExist:
+                    pass
+            
             try:
-                create_appointment(form, business)  # sin cliente
+                # Establecer duración fija de 30 minutos
+                appointment.duration_minutes = 30
+                
+                # Establecer precio basado en el servicio
+                if appointment.service:
+                    appointment.price = appointment.service.price
+                
+                # Usar la función create_appointment existente
+                create_appointment(form, business, customer)
                 messages.success(request, 'Cita creada exitosamente.')
                 return redirect('manage_staff_appointments')
             except ValidationError as e:
@@ -1186,6 +1373,10 @@ def createStaffAppointment(request):
     # Filtrar barberos y servicios por negocio
     form.fields['barber'].queryset = Employee.objects.filter(business=business)
     form.fields['service'].queryset = Service.objects.filter(business=business)
+    
+    # Ocultar campos que se establecerán automáticamente
+    form.fields['duration_minutes'].widget = forms.HiddenInput(attrs={'value': 30})
+    form.fields['price'].widget.attrs['readonly'] = True
 
     context = {
         'business': business,
@@ -1194,7 +1385,7 @@ def createStaffAppointment(request):
     }
 
     return render(request, 'staff_appointment_form.html', context)
- 
+
 @login_required
 def manageStaffAppointments(request):
     """
