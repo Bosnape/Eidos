@@ -139,14 +139,14 @@
                                         20+ services
                                     </span>
                                 </div>
-                                <button
-                                class="inline-flex items-center px-4 py-2 border border-primary text-sm font-medium rounded-md text-primary transition-colors duration-200"
-                                style="color: #007f6e; border-color: #007f6e;"
-                                onmouseover="this.style.backgroundColor='rgba(0,168,150,0.6)'; this.style.color='white';"
-                                onmouseout="this.style.backgroundColor='transparent'; this.style.color='#00a896';"
+                                <a href="{% url 'business_profile' business_name=business.name %}"
+                                    class="inline-flex items-center px-4 py-2 border border-primary text-sm font-medium rounded-md text-primary transition-colors duration-200"
+                                    style="color: #007f6e; border-color: #007f6e;"
+                                    onmouseover="this.style.backgroundColor='rgba(0,168,150,0.6)'; this.style.color='white';"
+                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#00a896';"
                                 >
-                                View Details
-                                </button>
+                                    View Details
+                                </a>
                             </div>
                         </div>
                     </div>
