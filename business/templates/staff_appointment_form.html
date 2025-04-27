@@ -139,16 +139,16 @@
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">
                     {% if action == 'create' %}
-                        Nueva Cita de Personal
+                        New Staff Appointment
                     {% else %}
-                        Editar Cita de Personal
+                        Edit Staff Appointment
                     {% endif %}
                 </h1>
                 <p class="mt-2 text-gray-600">
                     {% if action == 'create' %}
-                        Crea una nueva cita o evento para tu personal
+                        Create a new appointment or event for your staff
                     {% else %}
-                        Modifica los detalles de la cita de personal
+                        Modify staff appointment details
                     {% endif %}
                 </p>
             </div>
@@ -176,37 +176,37 @@
                 </div>
             {% endif %}
             
-            <!-- Sección de búsqueda de cliente -->
+            <!-- Client search section -->
             <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-                <h3 class="text-lg font-medium mb-3">Información del Cliente</h3>
+                <h3 class="text-lg font-medium mb-3">Client Information</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label for="customer_search" class="form-label">Buscar Cliente Existente</label>
+                        <label for="customer_search" class="form-label">Search Existing Client</label>
                         <div class="relative">
-                            <input type="text" id="customer_search" class="form-control" placeholder="Buscar por nombre o email">
+                            <input type="text" id="customer_search" class="form-control" placeholder="Search by name or email">
                             <div id="customer_results" class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
                         </div>
-                        <p class="text-sm text-gray-500 mt-1">Busca un cliente existente o completa los campos manualmente</p>
+                        <p class="text-sm text-gray-500 mt-1">Search for an existing client or fill in the fields manually</p>
                     </div>
                     
                     <div id="selected_customer_container" class="hidden">
-                        <label class="form-label">Cliente Seleccionado</label>
+                        <label class="form-label">Selected Client</label>
                         <div id="selected_customer_info" class="p-3 border rounded-md bg-gray-100">
-                            <!-- Información del cliente seleccionado -->
+                            <!-- Selected client information -->
                         </div>
                         <button type="button" id="clear_selection" class="mt-2 text-sm text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-times mr-1"></i>Limpiar selección
+                            <i class="fas fa-times mr-1"></i>Clear selection
                         </button>
                     </div>
                 </div>
                 
-                <!-- Campo oculto para el ID del cliente seleccionado -->
+                <!-- Hidden field for selected client ID -->
                 <input type="hidden" id="selected_customer_id" name="selected_customer_id">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-group">
-                        <label for="{{ form.customer_name.id_for_label }}" class="form-label">Nombre del Cliente</label>
+                        <label for="{{ form.customer_name.id_for_label }}" class="form-label">Client Name</label>
                         {{ form.customer_name }}
                         {% if form.customer_name.errors %}
                             <div class="invalid-feedback">
@@ -218,7 +218,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="{{ form.customer_email.id_for_label }}" class="form-label">Email del Cliente</label>
+                        <label for="{{ form.customer_email.id_for_label }}" class="form-label">Client Email</label>
                         {{ form.customer_email }}
                         {% if form.customer_email.errors %}
                             <div class="invalid-feedback">
@@ -233,7 +233,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-group">
-                    <label for="{{ form.barber.id_for_label }}" class="form-label">Empleado</label>
+                    <label for="{{ form.barber.id_for_label }}" class="form-label">Staff Member</label>
                     {{ form.barber }}
                     {% if form.barber.errors %}
                         <div class="invalid-feedback">
@@ -245,7 +245,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.service.id_for_label }}" class="form-label">Servicio</label>
+                    <label for="{{ form.service.id_for_label }}" class="form-label">Service</label>
                     {{ form.service }}
                     {% if form.service.errors %}
                         <div class="invalid-feedback">
@@ -257,7 +257,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.date.id_for_label }}" class="form-label">Fecha</label>
+                    <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
                     {{ form.date }}
                     {% if form.date.errors %}
                         <div class="invalid-feedback">
@@ -269,12 +269,12 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.time.id_for_label }}" class="form-label">Hora</label>
+                    <label for="{{ form.time.id_for_label }}" class="form-label">Time</label>
                     <select name="time" id="{{ form.time.id_for_label }}" class="form-control" required>
-                        <option value="">Selecciona empleado y fecha primero</option>
+                        <option value="">Select staff member and date first</option>
                     </select>
                     <div id="time_loading" class="mt-2 text-sm text-gray-500 hidden">
-                        <i class="fas fa-spinner fa-spin mr-1"></i> Cargando horarios disponibles...
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Loading available times...
                     </div>
                     <div id="time_message" class="mt-2 text-sm text-gray-500 hidden"></div>
                     {% if form.time.errors %}
@@ -286,11 +286,11 @@
                     {% endif %}
                 </div>
                 
-                <!-- Campo oculto para duración -->
+                <!-- Hidden field for duration -->
                 {{ form.duration_minutes }}
                 
                 <div class="form-group">
-                    <label for="{{ form.status.id_for_label }}" class="form-label">Estado</label>
+                    <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
                     {{ form.status }}
                     {% if form.status.errors %}
                         <div class="invalid-feedback">
@@ -302,7 +302,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.payment_method.id_for_label }}" class="form-label">Método de Pago</label>
+                    <label for="{{ form.payment_method.id_for_label }}" class="form-label">Payment Method</label>
                     {{ form.payment_method }}
                     {% if form.payment_method.errors %}
                         <div class="invalid-feedback">
@@ -314,9 +314,9 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.price.id_for_label }}" class="form-label">Precio</label>
+                    <label for="{{ form.price.id_for_label }}" class="form-label">Price</label>
                     {{ form.price }}
-                    <p class="text-sm text-gray-500 mt-1">El precio se establece automáticamente según el servicio seleccionado</p>
+                    <p class="text-sm text-gray-500 mt-1">Price is automatically set based on selected service</p>
                     {% if form.price.errors %}
                         <div class="invalid-feedback">
                             {% for error in form.price.errors %}
@@ -327,27 +327,28 @@
                 </div>
                 
                 <div class="form-group md:col-span-2">
-                    <label for="notes" class="form-label">Notas</label>
-                    <textarea id="notes" name="notes" class="form-textarea" rows="3" placeholder="Información adicional sobre la cita (opcional)"></textarea>
+                    <label for="notes" class="form-label">Notes</label>
+                    <textarea id="notes" name="notes" class="form-textarea" rows="3" placeholder="Additional information about the appointment (optional)"></textarea>
                 </div>
             </div>
             
             <div class="flex justify-end space-x-4 mt-8">
                 <a href="{% url 'manage_staff_appointments' %}" class="btn btn-secondary">
-                    <i class="fas fa-times mr-2"></i>Cancelar
+                    <i class="fas fa-times mr-2"></i>Cancel
                 </a>
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save mr-2"></i>
                     {% if action == 'create' %}
-                        Crear Cita
+                        Create Appointment
                     {% else %}
-                        Guardar Cambios
+                        Save Changes
                     {% endif %}
                 </button>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
