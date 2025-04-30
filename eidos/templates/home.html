@@ -6,51 +6,51 @@
 
 {% block content %}
     <!-- Hero Section -->
-<div class="relative bg-white overflow-hidden">
-    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row">
-        <!-- Text Content - Left Side -->
-        <div class="w-full lg:w-1/2 relative z-10 px-4 sm:px-6 py-12 sm:py-16 lg:py-24 xl:py-32">
-            <div class="lg:max-w-xl">  <!-- Changed from lg:max-w-lg to lg:max-w-xl -->
-                <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                    <span class="block transition-all duration-300 transform hover:translate-x-1">Your Barbershop's</span>
-                    <span class="block text-primary transition-all duration-300 transform hover:translate-x-2">Digital Command Center</span>
-                </h1>
-                <p class="mt-4 text-lg text-gray-600 sm:mt-5 sm:text-xl md:mt-6 md:text-xl leading-relaxed">
-                    From booking to branding, Eidos gives you everything needed to run a thriving modern barbershop. <span class="font-medium text-gray-700">Spend less time managing and more time creating great experiences.</span>
-                </p>
-                <div class="mt-8 sm:mt-10 space-y-4 sm:space-y-0 sm:flex sm:space-x-4">
-                    <div class="rounded-lg duration-300">
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'business_dashboard' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
-                                Go to Dashboard
+    <div class="relative bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row">
+            <!-- Text Content - Left Side -->
+            <div class="w-full lg:w-1/2 relative z-10 px-4 sm:px-6 py-12 sm:py-16 lg:py-24 xl:py-32">
+                <div class="lg:max-w-xl">  <!-- Changed from lg:max-w-lg to lg:max-w-xl -->
+                    <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                        <span class="block transition-all duration-300 transform hover:translate-x-1">Your Barbershop's</span>
+                        <span class="block text-primary transition-all duration-300 transform hover:translate-x-2">Digital Command Center</span>
+                    </h1>
+                    <p class="mt-4 text-lg text-gray-600 sm:mt-5 sm:text-xl md:mt-6 md:text-xl leading-relaxed">
+                        From booking to branding, Eidos gives you everything needed to run a thriving modern barbershop. <span class="font-medium text-gray-700">Spend less time managing and more time creating great experiences.</span>
+                    </p>
+                    <div class="mt-8 sm:mt-10 space-y-4 sm:space-y-0 sm:flex sm:space-x-4">
+                        <div class="rounded-lg duration-300">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'business_dashboard' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
+                                    Go to Dashboard
+                                </a>
+                            {% else %}
+                                <a href="{% url 'register_IBusiness' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
+                                    Start Free Trial
+                                    <i class="fas fa-rocket ml-2"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                        <div class="rounded-lg border-2 border-primary hover:border-primary-dark transition-colors duration-300">
+                            <a href="#visual-preview" class="w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg text-primary hover:text-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
+                                See How It Works
+                                <i class="fas fa-play-circle ml-2"></i>
                             </a>
-                        {% else %}
-                            <a href="{% url 'register_IBusiness' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
-                                Start Free Trial
-                                <i class="fas fa-rocket ml-2"></i>
-                            </a>
-                        {% endif %}
-                    </div>
-                    <div class="rounded-lg border-2 border-primary hover:border-primary-dark transition-colors duration-300">
-                        <a href="#visual-preview" class="w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg text-primary hover:text-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
-                            See How It Works
-                            <i class="fas fa-play-circle ml-2"></i>
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Image - Right Side -->
-        <div class="w-full lg:w-1/2 lg:absolute lg:inset-y-0 lg:right-0">
-            <div class="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full relative overflow-hidden">
-                <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105" src="{% static 'images/eidos-usage.png' %}" alt="Barber using Eidos dashboard on tablet while attending to client">
-                <!-- Decorative element -->
-                <div class="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent lg:bg-gradient-to-r lg:from-white lg:via-white/80 lg:to-transparent"></div>
+            <!-- Image - Right Side -->
+            <div class="w-full lg:w-1/2 lg:absolute lg:inset-y-0 lg:right-0">
+                <div class="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full relative overflow-hidden">
+                    <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105" src="{% static 'images/eidos-usage.png' %}" alt="Barber using Eidos dashboard on tablet while attending to client">
+                    <!-- Decorative element -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent lg:bg-gradient-to-r lg:from-white lg:via-white/80 lg:to-transparent"></div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Visual Journey -->
     <div id="visual-preview" class="py-16 bg-gray-50">
