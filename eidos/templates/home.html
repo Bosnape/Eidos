@@ -2,145 +2,363 @@
 
 {% block title %}Eidos - Digital Tools for Modern Barbershops{% endblock %}
 
-{% block extra_nav %}
-    <a href="#features" class="text-gray-600 hover:text-primary">Features</a> 
-{% endblock %}
+{% load static %}
 
 {% block content %}
     <!-- Hero Section -->
-    <div class="relative bg-white overflow-hidden">
-        <div class="max-w-7xl mx-auto text-center">
-            <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-                <div class="text-center">
-                    <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                        <span class="block">Transform Your</span>
-                        <span class="block text-primary">Digital Presence</span>
-                    </h1>
-                    <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl">
-                        Empower your business with powerful digital tools designed specifically for barbershops and beauty professionals.
-                    </p>
-                    <div class="mt-5 sm:mt-8 flex justify-center">
-                        <div class="rounded-md shadow">
-                            {% if user.is_authenticated %}
-                                <a href="{% url 'business_dashboard' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:opacity-90 md:py-4 md:text-lg md:px-10">
-                                    Go to Dashboard
-                                </a>
-                            {% else %}
-                                <a href="{% url 'register_IBusiness' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:opacity-90 md:py-4 md:text-lg md:px-10">
-                                    Start Free Trial
-                                </a>
-                            {% endif %}
-                        </div>
+<div class="relative bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row">
+        <!-- Text Content - Left Side -->
+        <div class="w-full lg:w-1/2 relative z-10 px-4 sm:px-6 py-12 sm:py-16 lg:py-24 xl:py-32">
+            <div class="lg:max-w-xl">  <!-- Changed from lg:max-w-lg to lg:max-w-xl -->
+                <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                    <span class="block transition-all duration-300 transform hover:translate-x-1">Your Barbershop's</span>
+                    <span class="block text-primary transition-all duration-300 transform hover:translate-x-2">Digital Command Center</span>
+                </h1>
+                <p class="mt-4 text-lg text-gray-600 sm:mt-5 sm:text-xl md:mt-6 md:text-xl leading-relaxed">
+                    From booking to branding, Eidos gives you everything needed to run a thriving modern barbershop. <span class="font-medium text-gray-700">Spend less time managing and more time creating great experiences.</span>
+                </p>
+                <div class="mt-8 sm:mt-10 space-y-4 sm:space-y-0 sm:flex sm:space-x-4">
+                    <div class="rounded-lg duration-300">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'business_dashboard' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
+                                Go to Dashboard
+                            </a>
+                        {% else %}
+                            <a href="{% url 'register_IBusiness' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
+                                Start Free Trial
+                                <i class="fas fa-rocket ml-2"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="rounded-lg border-2 border-primary hover:border-primary-dark transition-colors duration-300">
+                        <a href="#visual-preview" class="w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg text-primary hover:text-primary-dark transition-colors duration-300 md:py-4 md:text-lg md:px-10">
+                            See How It Works
+                            <i class="fas fa-play-circle ml-2"></i>
+                        </a>
                     </div>
                 </div>
-            </main>
+            </div>
+        </div>
+
+        <!-- Image - Right Side -->
+        <div class="w-full lg:w-1/2 lg:absolute lg:inset-y-0 lg:right-0">
+            <div class="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full relative overflow-hidden">
+                <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105" src="{% static 'images/eidos-usage.png' %}" alt="Barber using Eidos dashboard on tablet while attending to client">
+                <!-- Decorative element -->
+                <div class="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent lg:bg-gradient-to-r lg:from-white lg:via-white/80 lg:to-transparent"></div>
+            </div>
         </div>
     </div>
-    <!-- Features Section -->
-    <div id="features" class="py-12 bg-white" style="padding-top: 80px;">
+</div>
+
+    <!-- Visual Journey -->
+    <div id="visual-preview" class="py-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
-                <h2 class="text-3xl font-extrabold text-gray-900">Comprehensive Business Solutions</h2>
-                <p class="mt-4 text-xl text-gray-500">Everything you need to establish and grow your digital presence.</p>
+                <h2 class="text-3xl font-extrabold text-gray-900">Your Digital Barbershop, Beautifully Organized</h2>
+                <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+                    See how Eidos transforms your shop's operations with intuitive tools designed specifically for barbers.
+                </p>
             </div>
-            <div class="mt-10">
+            
+            <div class="mt-16 space-y-16">
+                <!-- Dashboard Preview -->
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                        <h3 class="text-2xl font-bold text-primary mb-4">At-a-Glance Business Dashboard</h3>
+                        <p class="text-gray-600 mb-4">
+                            Your daily snapshot shows appointments, earnings, and customer feedback the moment you open Eidos. No more guessing about how your business is performing.
+                        </p>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>See today's appointments and staff schedules</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>Track daily revenue and trending services</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>Get alerts for no-shows and last-minute bookings</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="md:w-1/2 shadow-xl rounded-lg overflow-hidden">
+                        <img src="{% static 'images/dashboard-preview.png' %}" alt="Eidos dashboard preview" class="w-full h-auto">
+                    </div>
+                </div>
+                
+                <!-- Branding Tools Preview -->
+                <div class="flex flex-col md:flex-row-reverse items-center">
+                    <div class="md:w-1/2 mb-8 md:mb-0 md:pl-8">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Showcase Your Unique Style</h3>
+                        <p class="text-gray-600 mb-4">
+                            Your barbershop isn't generic - your digital presence shouldn't be either. Eidos makes it simple to create a professional look that matches your shop's vibe.
+                        </p>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>Upload your logo and brand colors in minutes</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>Create a stunning portfolio of your work</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>Sync with Instagram to showcase fresh cuts</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="md:w-1/2 shadow-xl rounded-lg overflow-hidden">
+                        <img src="{% static 'images/branding-preview.png' %}" alt="Eidos branding preview" class="w-full h-auto">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">Everything You Need to Run a Better Barbershop</h2>
+                <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+                    We built Eidos to solve the real problems barbers face every day - so you can focus on what you do best.
+                </p>
+            </div>
+            
+            <div class="mt-16 space-y-20">
                 <!-- Identity Section -->
-                <div class="mb-16">
-                    <h3 class="text-2xl font-bold text-primary mb-8">Identity Management</h3>
-                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-palette text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Brand Customization</h4>
-                            <p class="text-gray-600">Upload your logo, customize colors, and maintain consistent branding across your digital presence.</p>
-                        </div>
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-share-alt text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Social Integration</h4>
-                            <p class="text-gray-600">Connect all your social media accounts and maintain a cohesive online presence.</p>
-                        </div>
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-book-open text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Story Telling</h4>
-                            <p class="text-gray-600">Share your brand story, mission, and vision to connect with customers on a deeper level.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Sales Section -->
-                <div class="mb-16">
-                    <h3 class="text-2xl font-bold text-primary mb-8">Sales Enhancement</h3>
-                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-camera text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Visual Showcase</h4>
-                            <p class="text-gray-600">Display high-quality images of your services and products with our advanced gallery system.</p>
-                        </div>
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-tags text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Service Catalog</h4>
-                            <p class="text-gray-600">Create detailed service descriptions with pricing, duration, and availability information.</p>
-                        </div>
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-chart-line text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Performance Tracking</h4>
-                            <p class="text-gray-600">Monitor sales performance and identify trending services with detailed analytics.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Operations Section -->
-                <div class="mb-16">
-                    <h3 class="text-2xl font-bold text-primary mb-8">Operational Excellence</h3>
-                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-users text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Staff Management</h4>
-                            <p class="text-gray-600">Create detailed staff profiles, manage schedules, and track performance metrics.</p>
-                        </div>
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-calendar-alt text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Smart Scheduling</h4>
-                            <p class="text-gray-600">Automated appointment booking system with customizable time slots and instant confirmations.</p>
-                        </div>
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-gift text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Promotion Management</h4>
-                            <p class="text-gray-600">Create and manage targeted promotions, discounts, and special offers with timing controls.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Analytics Section -->
                 <div>
-                    <h3 class="text-2xl font-bold text-primary mb-8">Business Intelligence</h3>
+                    <div class="text-center mb-12">
+                        <h3 class="text-2xl font-bold text-primary">Build Your Brand</h3>
+                        <p class="mt-2 text-gray-600 max-w-2xl mx-auto">
+                            Create a professional presence that attracts new clients and keeps regulars coming back
+                        </p>
+                    </div>
                     <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-star text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Customer Feedback</h4>
-                            <p class="text-gray-600">Collect and analyze customer reviews and ratings to improve service quality.</p>
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-palette text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Show Your Style</h4>
+                            <p class="text-gray-600">
+                                Customize your digital shop with your colors, logo, and photos to create a cohesive brand experience that matches your physical space.
+                            </p>
                         </div>
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-chart-pie text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Data Analytics</h4>
-                            <p class="text-gray-600">Get insights into customer preferences, peak hours, and business trends.</p>
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-share-alt text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Social Media Made Simple</h4>
+                            <p class="text-gray-600">
+                                Connect your Instagram and Facebook to automatically showcase your latest work and attract new clients.
+                            </p>
                         </div>
-                        <div class="hover-grow p-6 bg-white rounded-lg shadow-lg">
-                            <i class="fas fa-bullseye text-primary text-2xl mb-4"></i>
-                            <h4 class="text-xl font-bold mb-4">Strategic Planning</h4>
-                            <p class="text-gray-600">Make data-driven decisions with comprehensive business performance reports.</p>
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-book-open text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Tell Your Story</h4>
+                            <p class="text-gray-600">
+                                Share what makes your shop special - your journey, your team's expertise, and what clients can expect from your chairs.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sales Section -->
+                <div>
+                    <div class="text-center mb-12">
+                        <h3 class="text-2xl font-bold text-primary">Grow Your Business</h3>
+                        <p class="mt-2 text-gray-600 max-w-2xl mx-auto">
+                            Tools to showcase your skills, sell more services, and keep your chairs full
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-camera text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Portfolio That Sells</h4>
+                            <p class="text-gray-600">
+                                Showcase your best work with before/after photos and service descriptions that help clients choose the right cut or style.
+                            </p>
+                        </div>
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-tags text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Service Menu That Works</h4>
+                            <p class="text-gray-600">
+                                Create service packages, add-ons, and memberships that increase your average ticket and keep clients coming back.
+                            </p>
+                        </div>
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-chart-line text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Know What's Selling</h4>
+                            <p class="text-gray-600">
+                                Real-time reports show which services are trending and which barbers are booked solid - so you can adjust pricing and promotions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Operations Section -->
+                <div>
+                    <div class="text-center mb-12">
+                        <h3 class="text-2xl font-bold text-primary">Simplify Your Day</h3>
+                        <p class="mt-2 text-gray-600 max-w-2xl mx-auto">
+                            Streamline operations so you can spend less time on admin and more time with clients
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Team Management</h4>
+                            <p class="text-gray-600">
+                                Set individual schedules, commission rates, and service assignments. Give barbers access to their own client books.
+                            </p>
+                        </div>
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-calendar-alt text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Smart Booking</h4>
+                            <p class="text-gray-600">
+                                Clients book online 24/7 with automatic confirmations and reminders. Block off personal time with one click.
+                            </p>
+                        </div>
+                        <div class="hover-grow p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary bg-opacity-10 text-primary mb-6">
+                                <i class="fas fa-gift text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">Targeted Promotions</h4>
+                            <p class="text-gray-600">
+                                Create special offers for slow days, reward loyal clients, and run seasonal campaigns that actually work.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Testimonials Section -->
+    <div id="testimonials" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">Trusted by Barbershops Like Yours</h2>
+                <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+                    Don't just take our word for it - hear from barbers who transformed their businesses with Eidos
+                </p>
+            </div>
+            
+            <div class="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-12 w-12 rounded-full" src="{% static 'images/marcus-johnson.jpg' %}" alt="Marcus Johnson testimony">
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold">Marcus Johnson</h4>
+                            <p class="text-gray-600">Fade Factory, Brooklyn</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "Eidos cut our no-shows in half and helped us fill 20% more appointments. The booking system pays for itself, but the real value is how professional it makes our shop look online."
+                    </p>
+                    <div class="mt-4 flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-12 w-12 rounded-full" src="{% static 'images/sarah-chen.jpg' %}" alt="Sarah Chen testimony">
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold">Sarah Chen</h4>
+                            <p class="text-gray-600">The Gents Parlor, Chicago</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "I was spending hours each week managing appointments and social media. Now everything's in one place, and I've gained 5 hours back every week to focus on my clients."
+                    </p>
+                    <div class="mt-4 flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-12 w-12 rounded-full" src="{% static 'images/diego-martinez.jpg' %}" alt="Diego Martinez testimony">
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold">Diego Martinez</h4>
+                            <p class="text-gray-600">Blade Crafters, Miami</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "Our online bookings increased by 35% in the first month. The professional portfolio feature helps clients understand what we offer before they even walk in."
+                    </p>
+                    <div class="mt-4 flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <a href="#" class="inline-flex items-center text-primary font-medium">
+                    Read more success stories
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Call to Action -->
     <div class="bg-primary">
-        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
             <div class="text-center">
-                <h2 class="text-3xl font-extrabold text-white">Ready to Transform Your Business?</h2>
-                <p class="mt-4 text-xl text-white opacity-90">Join thousands of successful barbershops using Eidos.</p>
-                <div class="mt-8">
-                    <a href="{% url 'register_IBusiness' %}" class="inline-block bg-white text-primary px-8 py-3 rounded-lg font-medium hover:opacity-90">
-                        Get Started Today
+                <h2 class="text-3xl font-extrabold text-white">Ready to Transform Your Barbershop?</h2>
+                <p class="mt-4 text-xl text-white opacity-90 max-w-3xl mx-auto">
+                    Join thousands of barbers who spend less time on paperwork and more time doing what they love.
+                </p>
+                <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="{% url 'register_IBusiness' %}" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-lg font-medium rounded-md text-primary bg-white hover:bg-gray-100">
+                        Start Free Trial
                     </a>
+                    <a href="#" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-lg font-medium rounded-md text-white bg-primary bg-opacity-20 hover:bg-opacity-30">
+                        <i class="fas fa-play-circle mr-2"></i>
+                        Watch Demo
+                    </a>
+                </div>
+                <div class="mt-6">
+                    <p class="text-white opacity-80 text-sm">
+                        No credit card required • 14-day free trial • Cancel anytime
+                    </p>
                 </div>
             </div>
         </div>
