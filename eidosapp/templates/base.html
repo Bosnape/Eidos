@@ -75,14 +75,14 @@
             border-radius: 1px;
         }
 
-        /* Updated Auth button styles - Larger size */
+        /* Updated Auth button styles*/
         .login-btn {
-            padding: 0.5rem 1.5rem; /* Larger padding */
-            border-radius: 9999px;
-            font-size: 1rem; /* Slightly larger font */
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px; /* Changed from full rounded to slight rounding */
+            font-size: 1rem;
             font-weight: 500;
             transition: all 0.2s ease;
-            border: 2px solid var(--primary-color); /* Slightly thicker border */
+            border: 2px solid var(--primary-color);
             background-color: transparent;
             color: var(--primary-color);
         }
@@ -93,9 +93,9 @@
         }
         
         .signup-btn {
-            padding: 0.5rem 1.5rem; /* Larger padding */
-            border-radius: 9999px;
-            font-size: 1rem; /* Slightly larger font */
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px; /* Changed from full rounded to slight rounding */
+            font-size: 1rem;
             font-weight: 500;
             transition: all 0.2s ease;
             background-color: var(--primary-color);
@@ -108,7 +108,7 @@
         
         .logout-btn {
             padding: 0.5rem 1.5rem;
-            border-radius: 9999px;
+            border-radius: 6px; /* Changed from full rounded to slight rounding */
             font-size: 1rem;
             font-weight: 500;
             background-color: #e53e3e;
@@ -367,6 +367,89 @@
             const resultsDropdown = document.getElementById('searchResultsDropdown');
             let searchTimeout;
 
+            // Add styling for the enhanced dropdown
+            const style = document.createElement('style');
+            style.textContent = `
+                .search-results-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    max-height: 400px;
+                    overflow-y: auto;
+                    background: white;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    z-index: 100;
+                    display: none;
+                }
+
+                .search-results-dropdown.active {
+                    display: block;
+                }
+
+                .search-result-item {
+                    padding: 0.75rem 1rem;
+                    border-bottom: 1px solid #e2e8f0;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .search-result-item:hover {
+                    background-color: #f7fafc;
+                }
+
+                .search-result-item:last-child {
+                    border-bottom: none;
+                }
+
+                .search-result-logo {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 4px; // Changed from 50% (circle) to 4px (slightly rounded square)
+                    object-fit: cover;
+                    margin-right: 12px;
+                    border: 1px solid #e2e8f0;
+                }
+
+                .search-result-info {
+                    flex: 1;
+                }
+
+                .search-result-name {
+                    font-weight: 600; // Changed from 500 for more prominence
+                    color: #1a202c; // Darker color for better contrast
+                    margin-bottom: 3px; // Slightly increased spacing
+                    font-size: 0.9rem; // Slightly larger
+                    line-height: 1.2;
+                }
+
+                .search-result-address {
+                    font-size: 0.75rem;
+                    color: #4a5568; // Darker than before for better readability
+                    line-height: 1.3;
+                }
+
+                .no-results {
+                    padding: 0.75rem 1rem;
+                    color: #718096;
+                    font-size: 0.875rem;
+                    text-align: center;
+                }
+                
+                .search-hint {
+                    font-size: 0.7rem;
+                    color: #a0aec0;
+                    text-align: center;
+                    padding: 4px;
+                    border-top: 1px solid #f0f0f0;
+                }
+            `;
+            document.head.appendChild(style);
+
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
                 const searchTerm = this.value.trim();
@@ -399,15 +482,43 @@
                     businesses.forEach(business => {
                         const resultItem = document.createElement('div');
                         resultItem.className = 'search-result-item';
-                        resultItem.innerHTML = `
+                        
+                        // Create logo element
+                        const logoImg = document.createElement('img');
+                        logoImg.className = 'search-result-logo';
+                        logoImg.src = business.logo_url || '/static/images/default-business.png'; // Fallback to default image
+                        logoImg.alt = `${business.name} logo`;
+                        logoImg.onerror = function() {
+                            this.src = '/static/images/default-business.png'; // If image fails to load
+                        };
+                        
+                        // Create info container
+                        const infoDiv = document.createElement('div');
+                        infoDiv.className = 'search-result-info';
+                        
+                        // Add name and address
+                        infoDiv.innerHTML = `
                             <div class="search-result-name">${business.name}</div>
                             <div class="search-result-address">${business.address}</div>
                         `;
+                        
+                        // Assemble the result item
+                        resultItem.appendChild(logoImg);
+                        resultItem.appendChild(infoDiv);
+                        
                         resultItem.addEventListener('click', function() {
                             window.location.href = `/business/${business.name}/`;
                         });
+                        
                         resultsDropdown.appendChild(resultItem);
                     });
+                    
+                    // Add a hint at bottom
+                    const hint = document.createElement('div');
+                    hint.className = 'search-hint';
+                    hint.textContent = 'Click a business to view details';
+                    resultsDropdown.appendChild(hint);
+                    
                     resultsDropdown.classList.add('active');
                 } else {
                     const noResults = document.createElement('div');
@@ -422,6 +533,14 @@
             document.addEventListener('click', function(event) {
                 if (!event.target.closest('.navbar-search-container')) {
                     resultsDropdown.classList.remove('active');
+                }
+            });
+            
+            // Add focus event to show dropdown when clicking on search input
+            searchInput.addEventListener('focus', function() {
+                const searchTerm = this.value.trim();
+                if (searchTerm.length >= 2) {
+                    fetchSearchResults(searchTerm);
                 }
             });
         });
