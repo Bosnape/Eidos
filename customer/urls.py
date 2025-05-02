@@ -2,8 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('register/', views.registerChoice, name='register_choice'),  # Elección cliente o negocio
-    path('register/customer/', views.registerCustomer, name='register_customer'),  # Cliente
+    path('signup/', views.registerCustomer, name='register_customer'),
 
     # Appontment booking
     path('book-appointment/<int:business_id>/', views.bookAppointment, name='book_appointment'),
