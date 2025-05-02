@@ -15,10 +15,6 @@ from business.models import Service, BusinessAccount, Employee, Appointment
 from business.utils import get_available_times  # al inicio del archivo
 from business.utils import create_appointment  # al inicio también
 
-# View to choose record type
-def registerChoice(request):
-    return render(request, 'register_choice.html')
-
 # Customer registration
 def registerCustomer(request):
     Account = get_user_model()
