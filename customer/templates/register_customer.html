@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Register as a Customer - Eidos{% endblock %}
+{% block title %}Register with Eidos{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -9,43 +9,16 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        textarea,
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
             background-color: #f9fafb;
-            font-size: 1rem;
-            line-height: 1.5;
-            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="tel"]:focus,
-        textarea:focus,
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #374151;
-            font-size: 0.875rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1rem;
+            min-height: calc(100vh - 64px - 80px);
         }
 
         .registration-container {
@@ -57,7 +30,47 @@
             margin: 0 auto;
         }
 
-        .btn-primary {
+        /* Scoped input styles to only affect inputs within registration container */
+        .registration-container input[type="text"],
+        .registration-container input[type="email"],
+        .registration-container input[type="tel"],
+        .registration-container input[type="password"],
+        .registration-container textarea,
+        .registration-container .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: #f9fafb;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .registration-container input[type="text"]:focus,
+        .registration-container input[type="email"]:focus,
+        .registration-container input[type="tel"]:focus,
+        .registration-container input[type="password"]:focus,
+        .registration-container textarea:focus,
+        .registration-container .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
+        }
+
+        .registration-container label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .registration-container .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .registration-container .btn-primary {
             background-color: var(--primary-color);
             color: white;
             transition: all 0.2s;
@@ -70,73 +83,112 @@
             text-align: center;
         }
 
-        .btn-primary:hover {
+        .registration-container .btn-primary:hover {
             background-color: var(--primary-dark);
         }
 
-        .logo-upload-container {
-            border: 2px dashed #d1d5db;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background-color: #f9fafb;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .logo-upload-container:hover {
-            border-color: var(--primary-color);
-            background-color: rgba(0, 168, 150, 0.05);
-        }
-
-        .logo-upload-container input[type="file"] {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .registration-container .business-btn {
+            display: block;
             width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .logo-upload-icon {
-            color: #6b7280;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .logo-upload-text {
-            color: #374151;
+            text-align: center;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 0.375rem;
             font-weight: 500;
-            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: var(--primary-color);
+            background-color: white;
+            transition: all 0.2s;
+            text-decoration: none;
+            margin-top: 1rem;
         }
 
-        .logo-upload-hint {
-            color: #6b7280;
-            font-size: 0.875rem;
+        .registration-container .business-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
         }
 
-        .error-message {
+        .registration-container .error-message {
             color: #dc2626;
             font-size: 0.875rem;
             margin-top: 0.25rem;
         }
 
-        .help-text {
+        .registration-container .help-text {
             color: #6b7280;
             font-size: 0.875rem;
             margin-top: 0.25rem;
         }
 
-        main {
-            flex: 1;
+        .registration-container .or-divider {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 4rem 1rem;
-            min-height: calc(100vh - 64px - 80px);
+            margin: 1.5rem 0;
+        }
+
+        .registration-container .or-divider::before,
+        .registration-container .or-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #d1d5db;
+        }
+
+        .registration-container .or-divider-text {
+            padding: 0 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .registration-container .type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            background-color: #e5f3f2;
+            color: var(--primary-color);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .registration-container .business-benefits {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f0fdfa;
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .registration-container .business-benefits-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .registration-container .business-benefits-title i {
+            margin-right: 0.5rem;
+        }
+
+        .registration-container .business-benefits-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .registration-container .business-benefits-list li {
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .registration-container .business-benefits-list li i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
         }
     </style>
 {% endblock %}
@@ -144,16 +196,17 @@
 {% block content %}
     <main>
         <div class="registration-container p-8">
-            <div class="text-center mb-8">
+            <div class="text-center mb-6">
                 <h1 class="text-3xl font-bold text-gray-900">
-                    Register as a Customer with Eidos
+                    Join Eidos Today
+                    <span class="type-badge">Customer Registration</span>
                 </h1>
                 <p class="mt-2 text-gray-600">
-                    Tell us about yourself to complete your registration
+                    Create your account to book appointments with the best barbershops
                 </p>
             </div>
             
-            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" class="space-y-6">
                 {% csrf_token %}
                 
                 {% if form.non_field_errors %}
@@ -174,20 +227,9 @@
                             </div>
                         {% endif %}
                         
-                        {% if field.name == 'profile_picture' %}
-                            <div class="logo-upload-container mt-1">
-                                <div class="logo-upload-icon">📁</div>
-                                <div class="logo-upload-text">Upload your profile picture</div>
-                                <div class="logo-upload-hint">Click or drag and drop (PNG, JPG, SVG)</div>
-                                {{ field }}
-                            </div>
-                            <div id="logo-message"></div>
-                            <img id="logo-preview" src="#" alt="Profile preview" />
-                        {% else %}
-                            <div class="mt-1">
-                                {{ field }}
-                            </div>
-                        {% endif %}
+                        <div class="mt-1">
+                            {{ field }}
+                        </div>
                         
                         {% if field.help_text %}
                             <p class="help-text">{{ field.help_text }}</p>
@@ -197,10 +239,31 @@
 
                 <div>
                     <button type="submit" class="btn-primary">
-                        Continue to Account Setup
+                        Create Customer Account
                     </button>
                 </div>
             </form>
+            
+            <div class="or-divider">
+                <div class="or-divider::before"></div>
+                <span class="or-divider-text">OR</span>
+                <div class="or-divider::after"></div>
+            </div>
+            
+            <div class="business-benefits">
+                <div class="business-benefits-title">
+                    <i class="fas fa-store"></i> Do you own a barbershop?
+                </div>
+                <ul class="business-benefits-list">
+                    <li><i class="fas fa-check-circle"></i> Booking system and client management</li>
+                    <li><i class="fas fa-check-circle"></i> Staff scheduling and service management</li>
+                    <li><i class="fas fa-check-circle"></i> Portfolio and digital storefront</li>
+                </ul>
+            </div>
+            
+            <a href="{% url 'register_IBusiness' %}" class="business-btn">
+                <i class="fas fa-rocket mr-2"></i> Start Free Business Trial
+            </a>
             
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">
@@ -212,30 +275,4 @@
             </div>
         </div>
     </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const logoInput = document.querySelector('input[type="file"]');
-            const logoPreview = document.getElementById('logo-preview');
-            const logoMessage = document.getElementById('logo-message');
-            const logoContainer = document.querySelector('.logo-upload-container');
-            
-            logoInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        logoPreview.src = e.target.result;
-                        logoPreview.style.display = 'block';
-                        logoMessage.textContent = '✅ Profile picture uploaded successfully!';
-                        logoContainer.style.borderColor = 'var(--primary-color)';
-                    }
-                    reader.readAsDataURL(file);
-                } else {
-                    logoPreview.style.display = 'none';
-                    logoMessage.textContent = '';
-                }
-            });
-        });
-    </script>
 {% endblock %}
