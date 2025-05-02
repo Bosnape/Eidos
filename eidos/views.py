@@ -46,6 +46,3 @@ def searchBusinessAjax(request):
             })
     
     return JsonResponse({'businesses': results})
-
-def register_choice(request):
-    return render(request, 'register_choice.html')
