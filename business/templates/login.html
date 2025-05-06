@@ -30,40 +30,55 @@
             background-color: #f0f2f5;
             display: none;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch; /* Changed to stretch to fill width */
             justify-content: flex-start;
             overflow: hidden;
             position: relative;
+            height: calc(100vh - 64px); /* Set explicit height */
         }
 
-        /* Adjusted descriptive text section */
+        /* Image container with maximized size */
+        .login-image-container {
+            width: 100%;
+            flex-grow: 1; /* Allow image container to grow and fill available space */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0; /* Removed padding to maximize space */
+            overflow: hidden; /* Prevent image overflow */
+            min-height: 0; /* Allow container to shrink if needed */
+        }
+
+        .login-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0; /* Removed padding to maximize space */
+            max-height: none; /* Remove max-height constraint */
+        }
+
+        /* Text section with minimal size */
         .eidos-description {
             width: 100%;
-            padding: 1.25rem;
-            background-color: white;
-            border-bottom: 1px solid #e5e7eb;
-            z-index: 2;
-        }
-
-        .eidos-description h2 {
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 1.6rem;
-            margin-bottom: 0.5rem;
+            padding: 1rem; /* Reduced padding */
+            background-color: #f0f2f5;
+            flex-shrink: 0; /* Prevent shrinking */
         }
 
         .eidos-description p {
             color: #4a5568;
             font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 0.75rem;
+            line-height: 1.4; /* Reduced line height */
+            margin-bottom: 0.5rem; /* Reduced margin */
         }
 
         .eidos-features {
             display: flex;
             margin-top: 0.5rem;
-            gap: 1rem;
+            gap: 0.75rem; /* Reduced gap */
             flex-wrap: wrap;
+            margin-bottom: 0.5rem; /* Reduced margin */
         }
 
         .eidos-feature {
@@ -78,27 +93,6 @@
             margin-right: 0.5rem;
         }
 
-        .login-image-container {
-            width: 100%;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            max-height: calc(100vh - 180px);
-        }
-
-        .login-image-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-        }
-
         .login-right {
             flex: 0.35;
             display: flex;
@@ -109,46 +103,46 @@
 
         .login-container {
             width: 100%;
-            max-width: 380px; /* Increased from 360px */
+            max-width: 380px;
             margin: 0 auto;
         }
 
         .login-header {
-            margin-bottom: 1.2rem; /* Increased from 1rem */
+            margin-bottom: 1.2rem;
             text-align: center;
         }
 
         .login-title {
-            font-size: 1.75rem; /* Increased from 1.6rem */
+            font-size: 1.75rem;
             font-weight: 700;
             color: #111827;
-            margin-bottom: 0.6rem; /* Increased from 0.5rem */
+            margin-bottom: 0.6rem;
         }
 
         .login-subtitle {
-            font-size: 1rem; /* Increased from 0.95rem */
+            font-size: 1rem;
             color: #6b7280;
-            margin-bottom: 1.35rem; /* Increased from 1.25rem */
+            margin-bottom: 1.35rem;
         }
 
         .form-group {
-            margin-bottom: 1rem; /* Increased from 0.9rem */
+            margin-bottom: 1rem;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 0.4rem; /* Increased from 0.375rem */
+            margin-bottom: 0.4rem;
             font-weight: 500;
             color: #374151;
-            font-size: 0.9rem; /* Increased from 0.85rem */
+            font-size: 0.9rem;
         }
 
         .form-input {
             width: 100%;
-            padding: 0.7rem; /* Increased from 0.65rem */
+            padding: 0.7rem;
             border: 1px solid #d1d5db;
             border-radius: 6px;
-            font-size: 0.9rem; /* Increased from 0.85rem */
+            font-size: 0.9rem;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
@@ -162,8 +156,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.2rem; /* Increased from 1.1rem */
-            font-size: 0.85rem; /* Increased from 0.8rem */
+            margin-bottom: 1.2rem;
+            font-size: 0.85rem;
         }
 
         .remember-me {
@@ -182,16 +176,16 @@
 
         .btn-login {
             width: 100%;
-            padding: 0.8rem; /* Increased from 0.7rem */
+            padding: 0.8rem;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 6px;
             font-weight: 500;
-            font-size: 1rem; /* Increased from 0.95rem */
+            font-size: 1rem;
             cursor: pointer;
             transition: background-color 0.2s;
-            margin-bottom: 0.7rem; /* Increased from 0.6rem */
+            margin-bottom: 0.7rem;
         }
 
         .btn-login:hover {
@@ -200,31 +194,31 @@
 
         .register-section {
             text-align: center;
-            margin-top: 1.2rem; /* Increased from 1.1rem */
-            padding-top: 1.2rem; /* Increased from 1.1rem */
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
             border-top: 1px solid #e5e7eb;
         }
 
         .register-text {
             color: #6b7280;
-            margin-bottom: 0.7rem; /* Increased from 0.6rem */
-            font-size: 0.9rem; /* Increased from 0.85rem */
+            margin-bottom: 0.7rem;
+            font-size: 0.9rem;
         }
 
         .btn-register {
             display: block;
             width: 100%;
-            padding: 0.8rem; /* Increased from 0.7rem */
+            padding: 0.8rem;
             background-color: white;
             color: var(--primary-color);
             border: 1px solid var(--primary-color);
             border-radius: 6px;
             font-weight: 500;
-            font-size: 1rem; /* Increased from 0.95rem */
+            font-size: 1rem;
             cursor: pointer;
             transition: background-color 0.2s;
             text-align: center;
-            margin-bottom: 0.5rem; /* Increased from 0.4rem */
+            margin-bottom: 0.5rem;
         }
 
         .btn-register:hover {
@@ -233,13 +227,13 @@
 
         .business-signup {
             text-align: center;
-            margin-top: 0.5rem; /* Increased from 0.4rem */
+            margin-top: 0.5rem;
         }
 
         .business-signup a {
             color: var(--primary-color);
             font-weight: 500;
-            font-size: 0.9rem; /* Increased from 0.85rem */
+            font-size: 0.9rem;
         }
 
         /* Show left side on larger screens */
@@ -253,6 +247,13 @@
                 padding: 1rem 2rem;
             }
         }
+
+        /* Ensure the left and right sides are the same height */
+        @media (min-height: 700px) {
+            .login-left, .login-right {
+                height: calc(100vh - 64px);
+            }
+        }
     </style>
 {% endblock %}
 
@@ -260,9 +261,13 @@
     <div class="login-wrapper">
         <!-- Left side with image (60%) -->
         <div class="login-left">
-            <!-- Added descriptive text about Eidos ABOVE the image -->
+            <!-- Image moved to the top and made larger -->
+            <div class="login-image-container">
+                <img src="{% static 'images/eidos-value-prop.png' %}" alt="Eidos Dashboard Preview" class="login-image" onerror="this.src='/api/placeholder/800/600'; this.onerror=null;">
+            </div>
+            
+            <!-- Text section moved below the image -->
             <div class="eidos-description">
-                <h2>Your Barbershop's Digital Command Center</h2>
                 <p>Eidos gives you everything needed to run a thriving modern barbershop. From booking to branding, spend less time managing and more time creating great experiences for your clients.</p>
                 <div class="eidos-features">
                     <div class="eidos-feature">
@@ -282,11 +287,6 @@
                         <span>Brand Building</span>
                     </div>
                 </div>
-            </div>
-            
-            <div class="login-image-overlay"></div>
-            <div class="login-image-container">
-                <img src="{% static 'images/eidos-value-prop.png' %}" alt="Eidos Dashboard Preview" class="login-image" onerror="this.src='/api/placeholder/800/600'; this.onerror=null;">
             </div>
         </div>
 
