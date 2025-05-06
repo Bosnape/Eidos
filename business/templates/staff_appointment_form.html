@@ -139,16 +139,16 @@
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">
                     {% if action == 'create' %}
-                        Nueva Cita de Personal
+                        New Staff Appointment
                     {% else %}
-                        Editar Cita de Personal
+                        Edit Staff Appointment
                     {% endif %}
                 </h1>
                 <p class="mt-2 text-gray-600">
                     {% if action == 'create' %}
-                        Crea una nueva cita o evento para tu personal
+                        Create a new appointment or event for your staff
                     {% else %}
-                        Modifica los detalles de la cita de personal
+                        Modify staff appointment details
                     {% endif %}
                 </p>
             </div>
@@ -176,13 +176,68 @@
                 </div>
             {% endif %}
             
+            <!-- Client search section -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-lg font-medium mb-3">Client Information</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="customer_search" class="form-label">Search Existing Client</label>
+                        <div class="relative">
+                            <input type="text" id="customer_search" class="form-control" placeholder="Search by name or email">
+                            <div id="customer_results" class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Search for an existing client or fill in the fields manually</p>
+                    </div>
+                    
+                    <div id="selected_customer_container" class="hidden">
+                        <label class="form-label">Selected Client</label>
+                        <div id="selected_customer_info" class="p-3 border rounded-md bg-gray-100">
+                            <!-- Selected client information -->
+                        </div>
+                        <button type="button" id="clear_selection" class="mt-2 text-sm text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-times mr-1"></i>Clear selection
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Hidden field for selected client ID -->
+                <input type="hidden" id="selected_customer_id" name="selected_customer_id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="{{ form.customer_name.id_for_label }}" class="form-label">Client Name</label>
+                        {{ form.customer_name }}
+                        {% if form.customer_name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.customer_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.customer_email.id_for_label }}" class="form-label">Client Email</label>
+                        {{ form.customer_email }}
+                        {% if form.customer_email.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.customer_email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-group">
-                    <label for="{{ form.employee.id_for_label }}" class="form-label">Empleado</label>
-                    {{ form.employee }}
-                    {% if form.employee.errors %}
+                    <label for="{{ form.barber.id_for_label }}" class="form-label">Staff Member</label>
+                    {{ form.barber }}
+                    {% if form.barber.errors %}
                         <div class="invalid-feedback">
-                            {% for error in form.employee.errors %}
+                            {% for error in form.barber.errors %}
                                 {{ error }}
                             {% endfor %}
                         </div>
@@ -190,11 +245,11 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.title.id_for_label }}" class="form-label">Título de la Cita</label>
-                    {{ form.title }}
-                    {% if form.title.errors %}
+                    <label for="{{ form.service.id_for_label }}" class="form-label">Service</label>
+                    {{ form.service }}
+                    {% if form.service.errors %}
                         <div class="invalid-feedback">
-                            {% for error in form.title.errors %}
+                            {% for error in form.service.errors %}
                                 {{ error }}
                             {% endfor %}
                         </div>
@@ -202,7 +257,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.date.id_for_label }}" class="form-label">Fecha</label>
+                    <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
                     {{ form.date }}
                     {% if form.date.errors %}
                         <div class="invalid-feedback">
@@ -214,7 +269,28 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.status.id_for_label }}" class="form-label">Estado</label>
+                    <label for="{{ form.time.id_for_label }}" class="form-label">Time</label>
+                    <select name="time" id="{{ form.time.id_for_label }}" class="form-control" required>
+                        <option value="">Select staff member and date first</option>
+                    </select>
+                    <div id="time_loading" class="mt-2 text-sm text-gray-500 hidden">
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Loading available times...
+                    </div>
+                    <div id="time_message" class="mt-2 text-sm text-gray-500 hidden"></div>
+                    {% if form.time.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.time.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Hidden field for duration -->
+                {{ form.duration_minutes }}
+                
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
                     {{ form.status }}
                     {% if form.status.errors %}
                         <div class="invalid-feedback">
@@ -226,11 +302,11 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.start_time.id_for_label }}" class="form-label">Hora de Inicio</label>
-                    {{ form.start_time }}
-                    {% if form.start_time.errors %}
+                    <label for="{{ form.payment_method.id_for_label }}" class="form-label">Payment Method</label>
+                    {{ form.payment_method }}
+                    {% if form.payment_method.errors %}
                         <div class="invalid-feedback">
-                            {% for error in form.start_time.errors %}
+                            {% for error in form.payment_method.errors %}
                                 {{ error }}
                             {% endfor %}
                         </div>
@@ -238,11 +314,12 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="{{ form.end_time.id_for_label }}" class="form-label">Hora de Fin</label>
-                    {{ form.end_time }}
-                    {% if form.end_time.errors %}
+                    <label for="{{ form.price.id_for_label }}" class="form-label">Price</label>
+                    {{ form.price }}
+                    <p class="text-sm text-gray-500 mt-1">Price is automatically set based on selected service</p>
+                    {% if form.price.errors %}
                         <div class="invalid-feedback">
-                            {% for error in form.end_time.errors %}
+                            {% for error in form.price.errors %}
                                 {{ error }}
                             {% endfor %}
                         </div>
@@ -250,33 +327,229 @@
                 </div>
                 
                 <div class="form-group md:col-span-2">
-                    <label for="{{ form.notes.id_for_label }}" class="form-label">Notas</label>
-                    {{ form.notes }}
-                    {% if form.notes.errors %}
-                        <div class="invalid-feedback">
-                            {% for error in form.notes.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <div class="form-text">Información adicional sobre la cita (opcional)</div>
+                    <label for="notes" class="form-label">Notes</label>
+                    <textarea id="notes" name="notes" class="form-textarea" rows="3" placeholder="Additional information about the appointment (optional)"></textarea>
                 </div>
             </div>
             
             <div class="flex justify-end space-x-4 mt-8">
                 <a href="{% url 'manage_staff_appointments' %}" class="btn btn-secondary">
-                    <i class="fas fa-times mr-2"></i>Cancelar
+                    <i class="fas fa-times mr-2"></i>Cancel
                 </a>
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save mr-2"></i>
                     {% if action == 'create' %}
-                        Crear Cita
+                        Create Appointment
                     {% else %}
-                        Guardar Cambios
+                        Save Changes
                     {% endif %}
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Referencias a elementos del DOM
+        const customerSearch = document.getElementById('customer_search');
+        const customerResults = document.getElementById('customer_results');
+        const selectedCustomerContainer = document.getElementById('selected_customer_container');
+        const selectedCustomerInfo = document.getElementById('selected_customer_info');
+        const selectedCustomerId = document.getElementById('selected_customer_id');
+        const clearSelectionBtn = document.getElementById('clear_selection');
+        const customerNameInput = document.getElementById('{{ form.customer_name.id_for_label }}');
+        const customerEmailInput = document.getElementById('{{ form.customer_email.id_for_label }}');
+        
+        const barberSelect = document.getElementById('{{ form.barber.id_for_label }}');
+        const serviceSelect = document.getElementById('{{ form.service.id_for_label }}');
+        const dateInput = document.getElementById('{{ form.date.id_for_label }}');
+        const timeSelect = document.getElementById('{{ form.time.id_for_label }}');
+        const priceInput = document.getElementById('{{ form.price.id_for_label }}');
+        const timeLoading = document.getElementById('time_loading');
+        const timeMessage = document.getElementById('time_message');
+        
+        // Función para buscar clientes
+        function searchCustomers(query = '') {
+            fetch(`?search_customer=${encodeURIComponent(query)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                customerResults.innerHTML = '';
+                
+                if (data.customers.length === 0) {
+                    customerResults.innerHTML = '<div class="p-3 text-gray-500">No se encontraron clientes</div>';
+                    return;
+                }
+                
+                data.customers.forEach(customer => {
+                    const item = document.createElement('div');
+                    item.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b';
+                    item.innerHTML = `
+                        <div class="font-medium">${customer.name}</div>
+                        <div class="text-sm text-gray-500">${customer.email}</div>
+                    `;
+                    
+                    item.addEventListener('click', function() {
+                        selectCustomer(customer);
+                        customerResults.classList.add('hidden');
+                        customerSearch.value = '';
+                    });
+                    
+                    customerResults.appendChild(item);
+                });
+                
+                customerResults.classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                customerResults.innerHTML = '<div class="p-3 text-red-500">Error al buscar clientes</div>';
+                customerResults.classList.remove('hidden');
+            });
+        }
+        
+        // Función para seleccionar un cliente
+        function selectCustomer(customer) {
+            selectedCustomerId.value = customer.id;
+            selectedCustomerInfo.innerHTML = `
+                <div class="font-medium">${customer.name}</div>
+                <div class="text-sm text-gray-500">${customer.email}</div>
+            `;
+            selectedCustomerContainer.classList.remove('hidden');
+            customerNameInput.value = customer.name;
+            customerEmailInput.value = customer.email;
+        }
+        
+        // Función para limpiar la selección de cliente
+        function clearSelection() {
+            selectedCustomerId.value = '';
+            selectedCustomerContainer.classList.add('hidden');
+            customerNameInput.value = '';
+            customerEmailInput.value = '';
+        }
+        
+        // Función para obtener horarios disponibles
+        function getAvailableTimes() {
+            const barberId = barberSelect.value;
+            const date = dateInput.value;
+            
+            if (!barberId || !date) {
+                timeSelect.innerHTML = '<option value="">Selecciona empleado y fecha primero</option>';
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            timeLoading.classList.remove('hidden');
+            timeMessage.classList.add('hidden');
+            timeSelect.innerHTML = '<option value="">Cargando...</option>';
+            
+            fetch(`?get_available_times=1&employee_id=${barberId}&date=${date}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                timeLoading.classList.add('hidden');
+                timeSelect.innerHTML = '';
+                
+                if (data.message) {
+                    timeMessage.textContent = data.message;
+                    timeMessage.classList.remove('hidden');
+                }
+                
+                if (!data.available_times || data.available_times.length === 0) {
+                    timeSelect.innerHTML = '<option value="">No hay horarios disponibles</option>';
+                    return;
+                }
+                
+                timeSelect.innerHTML = '<option value="">Selecciona un horario</option>';
+                
+                data.available_times.forEach(time => {
+                    const option = document.createElement('option');
+                    option.value = time;
+                    option.textContent = time;
+                    timeSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                timeLoading.classList.add('hidden');
+                timeSelect.innerHTML = '<option value="">Error al cargar horarios</option>';
+            });
+        }
+        
+        // Función para actualizar el precio basado en el servicio
+        function updateServiceInfo() {
+            const serviceId = serviceSelect.value;
+            
+            if (!serviceId) {
+                priceInput.value = '';
+                return;
+            }
+            
+            fetch(`?get_service_info=1&service_id=${serviceId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.price) {
+                    priceInput.value = data.price;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        
+        // Eventos para búsqueda de clientes
+        customerSearch.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            if (query.length < 2 && query.length > 0) {
+                customerResults.classList.add('hidden');
+                return;
+            }
+            
+            searchCustomers(query);
+        });
+        
+        customerSearch.addEventListener('focus', function() {
+            if (!customerResults.children.length) {
+                searchCustomers();
+            }
+            customerResults.classList.remove('hidden');
+        });
+        
+        document.addEventListener('click', function(event) {
+            if (!customerSearch.contains(event.target) && !customerResults.contains(event.target)) {
+                customerResults.classList.add('hidden');
+            }
+        });
+        
+        clearSelectionBtn.addEventListener('click', clearSelection);
+        
+        // Eventos para disponibilidad y precio
+        barberSelect.addEventListener('change', getAvailableTimes);
+        dateInput.addEventListener('change', getAvailableTimes);
+        serviceSelect.addEventListener('change', updateServiceInfo);
+        
+        // Establecer fecha mínima como hoy
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.min = `${yyyy}-${mm}-${dd}`;
+        
+        // Inicializar precio si ya hay un servicio seleccionado
+        if (serviceSelect.value) {
+            updateServiceInfo();
+        }
+    });
+</script>
 {% endblock %}

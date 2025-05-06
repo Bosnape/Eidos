@@ -62,18 +62,26 @@ def create_appointment(form, business, customer=None):
     appointment = form.save(commit=False)
     appointment.business = business
 
+    # Si se proporciona un cliente, establecer la relación y los campos
     if customer: 
         appointment.customer = customer
-        appointment.customer_name = f"{customer.first_name} {customer.last_name}"
-        appointment.customer_email = customer.user.email
+        # Solo sobrescribir los campos si están vacíos o si se especifica
+        if not appointment.customer_name or not appointment.customer_email:
+            appointment.customer_name = f"{customer.first_name} {customer.last_name}"
+            appointment.customer_email = customer.user.email
 
-    if hasattr(appointment, 'service'):
+    # Establecer valores predeterminados para campos opcionales
+    if hasattr(appointment, 'service') and appointment.service:
         service = appointment.service
-        appointment.duration_minutes = getattr(service, 'duration_minutes', 30)
-        appointment.price = getattr(service, 'price', 0.0)  # 👈 Aquí se asigna el precio
+        # Solo establecer duration_minutes si no se ha especificado
+        if not appointment.duration_minutes or appointment.duration_minutes == 0:
+            appointment.duration_minutes = getattr(service, 'duration_minutes', 30)
+        # Solo establecer price si no se ha especificado
+        if not appointment.price:
+            appointment.price = getattr(service, 'price', 0.0)
 
-    appointment.clean()  # Ejecuta validaciones personalizadas del modelo
+    # Ejecutar validaciones personalizadas
+    appointment.clean()
     appointment.save()
 
     return appointment
-
