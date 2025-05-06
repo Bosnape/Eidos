@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Register with Eidos{% endblock %}
+{% block title %}Register as a Customer | Eidos{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -190,88 +190,176 @@
             margin-right: 0.5rem;
             font-size: 0.75rem;
         }
+
+        /* New styles for improved customer registration */
+        .customer-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem 0.75rem 0 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .customer-icon {
+            background-color: white;
+            color: var(--primary-color);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container {
+            padding: 2rem;
+        }
+
+        .customer-benefits {
+            background-color: #f0fdfa;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .customer-benefits-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .customer-benefits-title i {
+            margin-right: 0.5rem;
+        }
+
+        .customer-benefits-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .customer-benefits-list li {
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .customer-benefits-list li i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 640px) {
+            .customer-benefits-list {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 {% endblock %}
 
 {% block content %}
     <main>
-        <div class="registration-container p-8">
-            <div class="text-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-900">
-                    Join Eidos Today
-                    <span class="type-badge">Customer Registration</span>
-                </h1>
-                <p class="mt-2 text-gray-600">
-                    Create your account to book appointments with the best barbershops
+        <div class="registration-container">
+            <!-- Customer-specific header -->
+            <div class="customer-header">
+                <div class="customer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h1 class="text-2xl font-bold">Customer Registration</h1>
+                <p class="mt-2 text-white opacity-90">
+                    Create your account to book appointments with barbershops
                 </p>
             </div>
             
-            <form method="POST" class="space-y-6">
-                {% csrf_token %}
+            <div class="form-container">
+                <!-- Customer benefits section -->
+                <div class="customer-benefits">
+                    <div class="customer-benefits-title">
+                        <i class="fas fa-check-circle"></i> Benefits of a Customer Account
+                    </div>
+                    <ul class="customer-benefits-list">
+                        <li><i class="fas fa-calendar-check"></i> Book appointments online</li>
+                        <li><i class="fas fa-history"></i> View appointment history</li>
+                        <li><i class="fas fa-star"></i> Save favorite barbershops</li>
+                        <li><i class="fas fa-bell"></i> Get appointment reminders</li>
+                    </ul>
+                </div>
                 
-                {% if form.non_field_errors %}
-                    <div class="error-message">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
-
-                {% for field in form %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
-                            {{ field.label }}
-                        </label>
-                        
-                        {% if field.errors %}
-                            <div class="error-message">
-                                {{ field.errors }}
-                            </div>
-                        {% endif %}
-                        
-                        <div class="mt-1">
-                            {{ field }}
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="error-message">
+                            {{ form.non_field_errors }}
                         </div>
-                        
-                        {% if field.help_text %}
-                            <p class="help-text">{{ field.help_text }}</p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+                    {% endif %}
 
-                <div>
-                    <button type="submit" class="btn-primary">
-                        Create Customer Account
-                    </button>
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                                {{ field.label }}
+                            </label>
+                            
+                            {% if field.errors %}
+                                <div class="error-message">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mt-1">
+                                {{ field }}
+                            </div>
+                            
+                            {% if field.help_text %}
+                                <p class="help-text">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <div>
+                        <button type="submit" class="btn-primary">
+                            Create Customer Account
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="or-divider">
+                    <div class="or-divider::before"></div>
+                    <span class="or-divider-text">OR</span>
+                    <div class="or-divider::after"></div>
                 </div>
-            </form>
-            
-            <div class="or-divider">
-                <div class="or-divider::before"></div>
-                <span class="or-divider-text">OR</span>
-                <div class="or-divider::after"></div>
-            </div>
-            
-            <div class="business-benefits">
-                <div class="business-benefits-title">
-                    <i class="fas fa-store"></i> Do you own a barbershop?
+                
+                <div class="business-benefits">
+                    <div class="business-benefits-title">
+                        <i class="fas fa-store"></i> Do you own a barbershop?
+                    </div>
+                    <ul class="business-benefits-list">
+                        <li><i class="fas fa-check-circle"></i> Booking system and client management</li>
+                        <li><i class="fas fa-check-circle"></i> Staff scheduling and service management</li>
+                        <li><i class="fas fa-check-circle"></i> Portfolio and digital storefront</li>
+                    </ul>
                 </div>
-                <ul class="business-benefits-list">
-                    <li><i class="fas fa-check-circle"></i> Booking system and client management</li>
-                    <li><i class="fas fa-check-circle"></i> Staff scheduling and service management</li>
-                    <li><i class="fas fa-check-circle"></i> Portfolio and digital storefront</li>
-                </ul>
-            </div>
-            
-            <a href="{% url 'register_IBusiness' %}" class="business-btn">
-                <i class="fas fa-rocket mr-2"></i> Start Free Business Trial
-            </a>
-            
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600">
-                    Already have an account? 
-                    <a href="{% url 'login' %}" class="font-medium text-primary hover:text-primary-dark">
-                        Sign in
-                    </a>
-                </p>
+                
+                <a href="{% url 'register_IBusiness' %}" class="business-btn">
+                    <i class="fas fa-rocket mr-2"></i> Start Free Business Trial
+                </a>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">
+                        Already have an account? 
+                        <a href="{% url 'login' %}" class="font-medium text-primary hover:text-primary-dark">
+                            Sign in
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     </main>
