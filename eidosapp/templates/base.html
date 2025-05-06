@@ -94,12 +94,13 @@
         
         .signup-btn {
             padding: 0.5rem 1.5rem;
-            border-radius: 6px; /* Changed from full rounded to slight rounding */
+            border-radius: 6px;
             font-size: 1rem;
             font-weight: 500;
             transition: all 0.2s ease;
             background-color: var(--primary-color);
             color: white;
+            border: 2px solid var(--primary-color); /* Add this line to match login button */
         }
         
         .signup-btn:hover {
@@ -126,7 +127,7 @@
             object-fit: contain;
         }
 
-        /* Search bar styles */
+        /* Updated Search bar styles */
         .navbar-search-container {
             position: relative;
             width: 250px;
@@ -135,9 +136,9 @@
 
         .navbar-search-input {
             width: 100%;
-            padding: 0.5rem 2.5rem 0.5rem 1rem;
+            padding: 0.5rem 1rem 0.5rem 2.5rem; /* Changed padding to move placeholder to right */
             border: 2px solid #e2e8f0;
-            border-radius: 9999px;
+            border-radius: 6px; /* Changed from 9999px to 6px to match login/signup buttons */
             font-size: 0.875rem;
             transition: all 0.3s ease;
         }
@@ -150,7 +151,7 @@
 
         .navbar-search-btn {
             position: absolute;
-            right: 0.5rem;
+            left: 0.75rem; /* Changed from right to left */
             top: 50%;
             transform: translateY(-50%);
             background: none;
@@ -161,15 +162,15 @@
 
         .search-results-dropdown {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 5px);
             left: 0;
             right: 0;
             max-height: 400px;
             overflow-y: auto;
             background: white;
             border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 6px; /* Changed to match search bar */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             z-index: 100;
             display: none;
         }
@@ -183,6 +184,8 @@
             border-bottom: 1px solid #e2e8f0;
             cursor: pointer;
             transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
         }
 
         .search-result-item:hover {
@@ -193,20 +196,46 @@
             border-bottom: none;
         }
 
+        .search-result-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px; /* Changed from 50% (circle) to 4px (slightly rounded square) */
+            object-fit: cover;
+            margin-right: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
         .search-result-name {
-            font-weight: 500;
-            color: #2d3748;
+            font-weight: 600; /* Changed from 500 for more prominence */
+            color: #1a202c; /* Darker color for better contrast */
+            margin-bottom: 3px; /* Slightly increased spacing */
+            font-size: 0.9rem; /* Slightly larger */
+            line-height: 1.2;
         }
 
         .search-result-address {
             font-size: 0.75rem;
-            color: #718096;
+            color: #4a5568; /* Darker than before for better readability */
+            line-height: 1.3;
         }
 
         .no-results {
             padding: 0.75rem 1rem;
             color: #718096;
             font-size: 0.875rem;
+            text-align: center;
+        }
+        
+        .search-hint {
+            font-size: 0.7rem;
+            color: #a0aec0;
+            text-align: center;
+            padding: 4px;
+            border-top: 1px solid #f0f0f0;
         }
 
         /* Layout adjustments */
@@ -277,27 +306,29 @@
                         </div>
                         <a href="{% url 'logout' %}" class="logout-btn">Log out</a>
                     {% else %}
-                        <!-- Search bar for customers and non-authenticated users -->
-                        <div class="navbar-search-container mr-4">
-                            <input type="text" 
-                                id="navbarSearchInput"
-                                class="navbar-search-input" 
-                                placeholder="Search businesses..."
-                                autocomplete="off">
-                            <button class="navbar-search-btn">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <!-- Search Results Dropdown -->
-                            <div id="searchResultsDropdown" class="search-results-dropdown"></div>
-                        </div>
-
+                        {% if request.resolver_match.url_name != 'search_business' %}
+                            <!-- Updated Search bar for customers and non-authenticated users -->
+                            <div class="navbar-search-container mr-4">
+                                <input type="text" 
+                                    id="navbarSearchInput"
+                                    class="navbar-search-input" 
+                                    placeholder="Search businesses..."
+                                    autocomplete="off">
+                                <button class="navbar-search-btn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <!-- Search Results Dropdown -->
+                                <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+                            </div>
+                        {% endif %}
+                        
                         <!-- Auth Buttons -->
                         <div class="auth-buttons-container">
                             {% if user.is_authenticated %}
                                 <a href="{% url 'logout' %}" class="logout-btn">Log out</a>
                             {% else %}
                                 <a href="{% url 'login' %}" class="login-btn {% if request.resolver_match.url_name == 'login' %}active{% endif %}">Log in</a>
-                                <a href="{% url 'register_choice' %}" class="signup-btn {% if request.resolver_match.url_name == 'register_choice' %}active{% endif %}">Sign up</a>
+                                <a href="{% url 'register_customer' %}" class="signup-btn {% if request.resolver_match.url_name == 'register_choice' %}active{% endif %}">Sign up</a>
                             {% endif %}
                         </div>
                     {% endif %}
@@ -366,89 +397,6 @@
             const searchInput = document.getElementById('navbarSearchInput');
             const resultsDropdown = document.getElementById('searchResultsDropdown');
             let searchTimeout;
-
-            // Add styling for the enhanced dropdown
-            const style = document.createElement('style');
-            style.textContent = `
-                .search-results-dropdown {
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    right: 0;
-                    max-height: 400px;
-                    overflow-y: auto;
-                    background: white;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    z-index: 100;
-                    display: none;
-                }
-
-                .search-results-dropdown.active {
-                    display: block;
-                }
-
-                .search-result-item {
-                    padding: 0.75rem 1rem;
-                    border-bottom: 1px solid #e2e8f0;
-                    cursor: pointer;
-                    transition: background-color 0.2s;
-                    display: flex;
-                    align-items: center;
-                }
-
-                .search-result-item:hover {
-                    background-color: #f7fafc;
-                }
-
-                .search-result-item:last-child {
-                    border-bottom: none;
-                }
-
-                .search-result-logo {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 4px; // Changed from 50% (circle) to 4px (slightly rounded square)
-                    object-fit: cover;
-                    margin-right: 12px;
-                    border: 1px solid #e2e8f0;
-                }
-
-                .search-result-info {
-                    flex: 1;
-                }
-
-                .search-result-name {
-                    font-weight: 600; // Changed from 500 for more prominence
-                    color: #1a202c; // Darker color for better contrast
-                    margin-bottom: 3px; // Slightly increased spacing
-                    font-size: 0.9rem; // Slightly larger
-                    line-height: 1.2;
-                }
-
-                .search-result-address {
-                    font-size: 0.75rem;
-                    color: #4a5568; // Darker than before for better readability
-                    line-height: 1.3;
-                }
-
-                .no-results {
-                    padding: 0.75rem 1rem;
-                    color: #718096;
-                    font-size: 0.875rem;
-                    text-align: center;
-                }
-                
-                .search-hint {
-                    font-size: 0.7rem;
-                    color: #a0aec0;
-                    text-align: center;
-                    padding: 4px;
-                    border-top: 1px solid #f0f0f0;
-                }
-            `;
-            document.head.appendChild(style);
 
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
