@@ -65,6 +65,7 @@ def book_appointment(request, business_id):
         return render(request, 'error.html', {'message': 'Business not found'})  
 
     services = Service.objects.filter(business=business)  # Obtain the services associated with the business
+    barbers = business.employees.all()
 
     if request.method == 'POST':
         form = AppointmentForm(request.POST)
@@ -96,6 +97,7 @@ def book_appointment(request, business_id):
         'form': form,
         'business': business,
         'services': services,  # Pass the services to the template
+        'barbers': barbers,
     })
 
 # View for unauthenticated users
