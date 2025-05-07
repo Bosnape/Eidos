@@ -59,12 +59,11 @@
         }
 
         .nav-link.active {
-            color: var(--primary-color); /* Uses the teal primary color */
-            font-weight: 500; /* Makes the text slightly bolder */
-            position: relative; /* For the bottom border positioning */
+            color: var(--primary-color);
+            font-weight: 500;
+            position: relative;
         }
 
-        /* Add a bottom border/indicator for the active link */
         .nav-link.active::after {
             content: '';
             position: absolute;
@@ -76,29 +75,49 @@
             border-radius: 1px;
         }
 
-        /* Auth button styles */
-        .auth-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
+        /* Updated Auth button styles*/
+        .login-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px; /* Changed from full rounded to slight rounding */
+            font-size: 1rem;
             font-weight: 500;
             transition: all 0.2s ease;
             border: 2px solid var(--primary-color);
+            background-color: transparent;
             color: var(--primary-color);
         }
         
-        .auth-btn:hover {
+        .login-btn:hover {
             background-color: var(--primary-color);
             color: white;
         }
         
+        .signup-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            background-color: var(--primary-color);
+            color: white;
+            border: 2px solid var(--primary-color); /* Add this line to match login button */
+        }
+        
+        .signup-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
         .logout-btn {
-            border: 2px solid #e53e3e;
-            color: #e53e3e;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px; /* Changed from full rounded to slight rounding */
+            font-size: 1rem;
+            font-weight: 500;
+            background-color: #e53e3e;
+            color: white;
         }
         
         .logout-btn:hover {
-            background-color: #e53e3e;
-            color: white;
+            background-color: #c53030;
         }
 
         .navbar-logo {
@@ -107,48 +126,212 @@
             max-height: 45px;
             object-fit: contain;
         }
+
+        /* Updated Search bar styles */
+        .navbar-search-container {
+            position: relative;
+            width: 250px;
+            margin: 0 1rem;
+        }
+
+        .navbar-search-input {
+            width: 100%;
+            padding: 0.5rem 1rem 0.5rem 2.5rem; /* Changed padding to move placeholder to right */
+            border: 2px solid #e2e8f0;
+            border-radius: 6px; /* Changed from 9999px to 6px to match login/signup buttons */
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.3);
+        }
+
+        .navbar-search-btn {
+            position: absolute;
+            left: 0.75rem; /* Changed from right to left */
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #718096;
+            cursor: pointer;
+        }
+
+        .search-results-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px; /* Changed to match search bar */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            display: none;
+        }
+
+        .search-results-dropdown.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-result-item:hover {
+            background-color: #f7fafc;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px; /* Changed from 50% (circle) to 4px (slightly rounded square) */
+            object-fit: cover;
+            margin-right: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
+        .search-result-name {
+            font-weight: 600; /* Changed from 500 for more prominence */
+            color: #1a202c; /* Darker color for better contrast */
+            margin-bottom: 3px; /* Slightly increased spacing */
+            font-size: 0.9rem; /* Slightly larger */
+            line-height: 1.2;
+        }
+
+        .search-result-address {
+            font-size: 0.75rem;
+            color: #4a5568; /* Darker than before for better readability */
+            line-height: 1.3;
+        }
+
+        .no-results {
+            padding: 0.75rem 1rem;
+            color: #718096;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+        
+        .search-hint {
+            font-size: 0.7rem;
+            color: #a0aec0;
+            text-align: center;
+            padding: 4px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* Layout adjustments */
+        .nav-links-container {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .auth-buttons-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
     </style>
     {% endblock %}
     {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}bg-gray-50{% endblock %}">
 
-   <!-- Navigation -->
+    <!-- Navigation -->
     <nav id="navbar" class="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
+                <!-- Left side: Logo and Nav Links -->
+                <div class="flex items-center space-x-8">
                     <a href="{% url 'home' %}" class="navbar-brand flex items-center">
                         {% load static %}
                         <img src="{% static 'images/logo.png' %}" alt="Eidos Logo" class="navbar-logo mr-2">
                     </a>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
+
                     {% if user.is_authenticated %}
                         {% if user_type == 'business' %}
                             <!-- Navbar for business users -->
+                            <div class="nav-links-container hidden md:flex space-x-6">
+                                <a href="{% url 'search_business' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'search_business' %}active{% endif %}">Businesses</a>
+                                <a href="{% url 'business_profile' business_user.name %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'business_profile' %}active{% endif %}">Your Page</a>
+                            </div>
+                        {% elif user_type == 'customer' %}
+                            <!-- Navbar for customer users -->
+                            <div class="nav-links-container hidden md:flex space-x-6">
+                                <a href="{% url 'search_business' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'search_business' %}active{% endif %}">Businesses</a>
+                                <a href="{% url 'userAppointments' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'userAppointments' %}active{% endif %}">Appointments</a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <!-- Navbar for non-authenticated users -->
+                        <div class="nav-links-container hidden md:flex space-x-6">
+                            {% block extra_nav %}{% endblock %}
+                            {% block nav %}
+                                <a href="{% url 'search_business' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'search_business' %}active{% endif %}">Businesses</a>
+                                <a href="{% url 'contact' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact us</a>
+                            {% endblock %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Right side: Search (for customers/non-auth) or Business Nav (for business users) -->
+                <div class="flex items-center">
+                    {% if user.is_authenticated and user_type == 'business' %}
+                        <!-- Business user right side navigation -->
+                        <div class="hidden md:flex space-x-6 mr-6">
                             <a href="{% url 'business_dashboard' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'business_dashboard' %}active{% endif %}">Dashboard</a>
                             <a href="{% url 'dashboard_services' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'dashboard_services' %}active{% endif %}">Services</a>
                             <a href="{% url 'employee_list' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %}">Staff</a>
                             <a href="{% url 'portfolio_list' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'portfolio_list' %}active{% endif %}">Portfolio</a>
                             <a href="{% url 'manage_profile' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'manage_profile' %}active{% endif %}">Profile</a>
-                        {% elif user_type == 'customer' %}
-                            <!-- Navbar for customer users -->
-                            <a href="{% url 'search_business' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'search_business' %}active{% endif %}">Businesses</a>
-                            <a href="{% url 'contact' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact us</a>
-                            <a href="{% url 'userAppointments' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'userAppointments' %}active{% endif %}">Appointments</a>
-                        {% endif %}
-                        <a href="{% url 'logout' %}" class="auth-btn logout-btn ml-4">Logout</a>
+                        </div>
+                        <a href="{% url 'logout' %}" class="logout-btn">Log out</a>
                     {% else %}
-                        {% block extra_nav %}{% endblock %}
-                        {% block nav %}
-                            <a href="{% url 'search_business' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'search_business' %}active{% endif %}">Businesses</a>
-                            <a href="{% url 'contact' %}" class="nav-link text-gray-600 hover:text-primary {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact us</a>
-                        {% endblock %}
-                        <a class="auth-btn {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Login</a>
-                        <a class="auth-btn {% if request.resolver_match.url_name == 'register_choice' %}active{% endif %}" href="{% url 'register_choice' %}">Register</a>
+                        {% if request.resolver_match.url_name != 'search_business' %}
+                            <!-- Updated Search bar for customers and non-authenticated users -->
+                            <div class="navbar-search-container mr-4">
+                                <input type="text" 
+                                    id="navbarSearchInput"
+                                    class="navbar-search-input" 
+                                    placeholder="Search businesses..."
+                                    autocomplete="off">
+                                <button class="navbar-search-btn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <!-- Search Results Dropdown -->
+                                <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Auth Buttons -->
+                        <div class="auth-buttons-container">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'logout' %}" class="logout-btn">Log out</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="login-btn {% if request.resolver_match.url_name == 'login' %}active{% endif %}">Log in</a>
+                                <a href="{% url 'register_customer' %}" class="signup-btn {% if request.resolver_match.url_name == 'register_choice' %}active{% endif %}">Sign up</a>
+                            {% endif %}
+                        </div>
                     {% endif %}
-                    <!-- <p style="color:red;">User: {{ user.email }} | Type: {{ user_type }}</p>  (To know what type of user is logging in)-->
                 </div>
             </div>
         </div>
@@ -208,6 +391,108 @@
     </footer>
     {% endblock %}
 
-    {% block extra_js %}{% endblock %}
+    {% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('navbarSearchInput');
+            const resultsDropdown = document.getElementById('searchResultsDropdown');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = this.value.trim();
+                
+                if (searchTerm.length < 2) {
+                    resultsDropdown.classList.remove('active');
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    fetchSearchResults(searchTerm);
+                }, 300);
+            });
+
+            function fetchSearchResults(searchTerm) {
+                fetch(`/search-business-ajax/?searchBusiness=${encodeURIComponent(searchTerm)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        displaySearchResults(data.businesses);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching search results:', error);
+                    });
+            }
+
+            function displaySearchResults(businesses) {
+                resultsDropdown.innerHTML = '';
+
+                if (businesses && businesses.length > 0) {
+                    businesses.forEach(business => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        
+                        // Create logo element
+                        const logoImg = document.createElement('img');
+                        logoImg.className = 'search-result-logo';
+                        logoImg.src = business.logo_url || '/static/images/default-business.png'; // Fallback to default image
+                        logoImg.alt = `${business.name} logo`;
+                        logoImg.onerror = function() {
+                            this.src = '/static/images/default-business.png'; // If image fails to load
+                        };
+                        
+                        // Create info container
+                        const infoDiv = document.createElement('div');
+                        infoDiv.className = 'search-result-info';
+                        
+                        // Add name and address
+                        infoDiv.innerHTML = `
+                            <div class="search-result-name">${business.name}</div>
+                            <div class="search-result-address">${business.address}</div>
+                        `;
+                        
+                        // Assemble the result item
+                        resultItem.appendChild(logoImg);
+                        resultItem.appendChild(infoDiv);
+                        
+                        resultItem.addEventListener('click', function() {
+                            window.location.href = `/business/${business.name}/`;
+                        });
+                        
+                        resultsDropdown.appendChild(resultItem);
+                    });
+                    
+                    // Add a hint at bottom
+                    const hint = document.createElement('div');
+                    hint.className = 'search-hint';
+                    hint.textContent = 'Click a business to view details';
+                    resultsDropdown.appendChild(hint);
+                    
+                    resultsDropdown.classList.add('active');
+                } else {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'no-results';
+                    noResults.textContent = 'No businesses found';
+                    resultsDropdown.appendChild(noResults);
+                    resultsDropdown.classList.add('active');
+                }
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.navbar-search-container')) {
+                    resultsDropdown.classList.remove('active');
+                }
+            });
+            
+            // Add focus event to show dropdown when clicking on search input
+            searchInput.addEventListener('focus', function() {
+                const searchTerm = this.value.trim();
+                if (searchTerm.length >= 2) {
+                    fetchSearchResults(searchTerm);
+                }
+            });
+        });
+    </script>
+    {% endblock %}
 </body>
 </html>

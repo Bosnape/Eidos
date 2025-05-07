@@ -11,11 +11,12 @@
             flex-direction: column;
         }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        textarea,
-        .form-input {
+        /* Make selectors more specific to registration form elements only */
+        .registration-form input[type="text"],
+        .registration-form input[type="email"],
+        .registration-form input[type="tel"],
+        .registration-form textarea,
+        .registration-form .form-input {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #d1d5db;
@@ -26,17 +27,17 @@
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="tel"]:focus,
-        textarea:focus,
-        .form-input:focus {
+        .registration-form input[type="text"]:focus,
+        .registration-form input[type="email"]:focus,
+        .registration-form input[type="tel"]:focus,
+        .registration-form textarea:focus,
+        .registration-form .form-input:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
         }
 
-        label {
+        .registration-form label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
@@ -44,7 +45,7 @@
             font-size: 0.875rem;
         }
 
-        .form-group {
+        .registration-form .form-group {
             margin-bottom: 1.5rem;
         }
 
@@ -57,7 +58,8 @@
             margin: 0 auto;
         }
 
-        .btn-primary {
+        /* Changed selector to be specific to the registration form button */
+        .registration-form .btn-primary {
             background-color: var(--primary-color);
             color: white;
             transition: all 0.2s;
@@ -70,7 +72,7 @@
             text-align: center;
         }
 
-        .btn-primary:hover {
+        .registration-form .btn-primary:hover {
             background-color: var(--primary-dark);
         }
 
@@ -169,7 +171,7 @@
                 </p>
             </div>
             
-            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" enctype="multipart/form-data" class="space-y-6 registration-form">
                 {% csrf_token %}
                 
                 {% if form.non_field_errors %}

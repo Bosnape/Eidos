@@ -461,8 +461,8 @@
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
-        margin-top: 1rem; /* Reduced from 1rem */
-        padding-top: 1rem; /* Reduced from 1rem */
+        margin-top: 1rem;
+        padding-top: 1rem; 
         border-top: 1px solid #e5e7eb;
     }
     
@@ -592,6 +592,27 @@
     .stats-card-text {
         flex: 1;
     }
+
+    .summary-section {
+        background-color: #f9fafb;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .summary-section h4 {
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+    }
+
+    .summary-section ul {
+        margin-top: 0.5rem;
+    }
+
+    .summary-section li {
+        margin-bottom: 0.25rem;
+        color: #4b5563;
+    }
 </style>
 {% endblock %}
 
@@ -604,6 +625,9 @@
         const summaryStatsSections = document.querySelectorAll('.summary-stats');
         const chartButtonContainers = document.querySelectorAll('.chart-buttons');
         const chartsContainers = document.querySelectorAll('.charts-container');
+        const generateBtn = document.getElementById('generateSummaryBtn');
+        const summaryContainer = document.getElementById('summaryContainer');
+        const summarySection = document.querySelector('.ai-summary-section');
         
         // Track active chart for each section
         const activeCharts = {
@@ -626,6 +650,94 @@
             activeCharts.daily = firstDailyChartId;
         }
         
+        // Function to display summary
+        function displaySummary(summary, timeFrame) {
+            const insightsTitle = document.getElementById('insightsTitle');
+            
+            insightsTitle.textContent = timeFrame === 'annual' ? 
+                'AI-Powered Annual Insights' : 'AI-Powered Monthly Insights';
+            
+            // Build the HTML for the summary
+            let summaryHtml = '<div class="space-y-6">';
+            
+            summary.forEach(section => {
+                summaryHtml += `
+                    <div class="summary-section">
+                        <h4 class="font-bold text-lg mb-3 text-primary flex items-center">
+                            ${section.title.includes("Performance") ? 
+                                '<i class="fas fa-chart-bar mr-2"></i>' : 
+                                section.title.includes("Analysis") ?
+                                '<i class="fas fa-calendar-alt mr-2"></i>' :
+                                '<i class="fas fa-lightbulb mr-2"></i>'}
+                            ${section.title}
+                        </h4>`;
+                
+                // Handle both subsections and direct items
+                if (section.subsections && section.subsections.length > 0) {
+                    section.subsections.forEach(subsection => {
+                        summaryHtml += `
+                            <div class="subsection mt-3">
+                                <h5 class="font-semibold text-gray-800 mb-2">${subsection.title}</h5>`;
+                        
+                        if (subsection.items && subsection.items.length > 0) {
+                            summaryHtml += `<ul class="list-disc pl-5 space-y-1">`;
+                            subsection.items.forEach(item => {
+                                summaryHtml += `<li class="text-gray-700">${item}</li>`;
+                            });
+                            summaryHtml += `</ul>`;
+                        }
+                        
+                        summaryHtml += `</div>`;
+                    });
+                }
+                
+                if (section.items && section.items.length > 0) {
+                    summaryHtml += `<ul class="list-disc pl-5 space-y-2">`;
+                    section.items.forEach(item => {
+                        summaryHtml += `<li class="text-gray-700">${item}</li>`;
+                    });
+                    summaryHtml += `</ul>`;
+                }
+                
+                summaryHtml += `</div>`;
+            });
+            
+            summaryHtml += '</div>';
+            summaryContainer.innerHTML = summaryHtml;
+        }
+        
+        // Function to update summary visibility
+        function updateSummaryVisibility() {
+            const activeBtn = document.querySelector('.time-filter-btn.active');
+            const isMonthlyView = activeBtn.textContent.includes('Monthly');
+            const isAnnualView = activeBtn.textContent.includes('Annual');
+            
+            summarySection.style.display = (isMonthlyView || isAnnualView) ? 'block' : 'none';
+            
+            // Update title based on current view
+            const insightsTitle = document.getElementById('insightsTitle');
+            const currentTimeFrame = isAnnualView ? 'annual' : isMonthlyView ? 'monthly' : null;
+            
+            if (currentTimeFrame) {
+                insightsTitle.textContent = isAnnualView ? 
+                    'AI-Powered Annual Insights' : 'AI-Powered Monthly Insights';
+                
+                // Check for stored summary for current time frame
+                const storedSummary = sessionStorage.getItem(`ai_summary_${currentTimeFrame}`);
+                if (storedSummary) {
+                    displaySummary(JSON.parse(storedSummary), currentTimeFrame);
+                } else {
+                    // Show prompt to generate summary
+                    summaryContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-chart-pie text-gray-300 text-4xl mb-4"></i>
+                            <p class="text-gray-500">Click "Generate Insights" for ${currentTimeFrame} analysis</p>
+                        </div>`;
+                }
+            }
+        }
+        
+        // Time filter button click handler
         timeFilterBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 // Remove active class from all buttons
@@ -691,6 +803,9 @@
                         tab.classList.remove('active');
                     }
                 });
+                
+                // Update summary visibility
+                updateSummaryVisibility();
             });
         });
         
@@ -729,6 +844,62 @@
                 timeFilterBtns[index].click();
             });
         });
+        
+        if (generateBtn) {
+            generateBtn.addEventListener('click', function() {
+                // Show loading state
+                generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing...';
+                generateBtn.disabled = true;
+                
+                // Determine current time frame
+                const currentTimeFrame = document.querySelector('.time-filter-btn.active').dataset.target.split('-')[0]; // 'daily', 'monthly', or 'annual'
+                const timeFrameForSummary = currentTimeFrame === 'annual' ? 'annual' : 'monthly';
+                
+                // Make AJAX request to get the summary
+                fetch(window.location.pathname + `?generate_summary=true&time_frame=${timeFrameForSummary}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.summary) {
+                        // Store the summary in sessionStorage with time frame key
+                        sessionStorage.setItem(`ai_summary_${data.time_frame}`, JSON.stringify(data.summary));
+                        
+                        // Display the summary
+                        displaySummary(data.summary, data.time_frame);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    summaryContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-exclamation-triangle text-gray-300 text-4xl mb-4"></i>
+                            <p class="text-gray-500">An error occurred while generating insights.</p>
+                        </div>`;
+                })
+                .finally(() => {
+                    // Reset button state
+                    generateBtn.innerHTML = '<i class="fas fa-magic mr-2"></i> Generate Insights';
+                    generateBtn.disabled = false;
+                });
+            });
+        }
+
+        // Initial visibility check
+        updateSummaryVisibility();
+    });
+
+    // Clear summaries only when the page is completely reloaded or navigated away
+    window.addEventListener('beforeunload', function(event) {
+        // Only clear if this is a page reload or navigation
+        if (event.currentTarget.performance.navigation.type === PerformanceNavigation.TYPE_RELOAD ||
+            event.currentTarget.performance.navigation.type === PerformanceNavigation.TYPE_NAVIGATE) {
+            sessionStorage.removeItem('ai_summary_monthly');
+            sessionStorage.removeItem('ai_summary_annual');
+        }
     });
 </script>
 {% endblock %}
@@ -833,7 +1004,7 @@
             </div>
         </section>
         
-        <!-- Business Statistics - REDESIGNED to match mockup layout while keeping original styling -->
+        <!-- Business Statistics -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Business Analytics Title and Description -->
             <h2 class="section-title">Business Analytics</h2>
@@ -842,13 +1013,13 @@
             <!-- Analytics Tabs -->
             <div class="analytics-tabs">
                 <div class="analytics-tab active">
-                    <i class="fas fa-calendar-day"></i> Daily
+                    <i class="fas fa-calendar-day"></i> Day
                 </div>
                 <div class="analytics-tab">
-                    <i class="far fa-calendar"></i> Monthly
+                    <i class="far fa-calendar"></i> Month
                 </div>
                 <div class="analytics-tab">
-                    <i class="far fa-calendar-alt"></i> Annual
+                    <i class="far fa-calendar-alt"></i> Year
                 </div>
             </div>
 
@@ -861,7 +1032,6 @@
                     <i class="fas fa-calendar-week mr-2"></i>Monthly
                 </button>
                 <button class="time-filter-btn" data-target="annual-stats" data-summary="annual-summary" data-buttons="annual-chart-buttons">
-                    <i class  data-summary="annual-summary" data-buttons="annual-chart-buttons">
                     <i class="fas fa-calendar-alt mr-2"></i>Annual
                 </button>
             </div>
@@ -1044,6 +1214,9 @@
                         <button class="chart-button" data-section="monthly" data-chart="monthly-barber-chart">
                             <i class="fas fa-user-tie"></i> Staff Performance
                         </button>
+                        <button class="chart-button" data-section="monthly" data-chart="monthly-customer-type-chart">
+                            <i class="fas fa-user-friends"></i> Customer Types
+                        </button>
                         <button class="chart-button" data-section="monthly" data-chart="monthly-satisfaction-chart">
                             <i class="fas fa-smile"></i> Satisfaction
                         </button>
@@ -1063,8 +1236,8 @@
                         <button class="chart-button" data-section="annual" data-chart="annual-barber-chart">
                             <i class="fas fa-trophy"></i> Staff Leaderboard
                         </button>
-                        <button class="chart-button" data-section="annual" data-chart="annual-clients-chart">
-                            <i class="fas fa-users"></i> Client Types
+                        <button class="chart-button" data-section="annual" data-chart="annual-customer-type-chart">
+                            <i class="fas fa-user-friends"></i> Customer Types
                         </button>
                         <button class="chart-button" data-section="annual" data-chart="annual-no-show-chart">
                             <i class="fas fa-user-slash"></i> No-show Trends
@@ -1084,12 +1257,14 @@
                                 <div class="chart-container">
                                     <img src="{{ charts.time_slot_chart }}" alt="Appointments by Time Slot" class="img-fluid">
                                 </div>
+                                <!-- To implement later 
                                 <div class="chart-legend">
                                     <div class="legend-item">
                                         <div class="legend-color" style="background-color: #00a896;"></div>
                                         <span>Appointments</span>
                                     </div>
                                 </div>
+                                -->
                             </div>
                         </div>
                         
@@ -1099,8 +1274,9 @@
                                 <h3 class="chart-title"><i class="fas fa-user-friends"></i> New vs Repeat Customers</h3>
                                 <p class="text-gray-500 mb-4">Track the balance between new and returning clients</p>
                                 <div class="chart-container">
-                                    <img src="{{ charts.customer_type_chart }}" alt="New vs Repeat Customers" class="img-fluid">
+                                    <img src="{{ charts.customer_type_day_chart }}" alt="New vs Repeat Customers" class="img-fluid">
                                 </div>
+                                <!-- To implement later
                                 <div class="chart-legend">
                                     <div class="legend-item">
                                         <div class="legend-color" style="background-color: #00a896;"></div>
@@ -1111,6 +1287,7 @@
                                         <span>Repeat Customers</span>
                                     </div>
                                 </div>
+                                -->
                             </div>
                         </div>
                     </div>
@@ -1157,6 +1334,17 @@
                                 <p class="text-gray-500 mb-4">Compare revenue generation across your team</p>
                                 <div class="chart-container">
                                     <img src="{{ charts.barber_performance_chart }}" alt="Staff Performance" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monthly Customer Type Chart -->
+                        <div id="monthly-customer-type-chart" class="individual-chart" data-section="monthly">
+                            <div class="chart-card">
+                                <h3 class="chart-title"><i class="fas fa-user-friends"></i> New vs Repeat Customers</h3>
+                                <p class="text-gray-500 mb-4">Track client acquisition and retention throughout the month</p>
+                                <div class="chart-container">
+                                    <img src="{{ charts.customer_type_month_chart }}" alt="New vs Repeat Customers" class="img-fluid">
                                 </div>
                             </div>
                         </div>
@@ -1219,14 +1407,14 @@
                             </div>
                         </div>
                         
-                        <!-- Annual Clients Chart -->
-                        <div id="annual-clients-chart" class="individual-chart" data-section="annual">
+                        <!-- Annual Customer Type Chart -->
+                        <div id="annual-customer-type-chart" class="individual-chart" data-section="annual">
                             <div class="chart-card">
-                                <h3 class="chart-title"><i class="fas fa-users"></i> New vs Returning Clients</h3>
+                                <h3 class="chart-title"><i class="fas fa-user-friends"></i> New vs Repeat Customers</h3>
                                 <p class="text-gray-500 mb-4">Track client acquisition and retention throughout the year</p>
                                 <div class="chart-container">
-                                    {% if charts.client_types_chart %}
-                                        <img src="{{ charts.client_types_chart }}" alt="New vs Returning Clients" class="img-fluid">
+                                    {% if charts.customer_type_year_chart %}
+                                        <img src="{{ charts.customer_type_year_chart }}" alt="New vs Repeat Customers" class="img-fluid">
                                     {% else %}
                                         <div class="flex items-center justify-center h-full">
                                             <p class="text-gray-500">Chart data not available</p>
@@ -1260,8 +1448,193 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- AI-Powered Performance Insights -->
+            <div class="ai-summary-section mt-12" style="display: none;">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-robot text-primary mr-3"></i>
+                        <span id="insightsTitle">AI-Powered Annual Insights</span>
+                    </h3>
+                    <button id="generateSummaryBtn" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center text-sm">
+                        <i class="fas fa-magic mr-2"></i>
+                        Generate Insights
+                    </button>
+                </div>
+                
+                <div id="summaryContainer" class="bg-white p-6 rounded-lg shadow-md border-t-4 border-primary">
+                    {% if request.GET.time_frame == 'annual' and annual_summary %}
+                        <div class="space-y-8">
+                            {% for section in annual_summary %}
+                                <div class="summary-section">
+                                    <h4 class="font-bold text-lg mb-4 text-primary flex items-center">
+                                        {% if section.title == "Month-by-Month Analysis" %}
+                                            <i class="fas fa-calendar-alt mr-2"></i>
+                                        {% elif section.title == "Year-to-Date Summary" %}
+                                            <i class="fas fa-chart-line mr-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-lightbulb mr-2"></i>
+                                        {% endif %}
+                                        {{ section.title }}
+                                    </h4>
+                                    
+                                    {% if section.subsections %}
+                                        <div class="space-y-4 ml-4">
+                                            {% for subsection in section.subsections %}
+                                                <div class="subsection">
+                                                    <h5 class="font-semibold text-gray-800 mb-2">{{ subsection.title }}</h5>
+                                                    {% if subsection.items %}
+                                                        <ul class="list-disc pl-5 space-y-1">
+                                                            {% for item in subsection.items %}
+                                                                <li class="text-gray-700">{{ item }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if section.items %}
+                                        <ul class="list-disc pl-5 space-y-1 mt-4">
+                                            {% for item in section.items %}
+                                                <li class="text-gray-700">{{ item }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% elif not request.GET.time_frame and monthly_summary %}
+                        <div class="space-y-8">
+                            {% for section in monthly_summary %}
+                                <div class="summary-section">
+                                    <h4 class="font-bold text-lg mb-4 text-primary flex items-center">
+                                        {% if section.title == "Performance Overview" %}
+                                            <i class="fas fa-chart-bar mr-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-lightbulb mr-2"></i>
+                                        {% endif %}
+                                        {{ section.title }}
+                                    </h4>
+                                    
+                                    {% if section.items %}
+                                        <ul class="list-disc pl-5 space-y-1">
+                                            {% for item in section.items %}
+                                                <li class="text-gray-700">{{ item }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-chart-pie text-gray-300 text-4xl mb-4"></i>
+                            <p class="text-gray-500">Get AI-powered analysis of your performance metrics</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>    
         </div>
 
+        <!-- Staff Management Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h2 class="section-title">Staff Management</h2>
+            <div class="flex justify-between items-center mb-6">
+                <p class="text-gray-600">Manage your staff schedules, availability, and appointments</p>
+                <a href="{% url 'employee_list' %}" class="text-primary hover:text-primary-dark font-medium">
+                    View all staff <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-2">
+                <!-- Staff Calendar Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-calendar-week text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Staff Calendar</h3>
+                        <p class="text-gray-600 text-sm mb-4">View and manage your staff's schedules in a weekly calendar format</p>
+                        <a href="{% url 'staff_calendar' %}" class="action-button">
+                            <i class="fas fa-calendar-alt mr-2"></i>View Calendar
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Schedules Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-clock text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Staff Schedules</h3>
+                        <p class="text-gray-600 text-sm mb-4">Create and manage regular working hours for your staff members</p>
+                        <a href="{% url 'schedule_list' %}" class="action-button">
+                            <i class="fas fa-list-alt mr-2"></i>Manage Schedules
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Availability Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-user-clock text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Staff Availability</h3>
+                        <p class="text-gray-600 text-sm mb-4">Set days when your staff members are unavailable for appointments</p>
+                        <a href="{% url 'manage_availability' %}" class="action-button">
+                            <i class="fas fa-calendar-check mr-2"></i>Manage Availability
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Staff Appointments Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-calendar-plus text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Staff Appointments</h3>
+                        <p class="text-gray-600 text-sm mb-4">Manage client appointments with your staff members</p>
+                        <a href="{% url 'manage_staff_appointments' %}" class="action-button">
+                            <i class="fas fa-calendar-alt mr-2"></i>Manage Appointments
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Add Employee Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-user-plus text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Add Staff</h3>
+                        <p class="text-gray-600 text-sm mb-4">Add new staff members to your business profile</p>
+                        <a href="{% url 'add_employee' %}" class="action-button">
+                            <i class="fas fa-plus mr-2"></i>Add Employee
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Create Schedule Card -->
+                <div class="action-card">
+                    <div class="p-6">
+                        <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
+                            <i class="fas fa-plus-circle text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Create Schedule</h3>
+                        <p class="text-gray-600 text-sm mb-4">Create a new work schedule for your staff members</p>
+                        <a href="{% url 'create_schedule' %}" class="action-button">
+                            <i class="fas fa-plus mr-2"></i>Create Schedule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Portfolio Section -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h2 class="section-title">Previous work</h2>
@@ -1272,33 +1645,32 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                {% if portfolio_items %}
-                    {% for item in portfolio_items|slice:":2" %}
-                    <div class="portfolio-card">
-                        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
-                        <div class="p-4">
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
-                            <p class="text-gray-600 text-sm mb-3">{{ item.description|truncatechars:60 }}</p>
-                            <div class="flex flex-wrap">
-                                {% for tag in item.tags.all %}
-                                <span class="badge">{{ tag.name }}</span>
-                                {% endfor %}
-                            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {% if portfolio_items %}
+                {% for item in portfolio_items|slice:":2" %}
+                <div class="portfolio-card">
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-image">
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
+                        <p class="text-gray-600 text-sm mb-3">{{ item.description|truncatechars:60 }}</p>
+                        <div class="flex flex-wrap">
+                            {% for tag in item.tags.all %}
+                            <span class="badge">{{ tag.name }}</span>
+                            {% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
-                {% endif %}
-                
-                <!-- Button for adding work done -->
-                <a href="{% url 'add_portfolio' %}" class="portfolio-add-card">
-                    <div class="circle-add-button">
-                        <i class="fas fa-plus text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Add work</h3>
-                    <p class="text-gray-500 text-center max-w-xs px-4">Upload photos and details of your best projects</p>
-                </a>
-            </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Button for adding work done -->
+            <a href="{% url 'add_portfolio' %}" class="portfolio-add-card">
+                <div class="circle-add-button">
+                    <i class="fas fa-plus text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Add work</h3>
+                <p class="text-gray-500 text-center max-w-xs px-4">Upload photos and details of your best projects</p>
+            </a>
         </div>
     </div>
 </div>

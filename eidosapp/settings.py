@@ -52,6 +52,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'eidosapp.context_processors.user_type_context',
+                'eidosapp.context_processors.business_user_context',
             ],
         },
     },

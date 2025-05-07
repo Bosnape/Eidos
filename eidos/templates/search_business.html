@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}>Eidos - Businesses Using Our Digital Tools{% endblock %}
+{% block title %}Eidos - Businesses Using Our Digital Tools{% endblock %}
 
 {% block extra_css %}
     <style>
+        /* Core styles from original template */
         .search-container {
             position: relative;
             overflow: hidden;
@@ -26,7 +27,7 @@
         .search-input:focus {
             outline: none;
             border-color: var(--primary-dark);
-            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.3);
+            box-shadow: 0 0 0 3px #00a8964d;
         }
         .search-btn {
             position: absolute;
@@ -46,7 +47,93 @@
             background-color: var(--primary-dark);
         }
         .hero-section {
-            padding-top: 2rem; /* Add some top padding to the hero section */
+            padding-top: 2rem;
+        }
+        
+        /* Enhanced styles for business results */
+        .business-result {
+            transition: all 0.3s ease;
+        }
+        
+        .business-result:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .business-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: #f3f4f6;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: #4b5563;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .popular-searches {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .popular-search-tag {
+            padding: 0.35rem 1rem;
+            background-color: #f3f4f6;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .popular-search-tag:hover {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        
+        .no-results-container {
+            text-align: center;
+            padding: 3rem 1rem;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .no-results-icon {
+            font-size: 3rem;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Consistent button hover styles */
+        .view-details-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary-color);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.375rem;
+            color: var(--primary-color);
+            background-color: transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .view-details-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
         }
     </style>
 {% endblock %}
@@ -55,18 +142,20 @@
     <!-- Hero Section with Search Bar and Immediate Results -->
     <div class="relative bg-white overflow-hidden hero-section">
         <div class="max-w-7xl mx-auto text-center py-12 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+            <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl animate-fade-in">
                 <span class="block">Discover Thriving</span>
                 <span class="block text-primary">Eidos-Powered Businesses</span>
             </h1>
             <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl">
                 Explore how barbershops and beauty professionals are transforming their digital presence with Eidos.
             </p>
-            <!-- Search Form -->
+            
+            <!-- Search Form - Maintaining original structure for backend compatibility -->
             <div class="mt-8 max-w-3xl mx-auto">
                 <form method="GET" action="" class="search-container">
                     <input type="text" 
                         name="searchBusiness" 
+                        id="searchBusinessInput"
                         placeholder="Find your next favorite salon or barbershop..." 
                         class="search-input"
                         value="{{ searchTerm|default:'' }}">
@@ -74,6 +163,15 @@
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
+                
+                <!-- Popular searches -->
+                <div class="popular-searches">
+                    <span class="text-sm text-gray-500 mr-2">Popular:</span>
+                    <a href="?searchBusiness=Barber" class="popular-search-tag">Barber</a>
+                    <a href="?searchBusiness=Salon" class="popular-search-tag">Salon</a>
+                    <a href="?searchBusiness=Haircut" class="popular-search-tag">Haircut</a>
+                    <a href="?searchBusiness=Style" class="popular-search-tag">Style</a>
+                </div>
             </div>
         </div>
     </div>
@@ -113,7 +211,115 @@
                                         <span>4.8 (124 reviews)</span>
                                     </div>
                                 </div>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-primary">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-white">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Verified
+                                </span>                                
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <p class="flex items-center text-gray-600">
+                                    <i class="fas fa-map-marker-alt w-5 text-primary"></i>
+                                    {{ business.address }}
+                                </p>
+                                <p class="flex items-center text-gray-600">
+                                    <i class="fas fa-phone w-5 text-primary"></i>
+                                    {{ business.phone }}
+                                </p>
+                                {% if business.description %}
+                                <p class="text-gray-600 mt-2">
+                                    {{ business.description|truncatechars:150 }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Social Media Links -->
+                            <div class="flex space-x-3 mb-4">
+                                {% if business.instagram %}
+                                <a href="{{ business.instagram }}" target="_blank" class="text-gray-500 hover:text-primary">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                {% endif %}
+                                {% if business.facebook %}
+                                <a href="{{ business.facebook }}" target="_blank" class="text-gray-500 hover:text-primary">
+                                    <i class="fab fa-facebook"></i>
+                                </a>
+                                {% endif %}
+                                {% if business.twitter %}
+                                <a href="{{ business.twitter }}" target="_blank" class="text-gray-500 hover:text-primary">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                {% endif %}
+                                {% if business.tiktok %}
+                                <a href="{{ business.tiktok }}" target="_blank" class="text-gray-500 hover:text-primary">
+                                    <i class="fab fa-tiktok"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                <div class="flex space-x-4">
+                                    <span class="inline-flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Open until 8:00 PM
+                                    </span>
+                                    <span class="inline-flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-scissors mr-1"></i>
+                                        20+ services
+                                    </span>
+                                </div>
+                                <a href="{% url 'business_profile' business.name %}" 
+                                class="view-details-btn">
+                                    View Details
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-results-container">
+                <i class="fas fa-search no-results-icon"></i>
+                <p class="text-xl text-gray-600 mb-2">No businesses found matching your search criteria.</p>
+                <p class="text-gray-500">Try adjusting your search terms or browse our featured businesses below.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Featured Businesses Section (when no search is performed) -->
+    {% if not searchTerm %}
+    <div class="bg-gray-50 border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">
+                Featured Businesses
+            </h2>
+            
+            {% if businesses %}
+            <div class="space-y-4">
+                {% for business in businesses %}
+                <div class="business-result bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/4 relative">
+                            <img src="{{ business.logo.url }}" 
+                                alt="{{ business.name }}" 
+                                class="w-full h-48 md:h-full object-cover">
+                            <div class="absolute top-2 right-2 bg-white rounded-full p-2 shadow-sm">
+                                <i class="fas fa-heart text-gray-300 hover:text-primary cursor-pointer"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1 p-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ business.name }}</h3>
+                                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        <span>4.8 (124 reviews)</span>
+                                    </div>
+                                </div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary bg-opacity-10 text-white">
                                     <i class="fas fa-check-circle mr-1"></i>
                                     Verified
                                 </span>
@@ -127,7 +333,37 @@
                                     <i class="fas fa-phone w-5 text-primary"></i>
                                     {{ business.phone }}
                                 </p>
+                                {% if business.description %}
+                                <p class="text-gray-600 mt-2">
+                                    {{ business.description|truncatechars:150 }}
+                                </p>
+                                {% endif %}
                             </div>
+                            
+                            <!-- Social Media Links -->
+                            <div class="flex space-x-3 mb-4">
+                                {% if business.instagram %}
+                                <a href="{{ business.instagram }}" target="_blank" class="text-gray-500 hover:text-primary">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                {% endif %}
+                                {% if business.facebook %}
+                                <a href="{{ business.facebook }}" target="_blank" class="text-gray-500 hover:text-primary">
+                                    <i class="fab fa-facebook"></i>
+                                </a>
+                                {% endif %}
+                                {% if business.twitter %}
+                                <a href="{{ business.twitter }}" target="_blank" class="text-gray-500 hover:text-primary">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                {% endif %}
+                                {% if business.tiktok %}
+                                <a href="{{ business.tiktok }}" target="_blank" class="text-gray-500 hover:text-primary">
+                                    <i class="fab fa-tiktok"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                            
                             <div class="flex items-center justify-between pt-4 border-t border-gray-100">
                                 <div class="flex space-x-4">
                                     <span class="inline-flex items-center text-sm text-gray-500">
@@ -139,8 +375,8 @@
                                         20+ services
                                     </span>
                                 </div>
-                                <a href="{% url 'business_profile' business.name %}" 
-                                class="inline-flex items-center px-4 py-2 border border-primary text-sm font-medium rounded-md text-primary hover:bg-primary hover:text-white transition-colors duration-200">
+                                <a href="{% url 'business_profile' business_name=business.name %}"
+                                    class="view-details-btn">
                                     View Details
                                     <i class="fas fa-arrow-right ml-2"></i>
                                 </a>
@@ -152,9 +388,9 @@
             </div>
             {% else %}
             <div class="text-center py-12 bg-white rounded-xl shadow-sm">
-                <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
-                <p class="text-xl text-gray-600 mb-2">No businesses found matching your search criteria.</p>
-                <p class="text-gray-500">Try adjusting your search terms.</p>
+                <i class="fas fa-store text-4xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-600 mb-2">No businesses available at the moment.</p>
+                <p class="text-gray-500">Check back soon for new listings.</p>
             </div>
             {% endif %}
         </div>

@@ -51,18 +51,12 @@ def generateTimeSlotChart(business):
     
     # Create the plot
     plt.figure(figsize=(12, 8))
-    bars = plt.bar(hour_labels, hour_counts, color=PRIMARY_COLOR)
-    
-    # Add count labels on top of bars
-    for bar in bars:
-        height = bar.get_height()
-        if height > 0:
-            plt.text(bar.get_x() + bar.get_width()/2., height + 0.1,
-                    f'{height:.0f}', ha='center', va='bottom')
+    plt.bar(hour_labels, hour_counts, color=PRIMARY_COLOR)
     
     plt.title('Appointments by Time Slot', fontsize=18)
     plt.xlabel('Time of Day', fontsize=14)
     plt.ylabel('Number of Appointments', fontsize=14)
+    plt.yticks(range(0, max(hour_counts) + 1, 1))
     plt.xticks(rotation=45)
     plt.grid(True, linestyle='--', alpha=0.3)
     plt.tight_layout()
@@ -99,7 +93,13 @@ def generateCustomerTypesChart(business, period='day'):
                     wedgeprops={'edgecolor': 'white', 'linewidth': 1.5})
             plt.legend(loc="upper right", bbox_to_anchor=(1.0, 0.9))
         else:
-            plt.text(0.5, 0.5, 'No customer data available', horizontalalignment='center', verticalalignment='center')
+            # Create an empty pie chart with "No Data" label
+            labels = ['No Data']
+            counts = [1]
+            colors = ['#dddddd']  # Light gray color for empty state
+            plt.pie(counts, labels=labels, colors=colors,
+                wedgeprops={'edgecolor': 'white', 'linewidth': 1.5})
+            plt.legend(loc="upper right", bbox_to_anchor=(1.0, 0.9))
         
         plt.title('New vs Repeat Customers - Today', fontsize=18)
         plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
@@ -153,8 +153,10 @@ def generateCustomerTypesChart(business, period='day'):
         plt.ylabel('Number of Clients', fontsize=14)
         plt.title(f'New vs Returning Clients - {today.strftime("%B %Y")}', fontsize=18)
         plt.xticks(x, days)
+        plt.yticks(range(0, max(max(new_clients), max(returning_clients)) + 1, 1))
         plt.legend()
         plt.tight_layout()
+        plt.grid(True, linestyle='--', alpha=0.3)
     
     else:  # year
         # Annual view - bar chart by month
@@ -209,6 +211,7 @@ def generateCustomerTypesChart(business, period='day'):
         plt.xticks(x, months)
         plt.legend()
         plt.tight_layout()
+        plt.grid(True, linestyle='--', alpha=0.3)
     
     # Convert plot to base64 string
     chart_image = getImageBase64(plt)
@@ -216,7 +219,7 @@ def generateCustomerTypesChart(business, period='day'):
     
     return chart_image
 
-def generateMonthlyRevenueChart(business, period='month'):
+def generateRevenueChart(business, period='month'):
     """Generate line chart showing revenue by day for the current month or by month for the year"""
     
     today = datetime.today()
@@ -256,6 +259,7 @@ def generateMonthlyRevenueChart(business, period='month'):
         plt.plot(days, revenue, marker='o', linestyle='-', color=PRIMARY_COLOR, linewidth=2, markersize=8)
         plt.title(f'Revenue by Day - {today.strftime("%B %Y")}', fontsize=18)
         plt.xlabel('Day of Month', fontsize=14)
+        plt.xticks(days)
         plt.ylabel('Revenue ($)', fontsize=14)
         plt.grid(True, linestyle='--', alpha=0.3)
         plt.tight_layout()
@@ -347,6 +351,7 @@ def generateAppointmentsByDayChart(business):
     plt.plot(days, counts, marker='o', linestyle='-', color=PRIMARY_DARK, linewidth=2, markersize=8)
     plt.title(f'Appointments per Day - {today.strftime("%B %Y")}', fontsize=18)
     plt.xlabel('Day of Month', fontsize=14)
+    plt.xticks(days)
     plt.ylabel('Number of Appointments', fontsize=14)
     plt.grid(True, linestyle='--', alpha=0.3)
     plt.tight_layout()
@@ -571,6 +576,8 @@ def generateSatisfactionChart(business, period='month'):
     plt.plot(x_labels, satisfaction, marker='o', linestyle='-', color=PRIMARY_COLOR, linewidth=2, markersize=8)
     plt.title(f'Average Customer Satisfaction - {title_period}', fontsize=18)
     plt.xlabel(x_title, fontsize=14)
+    if period == 'month':
+        plt.xticks(x_labels)
     plt.ylabel('Average Rating (1-5)', fontsize=14)
     plt.ylim(0, 5.5)  # Set y-axis limits for ratings 1-5
     plt.grid(True, linestyle='--', alpha=0.3)
@@ -681,6 +688,10 @@ def generateNoShowChart(business, period='month'):
     plt.plot(x_labels, no_show_rates, marker='o', linestyle='-', color=PRIMARY_DARK, linewidth=2, markersize=8)
     plt.title(f'No-show Rate - {title_period}', fontsize=18)
     plt.xlabel(x_title, fontsize=14)
+    
+    if period == 'month':
+        plt.xticks(x_labels)
+        
     plt.ylabel('No-show Rate (%)', fontsize=14)
     plt.ylim(0, max(no_show_rates) + 5 if no_show_rates else 10)  # Set y-axis limits
     plt.grid(True, linestyle='--', alpha=0.3)
@@ -691,30 +702,3 @@ def generateNoShowChart(business, period='month'):
     plt.close()
     
     return chart_image
-
-def generateAllCharts(business):
-    """Generate all charts for the dashboard"""
-    
-    charts = {
-        # Daily charts
-        'time_slot_chart': generateTimeSlotChart(business),
-        'customer_type_chart': generateCustomerTypesChart(business, 'day'),
-        
-        # Monthly charts
-        'revenue_by_day_chart': generateMonthlyRevenueChart(business, 'month'),
-        'appointments_by_day_chart': generateAppointmentsByDayChart(business),
-        'top_services_month_chart': generateTopServicesChart(business, 'month'),
-        'barber_performance_chart': generateBarberPerformanceChart(business, 'month'),
-        'satisfaction_by_day_chart': generateSatisfactionChart(business, 'month'),
-        'no_show_rate_chart': generateNoShowChart(business, 'month'),
-        
-        # Annual charts
-        'monthly_revenue_chart': generateMonthlyRevenueChart(business, 'year'),
-        'top_services_year_chart': generateTopServicesChart(business, 'year'),
-        'barber_leaderboard_chart': generateBarberPerformanceChart(business, 'year'),
-        'no_show_rate_year_chart': generateNoShowChart(business, 'year'),
-        'monthly_rating_chart': generateSatisfactionChart(business, 'year'),
-        'client_types_chart': generateCustomerTypesChart(business, 'year'),
-    }
-    
-    return charts
