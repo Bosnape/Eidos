@@ -78,14 +78,30 @@ class AppointmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AppointmentForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-        # Customizing widgets for date and time
+
+        # Tooltips for each field
+        tooltips = {
+            'date': 'Choose the date you want your appointment.',
+            'time': 'Select the time that works best for your appointment.',
+            'service': 'Pick the service you want to book, like haircut, beard, etc.',
+            'barber': 'Select the professional you want to attend you.',
+            'payment_method': 'Choose your preferred payment method: cash, card, or other.',
+        }
+
+        # Custom widgets for date and time
         self.fields['date'].widget = forms.DateInput(attrs={
             'class': 'form-control datepicker',
             'type': 'date',
+            'title': tooltips['date'],
         })
         self.fields['time'].widget = forms.TimeInput(attrs={
             'class': 'form-control timepicker',
             'type': 'time',
+            'title': tooltips['time'],
         })
+
+        # Add class and title to the rest of the fields
+        for field_name, field in self.fields.items():
+            if field_name not in ['date', 'time']:
+                field.widget.attrs['class'] = 'form-control'
+                field.widget.attrs['title'] = tooltips.get(field_name, '')
