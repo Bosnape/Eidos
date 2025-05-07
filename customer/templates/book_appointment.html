@@ -3,94 +3,108 @@
 {% block title %}Book Appointment - Eidos{% endblock %}
 
 {% block extra_css %}
-    <style>
-        body {
-            padding-top: 64px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+<style>
+    body {
+        padding-top: 64px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-        input[type="date"],
-        input[type="time"],
-        select,
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            background-color: #f9fafb;
-            font-size: 1rem;
-            line-height: 1.5;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+    input[type="date"],
+    input[type="time"],
+    select,
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: #f9fafb;
+        font-size: 1rem;
+        line-height: 1.5;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-        input[type="date"]:focus,
-        input[type="time"]:focus,
-        select:focus,
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
-        }
+    input[type="date"]:focus,
+    input[type="time"]:focus,
+    select:focus,
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
+    }
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #374151;
-            font-size: 0.875rem;
-        }
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+        font-size: 0.875rem;
+    }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-        .appointment-container {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+    .appointment-container {
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 460px; /* Más estrecho */
+        margin: 0 auto;
+        padding: 1.75rem 1.25rem;
+    }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            transition: all 0.2s;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            padding: 0.75rem 1.5rem;
-            width: 100%;
-            border: none;
-            cursor: pointer;
-            text-align: center;
-            font-size: 1rem;
-        }
 
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-        }
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        transition: all 0.2s;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        padding: 0.5rem 1.25rem;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        font-size: 0.95rem;
+    }
 
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            text-align: center;
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-        }
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
 
-        main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem 1rem;
-            min-height: calc(100vh - 64px - 80px);
-        }
-    </style>
+    h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        text-align: center;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+    }
+
+    main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        min-height: calc(100vh - 64px - 80px);
+    }
+
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem; /* Antes 1rem */
+        margin-top: 1rem;
+    }
+
+    .form-navigation .btn-primary {
+        width: auto;
+        min-width: 100px;
+        flex: 1;
+        max-width: 150px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -98,63 +112,159 @@
     <div class="appointment-container">
         <h2>Book an Appointment at {{ business.name }}</h2>
 
-        <form method="POST">
+        <form method="POST" id="appointment-form">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label for="date">Select a Date</label>
-                <input type="date" name="date" id="date" required>
+            <!-- Paso 1: Selección de servicio -->
+            <div class="form-step" id="step-1">
+                <div class="form-group">
+                    <label for="id_service">Select a Service</label>
+                    <select id="id_service" name="service" required>
+                        {% for service in services %}
+                            <option value="{{ service.id }}" data-price="{{ service.price }}">{{ service.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Service Price:</label>
+                    <div id="price-display" class="form-input" style="background-color: #f3f4f6;">$0.00</div>
+                    <input type="hidden" name="price" id="price-hidden" value="">
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="time">Select a Time</label>
-                <input type="time" name="time" id="time" required>
+            <!-- Paso 2: Selección de barbero -->
+            <div class="form-step" id="step-2" style="display: none;">
+                <div class="form-group">
+                    <label for="barber">Barber</label>
+                    {{ form.barber }}
+                </div>
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="id_service">Select a Service</label>
-                <select id="id_service" name="service" required>
-                    {% for service in services %}
-                        <option value="{{ service.id }}" data-price="{{ service.price }}">{{ service.name }}</option>
-                    {% endfor %}
-                </select>
+            <!-- Paso 3: Fecha y hora -->
+            <div class="form-step" id="step-3" style="display: none;">
+                <div class="form-group">
+                    <label for="date">Select a Date</label>
+                    <input type="date" name="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="time">Select a Time</label>
+                    <input type="time" name="time" id="time" required>
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Service Price:</label>
-                <div id="price-display" class="form-input" style="background-color: #f3f4f6;">$0.00</div>
-                <input type="hidden" name="price" id="price-hidden" value="">
+            <!-- Paso 4: Método de pago -->
+            <div class="form-step" id="step-4" style="display: none;">
+                <div class="form-group">
+                    <label for="payment_method">Payment Method</label>
+                    {{ form.payment_method }}
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
+                </div>
             </div>
 
-            <script>
-                const serviceSelect = document.getElementById('id_service');
-                const priceDisplay = document.getElementById('price-display');
-                const priceHidden = document.getElementById('price-hidden');
+            <!-- Paso 5: Confirmación -->
+            <div class="form-step" id="step-5" style="display: none;">
+                <h3>Confirm Your Appointment</h3>
+                <p><strong>Service:</strong> <span id="confirm-service"></span></p>
+                <p><strong>Barber:</strong> <span id="confirm-barber"></span></p>
+                <p><strong>Date:</strong> <span id="confirm-date"></span></p>
+                <p><strong>Time:</strong> <span id="confirm-time"></span></p>
+                <p><strong>Price:</strong> <span id="confirm-price"></span></p>
+                <p><strong>Payment:</strong> <span id="confirm-payment"></span></p>
 
-                // Evento cuando se selecciona un servicio
-                serviceSelect.addEventListener('change', function () {
-                    const selectedOption = serviceSelect.selectedOptions[0];
-                    const price = selectedOption.getAttribute('data-price') || "0.00";
-                    priceDisplay.innerText = `$${price}`; // Muestra el precio
-                    priceHidden.value = price; // Asigna el valor al campo oculto
-                });
-
-                // Mostrar el precio si ya hay algo seleccionado
-                serviceSelect.dispatchEvent(new Event('change'));
-            </script>
-
-            <div class="form-group">
-                <label for="payment_method">Payment Method</label>
-                {{ form.payment_method }}
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
+                    <button type="submit" class="btn-primary">Confirm ✓</button>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="barber">Barber</label>
-                {{ form.barber }}
-            </div>
-
-            <button type="submit" class="btn-primary">Confirm Appointment</button>
         </form>
+
+        <!-- JS para controlar el flujo de pasos -->
+        <script>
+            let currentStep = 1;
+
+            function showStep(step) {
+                document.querySelectorAll('.form-step').forEach((stepDiv, index) => {
+                    stepDiv.style.display = (index === step - 1) ? 'block' : 'none';
+                });
+                currentStep = step;
+                updateSummary();
+            }
+
+            function nextStep() {
+                const currentDiv = document.querySelector(`#step-${currentStep}`);
+                const requiredFields = currentDiv.querySelectorAll('select:required, input:required');
+
+                for (let field of requiredFields) {
+                    if (!field.value) {
+                        alert("Please complete all required fields before proceeding.");
+                        return;
+                    }
+                }
+
+                if (currentStep < 5) {
+                    showStep(currentStep + 1);
+                }
+            }
+
+            function prevStep() {
+                if (currentStep > 1) {
+                    showStep(currentStep - 1);
+                }
+            }
+
+            // Precio del servicio
+            const serviceSelect = document.getElementById('id_service');
+            const priceDisplay = document.getElementById('price-display');
+            const priceHidden = document.getElementById('price-hidden');
+
+            serviceSelect.addEventListener('change', function () {
+                const selectedOption = serviceSelect.selectedOptions[0];
+                const price = selectedOption.getAttribute('data-price') || "0.00";
+                priceDisplay.innerText = `$${price}`;
+                priceHidden.value = price;
+            });
+            serviceSelect.dispatchEvent(new Event('change'));
+
+            // Actualizar resumen final
+            function updateSummary() {
+                document.getElementById('confirm-service').textContent = serviceSelect.options[serviceSelect.selectedIndex].text;
+                document.getElementById('confirm-price').textContent = priceDisplay.innerText;
+
+                const barber = document.getElementById('id_barber');
+                const barberText = barber ? barber.options[barber.selectedIndex].text : '';
+                document.getElementById('confirm-barber').textContent = barberText;
+
+                document.getElementById('confirm-date').textContent = document.getElementById('date').value;
+                document.getElementById('confirm-time').textContent = document.getElementById('time').value;
+
+                const payment = document.getElementById('id_payment_method');
+                const paymentText = payment ? payment.options[payment.selectedIndex].text : '';
+                document.getElementById('confirm-payment').textContent = paymentText;
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                showStep(1);
+            });
+        </script>
     </div>
 </main>
 {% endblock %}
