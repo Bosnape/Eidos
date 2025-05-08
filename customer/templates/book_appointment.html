@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Book Appointment - Eidos{% endblock %}
 
@@ -129,9 +130,97 @@
     }
 
     .barber-card.selected {
-        border-color: #007BFF;
+        border-color: #10b981;
         background-color: #e7f0ff;
     }
+
+    .confirmation-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    color: #1f2937; /* gris oscuro elegante */
+    }
+
+    .confirmation-summary {
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    padding: 1.5rem;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #111827;
+    }
+
+    .confirmation-summary p {
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.3rem;
+    }
+
+    .confirmation-summary p:last-child {
+    border-bottom: none;
+    }
+
+    .service-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .service-item:hover {
+        border-color: #a7f3d0;
+    }
+
+    .service-item.selected {
+        border-color: #10b981;
+        background-color: #ecfdf5;
+    }
+
+    .service-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+    }
+
+    .service-details h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .service-description {
+        margin: 0.2rem 0;
+        font-size: 0.9rem;
+        color: #6b7280;
+        line-height: 1.4;
+    }
+
+    .service-price {
+        margin: 0.2rem 0 0 0;
+        color: #374151;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    .service-list-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    }
+
 </style>
 {% endblock %}
 
@@ -146,20 +235,29 @@
             <!-- Step 1: Service Selection -->
             <div class="form-step" id="step-1">
                 <div class="form-group">
-                    <label for="id_service">Select a Service</label>
-                    <select id="id_service" name="service" required>
+                    <label>Select a Service</label>
+                    <div class="service-list-vertical">
                         {% for service in services %}
-                            <option value="{{ service.id }}" data-price="{{ service.price }}">{{ service.name }}</option>
+                            <div class="service-item" data-id="{{ service.id }}" data-price="{{ service.price }}" onclick="selectService(this)">
+                                {% if service.image %}
+                                    <img src="{{ service.image.url }}" alt="{{ service.name }}" class="service-image">
+                                {% else %}
+                                    <img src="{% static 'default-service.png' %}" alt="{{ service.name }}" class="service-image">
+                                {% endif %}
+                                <div class="service-details">
+                                    <h4>{{ service.name }}</h4>
+                                    {% if service.description %}
+                                        <p class="service-description">{{ service.description }}</p>
+                                    {% endif %}
+                                    <p class="service-price">${{ service.price }}</p>
+                                </div>
+                            </div>
                         {% endfor %}
-                    </select>
+                    </div>
+                    <input type="hidden" name="service" id="id_service" required>
+                    <input type="hidden" name="price" id="price-hidden">
                 </div>
-
-                <div class="form-group">
-                    <label>Service Price:</label>
-                    <div id="price-display" class="form-input" style="background-color: #f3f4f6;">$0.00</div>
-                    <input type="hidden" name="price" id="price-hidden" value="">
-                </div>
-
+            
                 <div class="form-navigation">
                     <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
                 </div>
@@ -197,6 +295,7 @@
                         name="date" 
                         id="date" 
                         required 
+                        min="{{ today }}"
                         placeholder="YYYY-MM-DD"
                         title="Choose the date you want your appointment."
                         oninvalid="this.setCustomValidity('Please select a valid date.')"
@@ -207,18 +306,11 @@
                 <div class="form-group">
                     <label for="time">
                         Select a Time
-                        <span title="Select the time that works best for your appointment." style="cursor: help;">🕒</span>
+                        <span title="Select the time that works best for your appointment." style="cursor: help;"></span>
                     </label>
-                    <input 
-                        type="time" 
-                        name="time" 
-                        id="time" 
-                        required 
-                        placeholder="HH:MM"
-                        title="Select the time that works best for your appointment."
-                        oninvalid="this.setCustomValidity('Please select a valid time.')"
-                        oninput="this.setCustomValidity('')"
-                    >
+                    <select name="time" id="time" required title="Select an available hour for your appointment.">
+                        <option value="" disabled selected>Select a time</option>
+                    </select>
                 </div>
 
                 <div class="form-navigation">
@@ -242,13 +334,16 @@
 
             <!-- Step 5: Confirmation -->
             <div class="form-step" id="step-5" style="display: none;">
-                <h3>Confirm Your Appointment</h3>
-                <p><strong>Service:</strong> <span id="confirm-service"></span></p>
-                <p><strong>Barber:</strong> <span id="confirm-barber"></span></p>
-                <p><strong>Date:</strong> <span id="confirm-date"></span></p>
-                <p><strong>Time:</strong> <span id="confirm-time"></span></p>
-                <p><strong>Price:</strong> <span id="confirm-price"></span></p>
-                <p><strong>Payment:</strong> <span id="confirm-payment"></span></p>
+                <h3 class="confirmation-title">Confirm Your Appointment</h3>
+
+                <div class="confirmation-summary">
+                    <p><strong>Service:</strong> <span id="confirm-service"></span></p>
+                    <p><strong>Barber:</strong> <span id="confirm-barber"></span></p>
+                    <p><strong>Date:</strong> <span id="confirm-date"></span></p>
+                    <p><strong>Time:</strong> <span id="confirm-time"></span></p>
+                    <p><strong>Price:</strong> <span id="confirm-price"></span></p>
+                    <p><strong>Payment:</strong> <span id="confirm-payment"></span></p>
+                </div>
 
                 <div class="form-navigation">
                     <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
@@ -259,96 +354,160 @@
 
         <!-- JS to manage step's flow -->
         <script>
-            let currentStep = 1;
-
-            function showStep(step) {
-                document.querySelectorAll('.form-step').forEach((stepDiv, index) => {
-                    stepDiv.style.display = (index === step - 1) ? 'block' : 'none';
-                });
-                currentStep = step;
-                updateSummary();
-            }
-
-            function nextStep() {
-                const currentDiv = document.querySelector(`#step-${currentStep}`);
-                const requiredFields = currentDiv.querySelectorAll('select:required, input:required');
-
-                // General validation of the required fields
-                for (let field of requiredFields) {
-                    if (!field.value) {
-                        alert("Please complete all required fields before proceeding.");
-                        return;
-                    }
+            document.addEventListener("DOMContentLoaded", () => {
+                let currentStep = 1;
+            
+                function showStep(step) {
+                    document.querySelectorAll('.form-step').forEach((stepDiv, index) => {
+                        stepDiv.style.display = (index === step - 1) ? 'block' : 'none';
+                    });
+                    currentStep = step;
+                    updateSummary();
                 }
-
-                // Specific step 2 validation: barber selection
-                if (currentStep === 2) {
-                    const selectedBarber = document.getElementById('id_barber').value;
-                    if (!selectedBarber) {
+            
+                function nextStep() {
+                    const currentDiv = document.querySelector(`#step-${currentStep}`);
+                    const requiredFields = currentDiv.querySelectorAll('select:required, input:required');
+            
+                    for (let field of requiredFields) {
+                        if (!field.value) {
+                            alert("Please complete all required fields before proceeding.");
+                            return;
+                        }
+                    }
+            
+                    if (currentStep === 2 && !document.getElementById('id_barber').value) {
                         alert("Please select a barber before proceeding.");
                         return;
                     }
+            
+                    if (currentStep < 5) {
+                        showStep(currentStep + 1);
+                    }
                 }
-
-                if (currentStep < 5) {
-                    showStep(currentStep + 1);
+            
+                function prevStep() {
+                    if (currentStep > 1) {
+                        showStep(currentStep - 1);
+                    }
                 }
-            }
-
-            function prevStep() {
-                if (currentStep > 1) {
-                    showStep(currentStep - 1);
+            
+                function selectService(element) {
+                    if (element.classList.contains('selected')) return;
+                    document.querySelectorAll('.service-item').forEach(card => card.classList.remove('selected'));
+                    element.classList.add('selected');
+            
+                    const serviceId = element.getAttribute('data-id');
+                    const price = element.getAttribute('data-price');
+                    document.getElementById('id_service').value = serviceId;
+                    document.getElementById('price-hidden').value = price;
+            
+                    updateSummary();
                 }
-            }
-
-            // Service price
-            const serviceSelect = document.getElementById('id_service');
-            const priceDisplay = document.getElementById('price-display');
-            const priceHidden = document.getElementById('price-hidden');
-
-            serviceSelect.addEventListener('change', function () {
-                const selectedOption = serviceSelect.selectedOptions[0];
-                const price = selectedOption.getAttribute('data-price') || "0.00";
-                priceDisplay.innerText = `$${price}`;
-                priceHidden.value = price;
-            });
-            serviceSelect.dispatchEvent(new Event('change'));
-
-            // Update final resume
-            function updateSummary() {
-                document.getElementById('confirm-service').textContent = serviceSelect.options[serviceSelect.selectedIndex].text;
-                document.getElementById('confirm-price').textContent = priceDisplay.innerText;
-
-                const selectedBarberCard = document.querySelector('.barber-card.selected');
-                const barberText = selectedBarberCard ? selectedBarberCard.querySelector('p').textContent : '';
-                document.getElementById('confirm-barber').textContent = barberText;
-
-                document.getElementById('confirm-date').textContent = document.getElementById('date').value;
-                document.getElementById('confirm-time').textContent = document.getElementById('time').value;
-
-                const payment = document.getElementById('id_payment_method');
-                const paymentText = payment ? payment.options[payment.selectedIndex].text : '';
-                document.getElementById('confirm-payment').textContent = paymentText;
-            }
-
-            document.addEventListener("DOMContentLoaded", () => {
+            
+                function selectBarber(element) {
+                    document.querySelectorAll('.barber-card').forEach(card => card.classList.remove('selected'));
+                    element.classList.add('selected');
+                    const barberId = element.getAttribute('data-id');
+                    document.getElementById('id_barber').value = barberId;
+            
+                    updateAvailableHours();
+                    updateSummary();
+                }
+            
+                function updateSummary() {
+                    const selectedService = document.querySelector('.service-item.selected');
+                    const priceHidden = document.getElementById('price-hidden');
+                    const barberId = document.getElementById('id_barber').value;
+                    const date = document.getElementById('date').value;
+                    const time = document.getElementById('time');
+                    const paymentSelect = document.getElementById('id_payment_method');
+            
+                    document.getElementById('confirm-service').textContent = selectedService
+                        ? selectedService.querySelector('h4').textContent
+                        : '';
+            
+                    document.getElementById('confirm-price').textContent = priceHidden.value
+                        ? `$${priceHidden.value}`
+                        : '';
+            
+                    document.getElementById('confirm-barber').textContent = barberId
+                        ? document.querySelector(`.barber-card[data-id="${barberId}"] p`)?.textContent || ''
+                        : '';
+            
+                    document.getElementById('confirm-date').textContent = date || '';
+                    document.getElementById('confirm-time').textContent = time.value
+                        ? time.options[time.selectedIndex].text
+                        : '';
+            
+                    document.getElementById('confirm-payment').textContent = paymentSelect.value
+                        ? paymentSelect.options[paymentSelect.selectedIndex].text
+                        : '';
+                }
+            
+                function updateAvailableHours() {
+                    const date = document.getElementById('date').value;
+                    const barberId = document.getElementById('id_barber').value;
+                    const timeSelect = document.getElementById('time');
+            
+                    if (!date || !barberId) return;
+            
+                    fetch(`/business/api/get-available-hours/?employee_id=${barberId}&date=${date}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            timeSelect.innerHTML = '';
+            
+                            if (data.available_hours.length === 0) {
+                                const opt = document.createElement('option');
+                                opt.text = 'No available hours';
+                                opt.disabled = true;
+                                opt.selected = true;
+                                timeSelect.appendChild(opt);
+                                updateSummary();
+                                return;
+                            }
+            
+                            const morningGroup = document.createElement('optgroup');
+                            morningGroup.label = "Morning";
+                            const afternoonGroup = document.createElement('optgroup');
+                            afternoonGroup.label = "Afternoon";
+            
+                            data.available_hours.forEach(hour => {
+                                const opt = document.createElement('option');
+                                opt.value = hour;
+                                const hourInt = parseInt(hour.split(":")[0]);
+                                const suffix = hourInt < 12 ? "AM" : "PM";
+                                const formattedHour = (hourInt % 12 || 12) + ":00 " + suffix;
+                                opt.text = formattedHour;
+            
+                                if (hourInt < 12) {
+                                    morningGroup.appendChild(opt);
+                                } else {
+                                    afternoonGroup.appendChild(opt);
+                                }
+                            });
+            
+                            timeSelect.appendChild(morningGroup);
+                            timeSelect.appendChild(afternoonGroup);
+                            updateSummary();
+                        });
+                }
+            
+                // Event listeners
+                document.getElementById('date').addEventListener('change', updateAvailableHours);
+                document.getElementById('date').addEventListener('change', updateSummary);
+                document.getElementById('time').addEventListener('change', updateSummary);
+                document.getElementById('id_payment_method').addEventListener('change', updateSummary);
+            
                 showStep(1);
+            
+                // Expose functions globally so they still work with onclick (optional)
+                window.nextStep = nextStep;
+                window.prevStep = prevStep;
+                window.selectService = selectService;
+                window.selectBarber = selectBarber;
             });
-        </script>
-        <script>
-            function selectBarber(element) {
-                // Quitar selección previa
-                document.querySelectorAll('.barber-card').forEach(card => card.classList.remove('selected'));
-            
-                // Marcar la nueva selección
-                element.classList.add('selected');
-            
-                // Actualizar campo hidden con el ID del barbero
-                const barberId = element.getAttribute('data-id');
-                document.getElementById('id_barber').value = barberId;
-            }
-        </script>
+        </script>            
     </div>
 </main>
 {% endblock %}
-
