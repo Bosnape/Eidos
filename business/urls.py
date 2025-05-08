@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import get_available_hours
 
 urlpatterns = [
     # Sign up and login
@@ -50,4 +51,5 @@ urlpatterns = [
     path('dashboard/staff-appointments/create/', views.createStaffAppointment, name='create_staff_appointment'),
     path('dashboard/staff-appointments/<int:appointment_id>/edit/', views.editStaffAppointment, name='edit_staff_appointment'),
     path('dashboard/staff-appointments/<int:appointment_id>/delete/', views.deleteStaffAppointment, name='delete_staff_appointment'),
+    path('api/get-available-hours/', get_available_hours, name='get_available_hours'),
 ]
