@@ -1,5 +1,5 @@
 import datetime
-
+from datetime import date
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login 
 from django.contrib.auth.decorators import login_required
@@ -60,7 +60,7 @@ def listUserAppointments(request):
 
     return render(request, 'user_appointments.html', {'appointments': appointments})
 
-
+today = date.today().isoformat()
 # View to book an appointment
 @login_required(login_url='must_be_logged_in')
 def bookAppointment(request, business_id):
@@ -82,7 +82,7 @@ def bookAppointment(request, business_id):
 
             customer = request.user.customer
             try:
-                create_appointment(form, business, customer=customer)  # usamos la función centralizada
+                create_appointment(form, business, customer=customer)  # we use de centralized function
                 messages.success(request, "Appointment booked successfully.")
                 return redirect('userAppointments')
             except ValidationError as e:
@@ -95,13 +95,14 @@ def bookAppointment(request, business_id):
     else:
         form = AppointmentForm()
         form.fields['service'].queryset = services
-        form.fields['barber'].queryset = employees
+        form.fields['barber'].queryset = barbers
 
     return render(request, 'book_appointment.html', {
         'form': form,
         'business': business,
         'services': services,  # Pass the services to the template
         'barbers': barbers,
+        'today': today, 
     })
 
 
