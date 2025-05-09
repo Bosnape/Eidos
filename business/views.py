@@ -245,7 +245,7 @@ def getStatisticsSummary(business):
     start_of_year = today.replace(month=1, day=1)
     
     # Get all appointments for this business
-    appointments = Appointment.objects.filter(business=business)
+    appointments = Appointment.objects.filter(business=business, status__in=['scheduled', 'completed'])
     
     # Daily statistics
     today_appointments = appointments.filter(date=today)
@@ -321,7 +321,7 @@ def generateAllCharts(business):
 def getMonthlySummary(business):
     """Get monthly summary of appointments for the business using openAI"""
     
-    appointments = Appointment.objects.filter(business=business)
+    appointments = Appointment.objects.filter(business=business, status__in=['scheduled', 'completed'])
     
     # Get this month's data
     today = datetime.today()
@@ -447,7 +447,7 @@ def getMonthlySummary(business):
 def getAnnualSummary(business):
     """Get month-by-month annual summary of appointments for the business using openAI"""
     
-    appointments = Appointment.objects.filter(business=business)
+    appointments = Appointment.objects.filter(business=business, status__in=['scheduled', 'completed'])
     today = datetime.today()
     current_year = today.year
     

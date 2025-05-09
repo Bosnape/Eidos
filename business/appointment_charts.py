@@ -34,7 +34,7 @@ def generateTimeSlotChart(business):
     today = datetime.today()
         
     # Get appointments for the specified date
-    appointments = Appointment.objects.filter(business=business, date=today)
+    appointments = Appointment.objects.filter(business=business, date=today, status__in=['scheduled', 'completed'])
     
     # Extract hour from time and count appointments per hour
     hours = appointments.annotate(hour=ExtractHour('time')).values('hour').annotate(count=Count('id')).order_by('hour')
@@ -75,7 +75,7 @@ def generateCustomerTypesChart(business, period='day'):
     if period == 'day':
         # Daily view - pie chart for today
         # Get appointments for today
-        appointments = Appointment.objects.filter(business=business, date=today)
+        appointments = Appointment.objects.filter(business=business, date=today, status__in=['scheduled', 'completed'])
         
         # Count new vs repeat customers
         new_customers = appointments.filter(repeat_customer=False).count()
@@ -117,7 +117,8 @@ def generateCustomerTypesChart(business, period='day'):
         month_appointments = Appointment.objects.filter(
             business=business, 
             date__gte=start_date, 
-            date__lte=end_date
+            date__lte=end_date,
+            status__in=['scheduled', 'completed']
         )
         
         # Prepare data for new vs returning clients by day
@@ -166,7 +167,8 @@ def generateCustomerTypesChart(business, period='day'):
         year_appointments = Appointment.objects.filter(
             business=business, 
             date__gte=start_date,
-            date__lte=today
+            date__lte=today,
+            status__in=['scheduled', 'completed']
         )
         
         # Prepare data for new vs returning clients by month
@@ -234,7 +236,8 @@ def generateRevenueChart(business, period='month'):
         appointments = Appointment.objects.filter(
             business=business, 
             date__gte=start_date, 
-            date__lte=end_date
+            date__lte=end_date,
+            status__in=['scheduled', 'completed']
         )
         
         # Calculate revenue by day - using values first, then annotate for proper grouping
@@ -273,7 +276,8 @@ def generateRevenueChart(business, period='month'):
         appointments = Appointment.objects.filter(
             business=business, 
             date__gte=start_date, 
-            date__lte=end_date
+            date__lte=end_date,
+            status__in=['scheduled', 'completed']
         )
         
         # Calculate revenue by month - FIXED: using values first, then annotate for proper grouping
@@ -327,7 +331,8 @@ def generateAppointmentsByDayChart(business):
     appointments = Appointment.objects.filter(
         business=business, 
         date__gte=start_of_month, 
-        date__lte=end_of_month
+        date__lte=end_of_month,
+        status__in=['scheduled', 'completed']
     )
     
     # Count appointments by day
@@ -384,7 +389,8 @@ def generateTopServicesChart(business, period='month'):
     appointments = Appointment.objects.filter(
         business=business, 
         date__gte=start_date, 
-        date__lte=end_date
+        date__lte=end_date,
+        status__in=['scheduled', 'completed']
     )
     
     # Count appointments by service
@@ -451,7 +457,8 @@ def generateBarberPerformanceChart(business, period='month'):
     appointments = Appointment.objects.filter(
         business=business, 
         date__gte=start_date, 
-        date__lte=end_date
+        date__lte=end_date,
+        status__in=['scheduled', 'completed']
     )
     
     # Calculate revenue by barber
@@ -514,7 +521,8 @@ def generateSatisfactionChart(business, period='month'):
             business=business, 
             date__gte=start_date, 
             date__lte=end_date,
-            customer_satisfaction__gt=0
+            customer_satisfaction__gt=0,
+            status__in=['scheduled', 'completed']
         )
         
         # Calculate average satisfaction by day
@@ -545,7 +553,8 @@ def generateSatisfactionChart(business, period='month'):
             business=business, 
             date__gte=start_date, 
             date__lte=end_date,
-            customer_satisfaction__gt=0
+            customer_satisfaction__gt=0,
+            status__in=['scheduled', 'completed']
         )
         
         # Calculate average satisfaction by month
@@ -607,7 +616,8 @@ def generateNoShowChart(business, period='month'):
         all_appointments = Appointment.objects.filter(
             business=business, 
             date__gte=start_date, 
-            date__lte=end_date
+            date__lte=end_date,
+            status__in=['scheduled', 'completed']
         )
         
         # Count total appointments by day
@@ -652,7 +662,8 @@ def generateNoShowChart(business, period='month'):
         all_appointments = Appointment.objects.filter(
             business=business, 
             date__gte=start_date, 
-            date__lte=end_date
+            date__lte=end_date,
+            status__in=['scheduled', 'completed']
         )
         
         # Calculate no-show rate by month
