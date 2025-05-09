@@ -3,10 +3,11 @@ import os
 import re
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 from pydantic import ValidationError
+from django.views.decorators.http import require_GET
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import models, transaction
@@ -1499,3 +1500,55 @@ def deleteStaffAppointment(request, appointment_id):
     }
     
     return render(request, 'confirm_delete_staff_appointment.html', context)
+
+# Function to make appointment times only selectable during the selected barber's schedule
+@require_GET
+def get_available_hours(request):
+    employee_id = request.GET.get('employee_id')
+    date_str = request.GET.get('date')  # YYYY-MM-DD format
+
+    try:
+        employee = Employee.objects.get(id=employee_id)
+        selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        weekday = selected_date.weekday()  # 0 = Monday
+    except (Employee.DoesNotExist, ValueError):
+        return JsonResponse({'error': 'Invalid data'}, status=400)
+
+    # verify special availability
+    availability = Availability.objects.filter(employee=employee, date=selected_date).first()
+    if availability and not availability.is_available:
+        return JsonResponse({'available_hours': []})  # Day marked as 'not available'
+
+    # Obtain active shifts fot the day
+    shifts = Shift.objects.filter(schedule__employee=employee, schedule__is_active=True,
+                                  schedule__start_date__lte=selected_date,
+                                  schedule__end_date__gte=selected_date,
+                                  day_of_week=weekday)
+
+    appointment_duration = timedelta(hours=1)
+    available_hours = []
+
+    # Obtain Appointments for that day
+    existing_appointments = Appointment.objects.filter(
+        barber=employee,
+        date=selected_date,
+        status='scheduled'
+    )
+
+    for shift in shifts:
+        current_time = datetime.combine(selected_date, shift.start_time)
+        shift_end_time = datetime.combine(selected_date, shift.end_time)
+
+        while current_time + appointment_duration <= shift_end_time:
+            end_time = current_time + appointment_duration
+            overlap = existing_appointments.filter(
+                time__gte=current_time.time(),
+                time__lt=end_time.time()
+            ).exists()
+
+            if not overlap:
+                available_hours.append(current_time.time().strftime('%H:%M'))
+
+            current_time += appointment_duration
+
+    return JsonResponse({'available_hours': available_hours})

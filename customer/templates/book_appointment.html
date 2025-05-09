@@ -1,114 +1,227 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Book Appointment - Eidos{% endblock %}
 
 {% block extra_css %}
-    <style>
-        body {
-            padding-top: 64px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+<style>
+    body {
+        padding-top: 64px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-        input[type="date"],
-        select,
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            background-color: #f9fafb;
-            font-size: 1rem;
-            line-height: 1.5;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+    input[type="date"],
+    input[type="time"],
+    select,
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: #f9fafb;
+        font-size: 1rem;
+        line-height: 1.5;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-        input[type="date"]:focus,
-        select:focus,
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
-        }
+    input[type="date"]:focus,
+    input[type="time"]:focus,
+    select:focus,
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.2);
+    }
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #374151;
-            font-size: 0.875rem;
-        }
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+        font-size: 0.875rem;
+    }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-        .appointment-container {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+    .appointment-container {
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 460px;
+        margin: 0 auto;
+        padding: 1.75rem 1.25rem;
+    }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            transition: all 0.2s;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            padding: 0.75rem 1.5rem;
-            width: 100%;
-            border: none;
-            cursor: pointer;
-            text-align: center;
-            font-size: 1rem;
-        }
 
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-        }
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        transition: all 0.2s;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        padding: 0.5rem 1.25rem;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        font-size: 0.95rem;
+    }
 
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            text-align: center;
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-        }
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
 
-        main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem 1rem;
-            min-height: calc(100vh - 64px - 80px);
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .error-message {
-            color: #ef4444;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
-    </style>
+    h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        text-align: center;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+    }
+
+    main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        min-height: calc(100vh - 64px - 80px);
+    }
+
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .form-navigation .btn-primary {
+        width: auto;
+        min-width: 100px;
+        flex: 1;
+        max-width: 150px;
+    }
+    .barber-gallery {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .barber-card {
+        border: 2px solid transparent;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 120px;
+    }
+
+    .barber-card img.barber-photo {
+        width: 100%;
+        height: auto;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .barber-card.selected {
+        border-color: #10b981;
+        background-color: #e7f0ff;
+    }
+
+    .confirmation-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    color: #1f2937; /* gris oscuro elegante */
+    }
+
+    .confirmation-summary {
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    padding: 1.5rem;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #111827;
+    }
+
+    .confirmation-summary p {
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.3rem;
+    }
+
+    .confirmation-summary p:last-child {
+    border-bottom: none;
+    }
+
+    .service-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .service-item:hover {
+        border-color: #a7f3d0;
+    }
+
+    .service-item.selected {
+        border-color: #10b981;
+        background-color: #ecfdf5;
+    }
+
+    .service-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+    }
+
+    .service-details h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .service-description {
+        margin: 0.2rem 0;
+        font-size: 0.9rem;
+        color: #6b7280;
+        line-height: 1.4;
+    }
+
+    .service-price {
+        margin: 0.2rem 0 0 0;
+        color: #374151;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    .service-list-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    }
+
+</style>
 {% endblock %}
 
 {% block content %}
@@ -116,158 +229,285 @@
     <div class="appointment-container">
         <h2>Book an Appointment at {{ business.name }}</h2>
 
-        <form method="POST">
+        <form method="POST" id="appointment-form">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label for="id_service">Select a Service</label>
-                <select id="id_service" name="service" required>
-                    {% for service in services %}
-                        <option value="{{ service.id }}" data-price="{{ service.price }}">{{ service.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Service Price:</label>
-                <div id="price-display" class="form-input" style="background-color: #f3f4f6;">$0.00</div>
-                <input type="hidden" name="price" id="price-hidden" value="">
-            </div>
-
-            <div class="form-group">
-                <label for="id_barber">Select a Barber</label>
-                {{ form.barber }}
-            </div>
-
-            <div class="form-group">
-                <label for="id_date">Select a Date</label>
-                <input type="date" name="date" id="id_date" required>
-            </div>
-
-            <div class="form-group">
-                <label for="id_time">Select a Time</label>
-                <select id="id_time" name="time" required>
-                    <option value="">Select a barber and date first</option>
-                </select>
-                <div id="time-loading" style="display: none;">
-                    <span class="loading-spinner"></span> Loading available times...
+            <!-- Step 1: Service Selection -->
+            <div class="form-step" id="step-1">
+                <div class="form-group">
+                    <label>Select a Service</label>
+                    <div class="service-list-vertical">
+                        {% for service in services %}
+                            <div class="service-item" data-id="{{ service.id }}" data-price="{{ service.price }}" onclick="selectService(this)">
+                                {% if service.image %}
+                                    <img src="{{ service.image.url }}" alt="{{ service.name }}" class="service-image">
+                                {% else %}
+                                    <img src="{% static 'default-service.png' %}" alt="{{ service.name }}" class="service-image">
+                                {% endif %}
+                                <div class="service-details">
+                                    <h4>{{ service.name }}</h4>
+                                    {% if service.description %}
+                                        <p class="service-description">{{ service.description }}</p>
+                                    {% endif %}
+                                    <p class="service-price">${{ service.price }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="service" id="id_service" required>
+                    <input type="hidden" name="price" id="price-hidden">
                 </div>
-                <div id="time-error" class="error-message" style="display: none;"></div>
+            
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="id_payment_method">Payment Method</label>
-                {{ form.payment_method }}
+            <!-- Step 2: Barber Selection -->
+            <div class="form-step" id="step-2" style="display: none;">
+                <div class="form-group">
+                    <label>Choose Your Barber</label>
+                    <div id="barber-gallery" class="barber-gallery">
+                        {% for barber in barbers %}
+                            <div class="barber-card" data-id="{{ barber.id }}" onclick="selectBarber(this)">
+                                <img src="{{ barber.photo.url }}" alt="{{ barber.name }}" class="barber-photo">
+                                <p>{{ barber.name }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="barber" id="id_barber" required>
+                </div>
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
+                </div>
             </div>
 
-            <button type="submit" class="btn-primary">Confirm Appointment</button>
+            <!-- Step 3: Date & Time -->
+            <div class="form-step" id="step-3" style="display: none;">
+                <div class="form-group">
+                    <label for="date">
+                        Select a Date
+                        <span title="Choose the date you want your appointment." style="cursor: help;">🛈</span>
+                    </label>
+                    <input 
+                        type="date" 
+                        name="date" 
+                        id="date" 
+                        required 
+                        min="{{ today }}"
+                        placeholder="YYYY-MM-DD"
+                        title="Choose the date you want your appointment."
+                        oninvalid="this.setCustomValidity('Please select a valid date.')"
+                        oninput="this.setCustomValidity('')"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="time">
+                        Select a Time
+                        <span title="Select the time that works best for your appointment." style="cursor: help;"></span>
+                    </label>
+                    <select name="time" id="time" required title="Select an available hour for your appointment.">
+                        <option value="" disabled selected>Select a time</option>
+                    </select>
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Payment method-->
+            <div class="form-step" id="step-4" style="display: none;">
+                <div class="form-group">
+                    <label for="payment_method">Payment Method</label>
+                    {{ form.payment_method }}
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Confirmation -->
+            <div class="form-step" id="step-5" style="display: none;">
+                <h3 class="confirmation-title">Confirm Your Appointment</h3>
+
+                <div class="confirmation-summary">
+                    <p><strong>Service:</strong> <span id="confirm-service"></span></p>
+                    <p><strong>Barber:</strong> <span id="confirm-barber"></span></p>
+                    <p><strong>Date:</strong> <span id="confirm-date"></span></p>
+                    <p><strong>Time:</strong> <span id="confirm-time"></span></p>
+                    <p><strong>Price:</strong> <span id="confirm-price"></span></p>
+                    <p><strong>Payment:</strong> <span id="confirm-payment"></span></p>
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="btn-primary" onclick="prevStep()">← Back</button>
+                    <button type="submit" class="btn-primary">Confirm ✓</button>
+                </div>
+            </div>
         </form>
+
+        <!-- JS to manage step's flow -->
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                let currentStep = 1;
+            
+                function showStep(step) {
+                    document.querySelectorAll('.form-step').forEach((stepDiv, index) => {
+                        stepDiv.style.display = (index === step - 1) ? 'block' : 'none';
+                    });
+                    currentStep = step;
+                    updateSummary();
+                }
+            
+                function nextStep() {
+                    const currentDiv = document.querySelector(`#step-${currentStep}`);
+                    const requiredFields = currentDiv.querySelectorAll('select:required, input:required');
+            
+                    for (let field of requiredFields) {
+                        if (!field.value) {
+                            alert("Please complete all required fields before proceeding.");
+                            return;
+                        }
+                    }
+            
+                    if (currentStep === 2 && !document.getElementById('id_barber').value) {
+                        alert("Please select a barber before proceeding.");
+                        return;
+                    }
+            
+                    if (currentStep < 5) {
+                        showStep(currentStep + 1);
+                    }
+                }
+            
+                function prevStep() {
+                    if (currentStep > 1) {
+                        showStep(currentStep - 1);
+                    }
+                }
+            
+                function selectService(element) {
+                    if (element.classList.contains('selected')) return;
+                    document.querySelectorAll('.service-item').forEach(card => card.classList.remove('selected'));
+                    element.classList.add('selected');
+            
+                    const serviceId = element.getAttribute('data-id');
+                    const price = element.getAttribute('data-price');
+                    document.getElementById('id_service').value = serviceId;
+                    document.getElementById('price-hidden').value = price;
+            
+                    updateSummary();
+                }
+            
+                function selectBarber(element) {
+                    document.querySelectorAll('.barber-card').forEach(card => card.classList.remove('selected'));
+                    element.classList.add('selected');
+                    const barberId = element.getAttribute('data-id');
+                    document.getElementById('id_barber').value = barberId;
+            
+                    updateAvailableHours();
+                    updateSummary();
+                }
+            
+                function updateSummary() {
+                    const selectedService = document.querySelector('.service-item.selected');
+                    const priceHidden = document.getElementById('price-hidden');
+                    const barberId = document.getElementById('id_barber').value;
+                    const date = document.getElementById('date').value;
+                    const time = document.getElementById('time');
+                    const paymentSelect = document.getElementById('id_payment_method');
+            
+                    document.getElementById('confirm-service').textContent = selectedService
+                        ? selectedService.querySelector('h4').textContent
+                        : '';
+            
+                    document.getElementById('confirm-price').textContent = priceHidden.value
+                        ? `$${priceHidden.value}`
+                        : '';
+            
+                    document.getElementById('confirm-barber').textContent = barberId
+                        ? document.querySelector(`.barber-card[data-id="${barberId}"] p`)?.textContent || ''
+                        : '';
+            
+                    document.getElementById('confirm-date').textContent = date || '';
+                    document.getElementById('confirm-time').textContent = time.value
+                        ? time.options[time.selectedIndex].text
+                        : '';
+            
+                    document.getElementById('confirm-payment').textContent = paymentSelect.value
+                        ? paymentSelect.options[paymentSelect.selectedIndex].text
+                        : '';
+                }
+            
+                function updateAvailableHours() {
+                    const date = document.getElementById('date').value;
+                    const barberId = document.getElementById('id_barber').value;
+                    const timeSelect = document.getElementById('time');
+            
+                    if (!date || !barberId) return;
+            
+                    fetch(`/business/api/get-available-hours/?employee_id=${barberId}&date=${date}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            timeSelect.innerHTML = '';
+            
+                            if (data.available_hours.length === 0) {
+                                const opt = document.createElement('option');
+                                opt.text = 'No available hours';
+                                opt.disabled = true;
+                                opt.selected = true;
+                                timeSelect.appendChild(opt);
+                                updateSummary();
+                                return;
+                            }
+            
+                            const morningGroup = document.createElement('optgroup');
+                            morningGroup.label = "Morning";
+                            const afternoonGroup = document.createElement('optgroup');
+                            afternoonGroup.label = "Afternoon";
+            
+                            data.available_hours.forEach(hour => {
+                                const opt = document.createElement('option');
+                                opt.value = hour;
+                                const hourInt = parseInt(hour.split(":")[0]);
+                                const suffix = hourInt < 12 ? "AM" : "PM";
+                                const formattedHour = (hourInt % 12 || 12) + ":00 " + suffix;
+                                opt.text = formattedHour;
+            
+                                if (hourInt < 12) {
+                                    morningGroup.appendChild(opt);
+                                } else {
+                                    afternoonGroup.appendChild(opt);
+                                }
+                            });
+            
+                            timeSelect.appendChild(morningGroup);
+                            timeSelect.appendChild(afternoonGroup);
+                            updateSummary();
+                        });
+                }
+            
+                // Event listeners
+                document.getElementById('date').addEventListener('change', updateAvailableHours);
+                document.getElementById('date').addEventListener('change', updateSummary);
+                document.getElementById('time').addEventListener('change', updateSummary);
+                document.getElementById('id_payment_method').addEventListener('change', updateSummary);
+            
+                showStep(1);
+            
+                // Expose functions globally so they still work with onclick (optional)
+                window.nextStep = nextStep;
+                window.prevStep = prevStep;
+                window.selectService = selectService;
+                window.selectBarber = selectBarber;
+            });
+        </script>            
     </div>
 </main>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const serviceSelect = document.getElementById('id_service');
-        const priceDisplay = document.getElementById('price-display');
-        const priceHidden = document.getElementById('price-hidden');
-        const barberSelect = document.getElementById('id_barber');
-        const dateInput = document.getElementById('id_date');
-        const timeSelect = document.getElementById('id_time');
-        const timeLoading = document.getElementById('time-loading');
-        const timeError = document.getElementById('time-error');
-        
-        // Evento cuando se selecciona un servicio
-        serviceSelect.addEventListener('change', function () {
-            const selectedOption = serviceSelect.selectedOptions[0];
-            const price = selectedOption.getAttribute('data-price') || "0.00";
-            priceDisplay.innerText = `$${price}`; // Muestra el precio
-            priceHidden.value = price; // Asigna el valor al campo oculto
-        });
-        
-        // Mostrar el precio si ya hay algo seleccionado
-        serviceSelect.dispatchEvent(new Event('change'));
-        
-        // Función para actualizar los horarios disponibles
-        function updateAvailableTimes() {
-            const barberId = barberSelect.value;
-            const date = dateInput.value;
-            
-            // Resetear el select de horarios
-            timeSelect.innerHTML = '<option value="">Select a barber and date first</option>';
-            
-            if (!barberId || !date) {
-                return;
-            }
-            
-            // Mostrar indicador de carga
-            timeLoading.style.display = 'block';
-            timeError.style.display = 'none';
-            
-            // Realizar petición AJAX para obtener horarios disponibles
-            fetch(`?employee_id=${barberId}&date=${date}`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                timeLoading.style.display = 'none';
-                timeSelect.innerHTML = '';
-                
-                if (data.message) {
-                    const messageOption = document.createElement('option');
-                    messageOption.disabled = true;
-                    messageOption.textContent = data.message;
-                    timeSelect.appendChild(messageOption);
-                }
-                
-                if (data.available_times && data.available_times.length === 0) {
-                    const noTimesOption = document.createElement('option');
-                    noTimesOption.value = "";
-                    noTimesOption.textContent = "No available times";
-                    timeSelect.appendChild(noTimesOption);
-                    return;
-                }
-                
-                const defaultOption = document.createElement('option');
-                defaultOption.value = "";
-                defaultOption.textContent = "Select a time";
-                timeSelect.appendChild(defaultOption);
-                
-                if (data.available_times) {
-                    data.available_times.forEach(time => {
-                        const option = document.createElement('option');
-                        option.value = time;
-                        option.textContent = time;
-                        timeSelect.appendChild(option);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                timeLoading.style.display = 'none';
-                timeError.style.display = 'block';
-                timeError.textContent = 'Error loading available times. Please try again.';
-            });
-        }
-        
-        // Actualizar horarios cuando cambia el empleado o la fecha
-        barberSelect.addEventListener('change', updateAvailableTimes);
-        dateInput.addEventListener('change', updateAvailableTimes);
-        
-        // Establecer fecha mínima como hoy
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        const formattedToday = `${yyyy}-${mm}-${dd}`;
-        dateInput.setAttribute('min', formattedToday);
-    });
-</script>
 {% endblock %}
-

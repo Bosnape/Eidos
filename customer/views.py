@@ -1,5 +1,5 @@
 import datetime
-
+from datetime import date
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login 
 from django.contrib.auth.decorators import login_required
@@ -60,7 +60,7 @@ def listUserAppointments(request):
 
     return render(request, 'user_appointments.html', {'appointments': appointments})
 
-
+today = date.today().isoformat()
 # View to book an appointment
 @login_required(login_url='must_be_logged_in')
 def bookAppointment(request, business_id):
@@ -70,25 +70,8 @@ def bookAppointment(request, business_id):
     except BusinessAccount.DoesNotExist:
         return render(request, 'error.html', {'message': 'Business not found'})  
 
-    services = Service.objects.filter(business=business)
-    employees = Employee.objects.filter(business=business)
-    
-    # Para AJAX: si se solicitan horarios disponibles
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and 'employee_id' in request.GET and 'date' in request.GET:
-        employee_id = request.GET.get('employee_id')
-        date_str = request.GET.get('date')
-
-        try:
-            employee = Employee.objects.get(id=employee_id)
-            selected_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
-
-            available_times, msg = get_available_times(employee, selected_date)
-            if msg:
-                return JsonResponse({'available_times': [], 'message': msg})
-            return JsonResponse({'available_times': available_times})
-
-        except (Employee.DoesNotExist, ValueError):
-            return JsonResponse({'error': 'Invalid data'}, status=400)
+    services = Service.objects.filter(business=business)  # Obtain the services associated with the business
+    barbers = business.employees.all()
 
     if request.method == 'POST':
         form = AppointmentForm(request.POST)
@@ -99,7 +82,7 @@ def bookAppointment(request, business_id):
 
             customer = request.user.customer
             try:
-                create_appointment(form, business, customer=customer)  # usamos la función centralizada
+                create_appointment(form, business, customer=customer)  # we use de centralized function
                 messages.success(request, "Appointment booked successfully.")
                 return redirect('userAppointments')
             except ValidationError as e:
@@ -112,13 +95,14 @@ def bookAppointment(request, business_id):
     else:
         form = AppointmentForm()
         form.fields['service'].queryset = services
-        form.fields['barber'].queryset = employees
+        form.fields['barber'].queryset = barbers
 
     return render(request, 'book_appointment.html', {
         'form': form,
         'business': business,
-        'services': services,
-        'employees': employees,
+        'services': services,  # Pass the services to the template
+        'barbers': barbers,
+        'today': today, 
     })
 
 
