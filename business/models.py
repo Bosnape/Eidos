@@ -70,7 +70,6 @@ class PortfolioItem(models.Model):
     def __str__(self):
         return self.title
     
-# Mantenemos el modelo Appointment original
 #  Appointment modified for integration
 class Appointment(models.Model):
     business = models.ForeignKey(BusinessAccount, on_delete=models.CASCADE, related_name='appointments', default=get_default_business)
@@ -99,7 +98,7 @@ def clean(self):
     if not self.time:
         raise ValidationError("Debes seleccionar una hora válida para la cita.")
 
-    # Verificar que el empleado esté disponible en la fecha y hora seleccionada
+    # Verify that the employee is available on the selected date and time
     day_of_week = self.date.weekday()
     shifts = Shift.objects.filter(
         schedule__employee=self.barber,
@@ -109,7 +108,7 @@ def clean(self):
         day_of_week=day_of_week
     )
     
-    # Verificar disponibilidad específica para esa fecha
+    # Check specific availability for that date
     availability = Availability.objects.filter(
         employee=self.barber,
         date=self.date
@@ -118,7 +117,7 @@ def clean(self):
     if availability and not availability.is_available:
         raise ValidationError(f"El empleado no está disponible en esta fecha: {availability.reason}")
         
-    # Verificar conflictos con otras citas
+    # Check for conflicts with other appointments
     end_time = (datetime.datetime.combine(datetime.date.today(), self.time) + 
                 datetime.timedelta(minutes=self.duration_minutes)).time()
 
