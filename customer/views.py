@@ -51,10 +51,10 @@ def listUserAppointments(request):
         return render(request, 'error.html', {'message': 'Only clients can view appointments.'})
 
     customer = request.user.customer
-    # Usar la relación ForeignKey en lugar de filtrar por email
+    # Use the ForeignKey relationship instead of filtering by email
     appointments = Appointment.objects.filter(customer=customer)
     
-    # Si no hay citas con la relación directa, buscar por email como fallback
+    # If there are no appointments with the direct relationship, search by email as an alternative
     if not appointments.exists():
         appointments = Appointment.objects.filter(customer_email=customer.user.email)
 
