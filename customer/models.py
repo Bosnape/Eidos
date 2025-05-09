@@ -2,9 +2,6 @@ from django.db import models
 from django.conf import settings
 from business.models import Employee, Service
 
-
-# Create your models here.
-
 class Customer(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
