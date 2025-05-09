@@ -58,9 +58,10 @@ def listUserAppointments(request):
     if not appointments.exists():
         appointments = Appointment.objects.filter(customer_email=customer.user.email)
 
-    return render(request, 'user_appointments.html', {'appointments': appointments})
+    return render(request, 'user_appointments.html', {'appointments': appointments, 'customer': customer})
 
 today = date.today().isoformat()
+
 # View to book an appointment
 @login_required(login_url='must_be_logged_in')
 def bookAppointment(request, business_id):
