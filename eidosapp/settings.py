@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-c78j#d64obey0x=h_@k8!ku_(d%#(-tbcwa2zbodu9&!4%lw*v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['eidos.software', 'www.eidos.software']
+ALLOWED_HOSTS = ['eidos.software']
 
 # Application definition
 INSTALLED_APPS = [
