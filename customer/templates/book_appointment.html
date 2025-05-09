@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load humanize %}
 {% block title %}Book Appointment - Eidos{% endblock %}
 
 {% block extra_css %}
@@ -249,7 +249,7 @@
                                     {% if service.description %}
                                         <p class="service-description">{{ service.description }}</p>
                                     {% endif %}
-                                    <p class="service-price">${{ service.price }}</p>
+                                    <p class="service-price">${{ service.price|floatformat:0|intcomma }}</p>
                                 </div>
                             </div>
                         {% endfor %}
