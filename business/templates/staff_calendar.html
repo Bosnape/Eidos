@@ -4,401 +4,887 @@
 
 {% block extra_css %}
 <style>
+    :root {
+        --primary-color: #00a896;
+        --primary-light: #e6f7f5;
+        --primary-dark: #007f6e;
+        --secondary-color: #f8f9fa;
+        --text-color: #333333;
+        --text-light: #6c757d;
+        --border-color: #dee2e6;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+    }
+    
     body { 
-        background-color: #f3f4f6;
+        background-color: #f8f9fa;
+        color: var(--text-color);
     }
     
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #374151;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 2px solid #e5e7eb;
-    }
-    
-    .calendar-card {
+    .calendar-container {
         background: white;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         overflow: hidden;
     }
     
     .calendar-header {
-        background-color: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
+        background-color: var(--secondary-color);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem;
     }
     
-    .calendar-day {
-        border-right: 1px solid #e5e7eb;
-        border-bottom: 1px solid #e5e7eb;
-        height: 150px;
-        overflow-y: auto;
+    .calendar-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    
+    .calendar-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+    }
+    
+    .calendar-navigation {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .calendar-nav-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        background-color: white;
+        border: 1px solid var(--border-color);
+        border-radius: 0.375rem;
+        color: var(--text-color);
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .calendar-nav-button:hover {
+        background-color: var(--primary-light);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+    
+    .calendar-nav-button i {
+        margin-right: 0.25rem;
+    }
+    
+    .calendar-nav-button.today {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    .calendar-nav-button.today:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .calendar-date-range {
+        font-weight: 500;
+        color: var(--text-color);
+        padding: 0.5rem 1rem;
+        background-color: var(--primary-light);
+        border-radius: 0.375rem;
+    }
+    
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: 200px repeat(7, 1fr);
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .calendar-grid-header {
+        background-color: var(--secondary-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .calendar-grid-cell {
+        padding: 0.75rem;
+        border-right: 1px solid var(--border-color);
+        text-align: center;
+    }
+    
+    .calendar-grid-cell:last-child {
+        border-right: none;
+    }
+    
+    .calendar-day-name {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.25rem;
+    }
+    
+    .calendar-day-date {
+        font-size: 0.875rem;
+        color: var(--text-light);
     }
     
     .calendar-day-today {
-        background-color: rgba(59, 130, 246, 0.05);
+        background-color: var(--primary-light);
     }
     
-    .calendar-day-unavailable {
-        background-color: rgba(239, 68, 68, 0.05);
-    }
-    
-    .shift-tag {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        background-color: rgba(0, 168, 150, 0.1);
+    .calendar-day-today .calendar-day-name {
         color: var(--primary-color);
-        margin-right: 0.25rem;
+    }
+    
+    .calendar-day-weekend {
+        background-color: #f8f9fa;
+    }
+    
+    .calendar-employee-row {
+        display: grid;
+        grid-template-columns: 200px repeat(7, 1fr);
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s;
+    }
+    
+    .calendar-employee-row:last-child {
+        border-bottom: none;
+    }
+    
+    .calendar-employee-row:hover {
+        background-color: rgba(0, 168, 150, 0.05);
+    }
+    
+    .calendar-employee-cell {
+        padding: 0.75rem;
+        border-right: 1px solid var(--border-color);
+    }
+    
+    .calendar-employee-cell:last-child {
+        border-right: none;
+    }
+    
+    .calendar-employee-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .calendar-employee-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 0.75rem;
+        background-color: var(--primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+    }
+    
+    .calendar-employee-name {
+        font-weight: 600;
+        color: var(--text-color);
         margin-bottom: 0.25rem;
     }
     
-    .appointment-tag {
+    .calendar-employee-role {
+        font-size: 0.75rem;
+        color: var(--text-light);
+    }
+    
+    .calendar-day-cell {
+        min-height: 100px;
+        max-height: 150px;
+        overflow-y: auto;
+        padding: 0.5rem;
+        position: relative;
+    }
+    
+    .calendar-day-cell.unavailable {
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+    
+    .calendar-day-cell.today {
+        background-color: var(--primary-light);
+    }
+    
+    .calendar-shift {
         display: inline-flex;
         align-items: center;
         padding: 0.25rem 0.5rem;
+        background-color: var(--primary-light);
+        color: var(--primary-color);
         border-radius: 0.25rem;
         font-size: 0.75rem;
-        background-color: rgba(59, 130, 246, 0.1);
-        color: #3b82f6;
-        margin-right: 0.25rem;
-        margin-bottom: 0.25rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        border: 1px solid var(--primary-color);
     }
     
-    .availability-tag {
+    .calendar-shift i {
+        margin-right: 0.25rem;
+        font-size: 0.75rem;
+    }
+    
+    .calendar-appointment {
+        display: flex;
+        align-items: center;
+        padding: 0.375rem 0.5rem;
+        background-color: white;
+        border-left: 3px solid var(--primary-color);
+        border-radius: 0.25rem;
+        margin-bottom: 0.375rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+        cursor: pointer;
+    }
+    
+    .calendar-appointment:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .calendar-appointment-time {
+        font-weight: 600;
+        font-size: 0.75rem;
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .calendar-appointment-info {
+        flex: 1;
+    }
+    
+    .calendar-appointment-name {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .calendar-appointment-service {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .calendar-unavailable-badge {
         display: inline-flex;
         align-items: center;
         padding: 0.25rem 0.5rem;
+        background-color: rgba(220, 53, 69, 0.1);
+        color: var(--danger-color);
         border-radius: 0.25rem;
         font-size: 0.75rem;
-        background-color: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        margin-right: 0.25rem;
-        margin-bottom: 0.25rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
     }
     
-    .action-button {
+    .calendar-unavailable-badge i {
+        margin-right: 0.25rem;
+    }
+    
+    .calendar-unavailable-reason {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-style: italic;
+        margin-bottom: 0.5rem;
+    }
+    
+    .calendar-actions {
+        position: absolute;
+        bottom: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        gap: 0.25rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    
+    .calendar-day-cell:hover .calendar-actions {
+        opacity: 1;
+    }
+    
+    .calendar-action-button {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: white;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-light);
+        transition: all 0.2s;
+    }
+    
+    .calendar-action-button:hover {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    .calendar-action-button i {
+        font-size: 0.75rem;
+    }
+    
+    .calendar-appointment-count {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .calendar-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        text-align: center;
+    }
+    
+    .calendar-empty-icon {
+        font-size: 3rem;
+        color: var(--border-color);
+        margin-bottom: 1rem;
+    }
+    
+    .calendar-empty-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .calendar-empty-text {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+    }
+    
+    .calendar-action-button-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         padding: 0.75rem 1.5rem;
         background-color: var(--primary-color);
         color: white;
         border-radius: 0.375rem;
         font-weight: 500;
         transition: background-color 0.2s;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
     }
     
-    .action-button:hover {
+    .calendar-action-button-primary:hover {
         background-color: var(--primary-dark);
     }
     
-    .action-button-secondary {
-        padding: 0.75rem 1.5rem;
+    .calendar-action-button-primary i {
+        margin-right: 0.5rem;
+    }
+    
+    .calendar-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding: 1rem;
         background-color: white;
-        color: #6b7280;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        font-weight: 500;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
     
-    .action-button-secondary:hover {
-        background-color: #f9fafb;
-        border-color: #9ca3af;
-    }
-    
-    .nav-button {
-        padding: 0.5rem 1rem;
-        background-color: white;
-        color: #6b7280;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .nav-button:hover {
-        background-color: #f9fafb;
-        border-color: #9ca3af;
-    }
-    
-    .employee-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-    
-    .employee-avatar-placeholder {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #e5e7eb;
+    .calendar-legend-item {
         display: flex;
         align-items: center;
-        justify-content: center;
-        color: #9ca3af;
     }
     
-    .action-icon {
-        width: 24px;
-        height: 24px;
+    .calendar-legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        margin-right: 0.5rem;
+    }
+    
+    .calendar-legend-text {
+        font-size: 0.875rem;
+        color: var(--text-color);
+    }
+    
+    /* Styles for the bottom actions section */
+    .calendar-actions-section {
+        margin-top: 2rem;
+    }
+    
+    .calendar-actions-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-light);
+    }
+    
+    .calendar-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .calendar-action-card {
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .calendar-action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .calendar-action-icon {
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
-        background-color: rgba(0, 168, 150, 0.1);
+        background-color: var(--primary-light);
         color: var(--primary-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s;
-        font-size: 0.75rem;
+        margin-bottom: 1rem;
     }
     
-    .action-icon:hover {
+    .calendar-action-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .calendar-action-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .calendar-action-description {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+    
+    .calendar-action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1rem;
         background-color: var(--primary-color);
         color: white;
-    }
-    
-    .availability-badge {
-        font-size: 0.65rem;
-        padding: 0.15rem 0.3rem;
-        border-radius: 0.25rem;
-        margin-bottom: 0.25rem;
-        display: inline-block;
-    }
-    
-    .unavailable-badge {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-    
-    /* Modal styles */
-    .modal-backdrop {
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 50;
-    }
-    
-    .modal-content {
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 28rem;
-        margin: 0 1rem;
-    }
-    
-    .form-radio {
-        width: 1rem;
-        height: 1rem;
-        color: var(--primary-color);
-        border: 1px solid #d1d5db;
-        border-radius: 50%;
-        transition: all 0.2s;
-    }
-    
-    .form-input {
-        display: block;
-        width: 100%;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #d1d5db;
         border-radius: 0.375rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        text-decoration: none;
+        width: 100%;
+    }
+    
+    .calendar-action-button.outline {
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+    
+    .calendar-action-button:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .calendar-action-button.outline:hover {
+        background-color: var(--primary-light);
+    }
+    
+    .calendar-action-button i {
+        margin-right: 0.5rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        .calendar-grid,
+        .calendar-employee-row {
+            grid-template-columns: 150px repeat(7, 1fr);
+        }
+        
+        .calendar-actions-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .calendar-grid,
+        .calendar-employee-row {
+            grid-template-columns: 120px repeat(7, 1fr);
+        }
+        
+        .calendar-employee-avatar {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .calendar-employee-name {
+            font-size: 0.875rem;
+        }
+        
+        .calendar-employee-role {
+            font-size: 0.7rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .calendar-toolbar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .calendar-navigation {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .calendar-grid,
+        .calendar-employee-row {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .calendar-grid-cell,
+        .calendar-employee-cell,
+        .calendar-day-cell {
+            display: inline-block;
+            width: 150px;
+            vertical-align: top;
+        }
+        
+        .calendar-grid-cell:first-child,
+        .calendar-employee-cell:first-child {
+            position: sticky;
+            left: 0;
+            background-color: white;
+            z-index: 1;
+            width: 120px;
+        }
+        
+        .calendar-actions-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-6">
-        <a href="{% url 'schedule_list' %}" class="text-primary hover:text-primary-dark flex items-center">
-            <i class="fas fa-arrow-left mr-2"></i>Back to Schedules
-        </a>
-    </div>
-
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-        <h1 class="section-title mb-0">Staff Calendar</h1>
-        
-        <div class="flex items-center space-x-4">
-            <a href="?date={{ prev_week|date:'Y-m-d' }}" class="nav-button">
-                <i class="fas fa-chevron-left mr-1"></i> Previous Week
-            </a>
-            <span class="text-sm font-medium">
-                {{ week_start|date:"M d" }} - {{ week_end|date:"M d, Y" }}
-            </span>
-            <a href="?date={{ next_week|date:'Y-m-d' }}" class="nav-button">
-                Next Week <i class="fas fa-chevron-right ml-1"></i>
-            </a>
-        </div>
-    </div>
-
-    <div class="calendar-card mb-8">
-        <!-- Calendar Header -->
-        <div class="grid grid-cols-8 calendar-header">
-            <div class="p-4 border-r border-gray-200">
-                <span class="text-sm font-medium text-gray-500">Staff</span>
-            </div>
-            
-            {% for day in calendar_data.days %}
-                <div class="p-4 text-center border-r border-gray-200 {% if day.is_today %}calendar-day-today{% endif %}">
-                    <div class="text-sm font-medium {% if day.is_today %}text-blue-600{% else %}text-gray-500{% endif %}">
-                        {{ day.day_name }}
-                    </div>
-                    <div class="text-xs text-gray-500">{{ day.date|date:"M d" }}</div>
+<div class="container-fluid py-4">
+    <div class="calendar-container mb-4">
+        <div class="calendar-header">
+            <div class="calendar-toolbar">
+                <h1 class="calendar-title">Staff Calendar</h1>
+                
+                <div class="calendar-navigation">
+                    <a href="?date={{ prev_week|date:'Y-m-d' }}" class="calendar-nav-button">
+                        <i class="fas fa-chevron-left"></i> Previous Week
+                    </a>
+                    
+                    <a href="?date={{ today|date:'Y-m-d' }}" class="calendar-nav-button today">
+                        <i class="fas fa-calendar-day"></i> Today
+                    </a>
+                    
+                    <span class="calendar-date-range">
+                        {{ week_start|date:"d M" }} - {{ week_end|date:"d M, Y" }}
+                    </span>
+                    
+                    <a href="?date={{ next_week|date:'Y-m-d' }}" class="calendar-nav-button">
+                        Next Week <i class="fas fa-chevron-right"></i>
+                    </a>
                 </div>
-            {% endfor %}
+            </div>
         </div>
         
-        <!-- Calendar Body -->
-        {% for employee_data in calendar_data.employees %}
-            <div class="grid grid-cols-8 hover:bg-gray-50">
-                <!-- Employee Column -->
-                <div class="p-4 border-r border-gray-200">
-                    <div class="flex items-center">
-                        {% if employee_data.photo_url %}
-                            <img class="employee-avatar mr-3" src="{{ employee_data.photo_url }}" alt="{{ employee_data.employee.name }}">
-                        {% else %}
-                            <div class="employee-avatar-placeholder mr-3">
-                                <i class="fas fa-user"></i>
-                            </div>
-                        {% endif %}
-                        <div>
-                            <div class="text-sm font-medium text-gray-900">{{ employee_data.employee.name }}</div>
-                            <div class="text-xs text-gray-500 truncate max-w-[120px]">{{ employee_data.employee.job_description|truncatechars:20 }}</div>
-                        </div>
-                    </div>
+        {% if has_employees %}
+            <div class="calendar-grid calendar-grid-header">
+                <div class="calendar-grid-cell">
+                    <div class="calendar-day-name">Staff</div>
                 </div>
                 
-                <!-- Days Columns -->
-                {% for day in employee_data.days %}
-                    <div class="p-2 calendar-day 
-                              {% if day.is_today %}calendar-day-today{% endif %} 
-                              {% if not day.is_available %}calendar-day-unavailable{% endif %}">
-                        <!-- Availability Status -->
-                        {% if not day.is_available %}
-                            <span class="availability-badge unavailable-badge">Unavailable</span>
-                            {% if day.availability.reason %}
-                                <div class="text-xs text-gray-600 italic">{{ day.availability.reason }}</div>
-                            {% endif %}
-                        {% endif %}
-                        
-                        <!-- Shifts -->
-                        {% if day.shifts %}
-                            <div class="mb-2">
-                                {% for shift in day.shifts %}
-                                    <div class="shift-tag">
-                                        {{ shift.start_time|time:"g:i A" }} - {{ shift.end_time|time:"g:i A" }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        
-                        <!-- Appointments -->
-                        {% if day.appointments %}
-                            <div class="mb-2">
-                                {% for appointment in day.appointments %}
-                                    <div class="appointment-tag">
-                                        {{ appointment.time|time:"g:i A" }} - {{ appointment.service.name }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        
-                        <!-- Actions -->
-                        <div class="mt-1 flex space-x-2">
-                            <button onclick="openAvailabilityModal('{{ employee_data.employee.id }}', '{{ day.date|date:'Y-m-d' }}', '{{ day.date|date:'l, F j, Y' }}', {% if day.availability %}{{ day.availability.is_available|lower }}{% else %}true{% endif %}, '{% if day.availability %}{{ day.availability.reason|default:''|escapejs }}{% endif %}')"
-                                    class="action-icon" title="Set Availability">
-                                <i class="fas fa-calendar-check"></i>
-                            </button>
-                            <a href="{% url 'create_staff_appointment' %}?employee={{ employee_data.employee.id }}&date={{ day.date|date:'Y-m-d' }}" class="action-icon" title="Add Appointment">
-                                <i class="fas fa-plus"></i>
-                            </a>
-                        </div>
+                {% for day in calendar_data.days %}
+                    <div class="calendar-grid-cell {% if day.is_today %}calendar-day-today{% endif %} {% if day.is_weekend %}calendar-day-weekend{% endif %}">
+                        <div class="calendar-day-name">{{ day.full_day_name }}</div>
+                        <div class="calendar-day-date">{{ day.day_number }} {{ day.month }}</div>
                     </div>
                 {% endfor %}
             </div>
-        {% empty %}
-            <div class="p-8 text-center">
-                <div class="rounded-full bg-primary bg-opacity-10 p-3 inline-flex mb-4">
-                    <i class="fas fa-user-plus text-primary text-xl"></i>
+            
+            {% for employee_data in calendar_data.employees %}
+                <div class="calendar-employee-row">
+                    <div class="calendar-employee-cell">
+                        <div class="calendar-employee-info">
+                            {% if employee_data.photo_url %}
+                                <img src="{{ employee_data.photo_url }}" alt="{{ employee_data.employee.name }}" class="calendar-employee-avatar">
+                            {% else %}
+                                <div class="calendar-employee-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div>
+                                <div class="calendar-employee-name">{{ employee_data.employee.name }}</div>
+                                <div class="calendar-employee-role">{{ employee_data.employee.job_description|default:"Employee" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% for day in employee_data.days %}
+                        <div class="calendar-employee-cell">
+                            <div class="calendar-day-cell {% if not day.is_available %}unavailable{% endif %} {% if day.date == today %}today{% endif %}">
+                                {% if day.appointment_count > 0 %}
+                                    <div class="calendar-appointment-count">{{ day.appointment_count }}</div>
+                                {% endif %}
+                                
+                                {% if day.shifts %}
+                                    <div class="mb-2">
+                                        {% for shift in day.shifts %}
+                                            <div class="calendar-shift">
+                                                <i class="fas fa-clock"></i>
+                                                {{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                
+                                {% if day.availability and not day.availability.is_available %}
+                                    <div class="calendar-unavailable-badge">
+                                        <i class="fas fa-ban"></i> Not Available
+                                    </div>
+                                    
+                                    {% if day.availability.reason %}
+                                        <div class="calendar-unavailable-reason">
+                                            {{ day.availability.reason|truncatechars:30 }}
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                                
+                                {% for appointment in day.appointments %}
+                                    <div class="calendar-appointment" onclick="showAppointmentDetails('{{ appointment.id }}')">
+                                        <div class="calendar-appointment-time">
+                                            {{ appointment.time|time:"H:i" }}
+                                        </div>
+                                        <div class="calendar-appointment-info">
+                                            <div class="calendar-appointment-name">
+                                                {% if appointment.customer_name %}
+                                                    {{ appointment.customer_name }}
+                                                {% elif appointment.customer %}
+                                                    {{ appointment.customer.get_full_name }}
+                                                {% else %}
+                                                    Client
+                                                {% endif %}
+                                            </div>
+                                            <div class="calendar-appointment-service">
+                                                {{ appointment.service.name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                
+                                <div class="calendar-actions">
+                                    <a href="{% url 'create_staff_appointment' %}?barber={{ employee_data.employee.id }}&date={{ day.date|date:'Y-m-d' }}" class="calendar-action-button" title="Add Appointment">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
-                <p class="text-gray-500 mb-4">No employees have been added yet.</p>
-                <a href="{% url 'add_employee' %}" class="action-button">
-                    <i class="fas fa-user-plus mr-2"></i>Add Your First Employee
+            {% endfor %}
+        {% else %}
+            <div class="calendar-empty-state">
+                <div class="calendar-empty-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="calendar-empty-title">No employees registered</h3>
+                <p class="calendar-empty-text">Add employees to your business to start managing their schedules and appointments.</p>
+                <a href="{% url 'add_employee' %}" class="calendar-action-button-primary">
+                    <i class="fas fa-user-plus"></i> Add Employee
                 </a>
             </div>
-        {% endfor %}
+        {% endif %}
+    </div>
+    
+    <div class="calendar-legend">
+        <div class="calendar-legend-item">
+            <div class="calendar-legend-color" style="background-color: var(--primary-light);"></div>
+            <div class="calendar-legend-text">Today</div>
+        </div>
+        
+        <div class="calendar-legend-item">
+            <div class="calendar-legend-color" style="background-color: rgba(220, 53, 69, 0.05);"></div>
+            <div class="calendar-legend-text">Not Available</div>
+        </div>
+        
+        <div class="calendar-legend-item">
+            <div class="calendar-legend-color" style="background-color: var(--primary-color);"></div>
+            <div class="calendar-legend-text">Number of Appointments</div>
+        </div>
+        
+        <div class="calendar-legend-item">
+            <div class="calendar-legend-color" style="border-left: 3px solid var(--primary-color); background-color: white;"></div>
+            <div class="calendar-legend-text">Appointment</div>
+        </div>
+    </div>
+    
+    <!-- Improved actions section -->
+    <div class="calendar-actions-section">
+        <h2 class="calendar-actions-title">Calendar Management</h2>
+        
+        <div class="calendar-actions-grid">
+            <div class="calendar-action-card">
+                <div class="calendar-action-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h3 class="calendar-action-title">Create Schedule</h3>
+                <p class="calendar-action-description">Define regular work schedules for your staff. Set weekly shifts and specific hours.</p>
+                <a href="{% url 'create_schedule' %}" class="calendar-action-button">
+                    <i class="fas fa-plus"></i> Create Schedule
+                </a>
+            </div>
+            
+            <div class="calendar-action-card">
+                <div class="calendar-action-icon">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <h3 class="calendar-action-title">Manage Availability</h3>
+                <p class="calendar-action-description">Set days when your staff is not available. Mark vacations, days off, or absences.</p>
+                <a href="{% url 'manage_availability' %}" class="calendar-action-button outline">
+                    <i class="fas fa-calendar-check"></i> Manage Availability
+                </a>
+            </div>
+            
+            <div class="calendar-action-card">
+                <div class="calendar-action-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="calendar-action-title">Manage Appointments</h3>
+                <p class="calendar-action-description">Manage your clients' appointments with your staff. Create, edit, and cancel appointments easily.</p>
+                <a href="{% url 'manage_staff_appointments' %}" class="calendar-action-button outline">
+                    <i class="fas fa-calendar-alt"></i> Manage Appointments
+                </a>
+            </div>
+        </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-function openAvailabilityModal(employeeId, date, displayDate, isAvailable, reason) {
-    const modal = document.getElementById('availability-modal');
-    document.getElementById('modal-date-display').textContent = displayDate;
-    document.getElementById('modal-date-input').value = date;
-    document.getElementById('modal-employee-id').value = employeeId;
-    
-    // Configurar radio buttons
-    document.getElementById('available-true').checked = isAvailable;
-    document.getElementById('available-false').checked = !isAvailable;
-    
-    // Mostrar/ocultar razón
-    const reasonContainer = document.getElementById('reason-container');
-    if (!isAvailable) {
-        reasonContainer.classList.remove('hidden');
-        document.getElementById('reason').value = reason || '';
-    } else {
-        reasonContainer.classList.add('hidden');
+    function showAppointmentDetails(appointmentId) {
+        const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+        const modalBody = document.getElementById('appointmentModalBody');
+        const editBtn = document.getElementById('editAppointmentBtn');
+        
+        // Show spinner while loading
+        modalBody.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `;
+        
+        // Configure edit button
+        editBtn.href = `/business/dashboard/staff-appointments/${appointmentId}/edit/`;
+        
+        // Load appointment details
+        fetch(`/api/appointments/${appointmentId}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Could not load appointment information');
+                }
+                return response.json();
+            })
+            .then(data => {
+                modalBody.innerHTML = `
+                    <div class="mb-3">
+                        <label class="fw-bold">Client:</label>
+                        <div>${data.customer_name || 'Not specified'}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold">Service:</label>
+                        <div>${data.service.name}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold">Date and Time:</label>
+                        <div>${new Date(data.date + 'T' + data.time).toLocaleString()}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold">Duration:</label>
+                        <div>${data.duration_minutes} minutes</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold">Price:</label>
+                        <div>$${data.price}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold">Status:</label>
+                        <div>
+                            <span class="badge ${getStatusBadgeClass(data.status)}">
+                                ${getStatusText(data.status)}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                // Fallback for demo or if there's an error
+                modalBody.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Click "Edit" to view and modify the complete details of this appointment.
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-calendar-check text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                `;
+            });
+        
+        modal.show();
     }
     
-    // Mostrar modal
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeAvailabilityModal() {
-    const modal = document.getElementById('availability-modal');
-    modal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('availability-modal');
-    modal.addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeAvailabilityModal();
+    function getStatusBadgeClass(status) {
+        switch(status) {
+            case 'scheduled': return 'bg-primary';
+            case 'completed': return 'bg-success';
+            case 'cancelled': return 'bg-danger';
+            default: return 'bg-secondary';
         }
-    });
+    }
     
-    document.querySelectorAll('.modal-close-button, .cancel-button').forEach(btn => {
-        btn.addEventListener('click', closeAvailabilityModal);
-    });
-
-    document.getElementById('available-true').addEventListener('change', function() {
-        document.getElementById('reason-container').classList.add('hidden');
-    });
-    document.getElementById('available-false').addEventListener('change', function() {
-        document.getElementById('reason-container').classList.remove('hidden');
-    });
-});
+    function getStatusText(status) {
+        switch(status) {
+            case 'scheduled': return 'Scheduled';
+            case 'completed': return 'Completed';
+            case 'cancelled': return 'Cancelled';
+            default: return status;
+        }
+    }
 </script>
-{% endblock %}
+{% endblock %} 

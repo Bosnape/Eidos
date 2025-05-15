@@ -52,4 +52,8 @@ urlpatterns = [
     path('dashboard/staff-appointments/<int:appointment_id>/edit/', views.editStaffAppointment, name='edit_staff_appointment'),
     path('dashboard/staff-appointments/<int:appointment_id>/delete/', views.deleteStaffAppointment, name='delete_staff_appointment'),
     path('api/get-available-hours/', get_available_hours, name='get_available_hours'),
+
+    path('dashboard/staff-appointments/update-status/<int:appointment_id>/', 
+         views.update_appointment_status, 
+         name='update_appointment_status'),
 ]

@@ -1052,7 +1052,10 @@ def displayStaffCalendar(request):
     
     # Manejo de fechas
     date_str = request.GET.get('date')
-    current_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else date.today()
+    try:
+        current_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else date.today()
+    except ValueError:
+        current_date = date.today()
     
     # Calcular semana
     week_start = current_date - timedelta(days=current_date.weekday())
@@ -1091,8 +1094,12 @@ def displayStaffCalendar(request):
     calendar_data = {
         'days': [{
             'date': week_start + timedelta(days=i),
-            'day_name': (week_start + timedelta(days=i)).strftime('%A'),
-            'is_today': (week_start + timedelta(days=i)) == date.today()
+            'day_name': (week_start + timedelta(days=i)).strftime('%a'),  # Abreviatura del día
+            'full_day_name': (week_start + timedelta(days=i)).strftime('%A'),  # Nombre completo del día
+            'day_number': (week_start + timedelta(days=i)).day,  # Número del día
+            'month': (week_start + timedelta(days=i)).strftime('%b'),  # Abreviatura del mes
+            'is_today': (week_start + timedelta(days=i)) == date.today(),
+            'is_weekend': (week_start + timedelta(days=i)).weekday() >= 5  # Sábado o domingo
         } for i in range(7)],
         'employees': []
     }
@@ -1109,6 +1116,9 @@ def displayStaffCalendar(request):
             day_availability = next((a for a in availabilities if a.employee == employee and a.date == day['date']), None)
             day_appointments = [a for a in appointments if a.barber == employee and a.date == day['date']]
             
+            # Ordenar citas por hora
+            day_appointments.sort(key=lambda a: a.time)
+            
             is_available = True
             if day_availability and not day_availability.is_available:
                 is_available = False
@@ -1118,7 +1128,8 @@ def displayStaffCalendar(request):
                 'shifts': day_shifts,
                 'availability': day_availability,
                 'appointments': day_appointments,
-                'is_available': is_available
+                'is_available': is_available,
+                'appointment_count': len(day_appointments)
             })
         
         calendar_data['employees'].append(employee_data)
@@ -1132,6 +1143,7 @@ def displayStaffCalendar(request):
         'next_week': next_week,
         'today': date.today(),
         'current_date': current_date,
+        'has_employees': len(employees) > 0
     }
     
     return render(request, 'staff_calendar.html', context)
@@ -1387,6 +1399,7 @@ def createStaffAppointment(request):
 
     return render(request, 'staff_appointment_form.html', context)
 
+
 @login_required
 def manageStaffAppointments(request):
     """
@@ -1397,6 +1410,11 @@ def manageStaffAppointments(request):
     # Filtramos las citas por los barberos del negocio y las ordenamos por fecha y hora
     appointments = Appointment.objects.filter(
         barber__business=business
+    ).select_related(
+        'business',       # Relación ForeignKey directa en Appointment
+        'barber',         # Relación ForeignKey a Employee
+        'customer',       # Relación ForeignKey a Customer
+        'service'         # Relación ForeignKey a Service
     ).order_by('-date', '-time')
     
     # Filtrar por estado si se proporciona
@@ -1552,3 +1570,31 @@ def get_available_hours(request):
             current_time += appointment_duration
 
     return JsonResponse({'available_hours': available_hours})
+ 
+
+
+@login_required
+def update_appointment_status(request, appointment_id):
+    from django.shortcuts import get_object_or_404
+    from .models import Appointment
+    
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    new_status = request.POST.get('status')
+    
+    if new_status in ['scheduled', 'completed', 'cancelled']:
+        appointment.status = new_status
+        appointment.save()
+        
+        # Para respuesta AJAX
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'new_status': appointment.status,
+                'status_display': appointment.get_status_display()
+            })
+        
+        # Para solicitudes normales
+        messages.success(request, f'Appointment status updated to {new_status}')
+        return redirect('manage_staff_appointments')
+    
+    return JsonResponse({'success': False, 'error': 'Invalid status'}, status=400)

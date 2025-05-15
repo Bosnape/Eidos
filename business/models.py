@@ -190,4 +190,3 @@ class Availability(models.Model):
     class Meta:
         verbose_name_plural = "Availabilities"
         unique_together = ['employee', 'date']
-
