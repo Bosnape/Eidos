@@ -3,11 +3,9 @@ from . import views
 from .views import get_available_hours
 
 urlpatterns = [
-    # Sign up and login
+    # Sign up
     path('signup/account-info/', views.registerBusinessInfo, name="register_IBusiness"),
     path('signup/account-credentials/', views.registerBusinessUser, name="register_UBusiness"),
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logoutBusiness, name='logout'),
     
     # Dashboard and manage profile
     path('dashboard/', views.provideDashboardSection, name="business_dashboard"),

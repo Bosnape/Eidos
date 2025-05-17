@@ -1,8 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from .models import BusinessAccount, RegistrationSession, Service, Employee, PortfolioItem, Schedule, Shift, Availability, Appointment 
-from django.forms import inlineformset_factory, modelformset_factory
 
 Account = get_user_model()
 
@@ -51,11 +49,6 @@ class BusinessUserForm(forms.ModelForm):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords don't match")
         return password2
-
-class LoginForm(forms.Form):
-    """Form for user login"""
-    email = forms.EmailField(max_length=100, required=True)
-    password = forms.CharField(widget=forms.PasswordInput)
     
 class BusinessProfileForm(forms.ModelForm):
     description = forms.CharField(
@@ -91,7 +84,6 @@ class PortfolioItemForm(forms.ModelForm):
     class Meta:
         model = PortfolioItem
         fields = ['title', 'description', 'image']
-
 
 # Used to create/edit a Schedule
 class ScheduleForm(forms.ModelForm):

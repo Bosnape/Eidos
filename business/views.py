@@ -2,8 +2,8 @@ import uuid
 import os
 import re
 from django.http import JsonResponse
-from django.contrib.auth import authenticate, login, logout, get_user_model
-from datetime import datetime, timedelta, date, time
+from django.contrib.auth import login, get_user_model
+from datetime import datetime, timedelta, date
 from pydantic import ValidationError
 from django.views.decorators.http import require_GET
 
@@ -22,7 +22,7 @@ from .models import (
     Availability
 )
 from .forms import (
-    BusinessInfoForm, BusinessUserForm, LoginForm, BusinessProfileForm, 
+    BusinessInfoForm, BusinessUserForm, BusinessProfileForm, 
     ServiceForm, SocialMediaForm, EmployeeForm, PortfolioItemForm,
     ScheduleForm, ShiftFormSet, AppointmentForm
 )
@@ -112,51 +112,6 @@ def registerBusinessUser(request):
         form = BusinessUserForm()
     
     return render(request, 'register_credentials.html', {'form': form})
-
-def login_view(request):
-    # If the user is already authenticated, redirect appropriately
-    if request.user.is_authenticated:
-        if hasattr(request.user, 'businessaccount'):
-            return redirect('business_dashboard')
-        elif hasattr(request.user, 'customerprofile'):
-            return redirect('userAppointments')
-        else:
-            return redirect('search_business')
-
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            user = authenticate(request, email=email, password=password)
-
-            if user is not None:
-                login(request, user)
-                messages.success(request, "Welcome back!")
-
-                if hasattr(user, 'businessaccount'):
-                    return redirect('business_dashboard')
-
-                elif hasattr(user, 'customer'):
-                    return redirect('userAppointments')
-
-                else:
-                    messages.error(request, "This account is not associated with any valid profile.")
-                    return redirect('search_business')
-
-            else:
-                messages.error(request, "Invalid email or password.")
-    else:
-        form = LoginForm()
-
-    return render(request, 'login.html', {'form': form})
-
-
-@login_required
-def logoutBusiness(request):
-    logout(request)
-    messages.success(request, "Logged out successfully!")
-    return redirect('home')
 
 def displayProfile(request, business_name):
     try:
@@ -1571,8 +1526,6 @@ def get_available_hours(request):
 
     return JsonResponse({'available_hours': available_hours})
  
-
-
 @login_required
 def update_appointment_status(request, appointment_id):
     from django.shortcuts import get_object_or_404

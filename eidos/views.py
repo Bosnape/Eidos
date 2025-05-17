@@ -1,7 +1,11 @@
-from django.shortcuts import render
-from business.models import BusinessAccount
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.db.models import Q
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from business.models import BusinessAccount
+from .forms import LoginForm
 
 def showEidosHome(request): 
     return render(request, "home.html") 
@@ -46,3 +50,47 @@ def searchBusinessAjax(request):
             })
     
     return JsonResponse({'businesses': results})
+
+def loginView(request):
+    # If the user is already authenticated, redirect appropriately
+    if request.user.is_authenticated:
+        if hasattr(request.user, 'businessaccount'):
+            return redirect('business_dashboard')
+        elif hasattr(request.user, 'customerprofile'):
+            return redirect('userAppointments')
+        else:
+            return redirect('search_business')
+
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            user = authenticate(request, email=email, password=password)
+
+            if user is not None:
+                login(request, user)
+                messages.success(request, "Welcome back!")
+
+                if hasattr(user, 'businessaccount'):
+                    return redirect('business_dashboard')
+
+                elif hasattr(user, 'customer'):
+                    return redirect('userAppointments')
+
+                else:
+                    messages.error(request, "This account is not associated with any valid profile.")
+                    return redirect('search_business')
+
+            else:
+                messages.error(request, "Invalid email or password.")
+    else:
+        form = LoginForm()
+
+    return render(request, 'login.html', {'form': form})
+
+@login_required
+def logoutView(request):
+    logout(request)
+    messages.success(request, "Logged out successfully!")
+    return redirect('home')
