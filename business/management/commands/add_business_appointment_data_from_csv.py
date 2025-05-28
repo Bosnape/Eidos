@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = "Add fake data to a business from a CSV file"
 
     def handle(self, *args, **kwargs):
-        csv_file = 'sample.csv' # Remember to change this to the correct path
+        csv_file = 'sample_january_updated.csv' # Remember to change this to the correct path
 
         if not os.path.exists(csv_file):
             self.stderr.write(f"CSV file '{csv_file}' not found.")
@@ -21,7 +21,6 @@ class Command(BaseCommand):
                 time = row['Time']
                 customer_name = row['Customer Name']
                 customer_email = row['Customer Email']
-                price = row['Price']
                 payment_method = row['Payment Method']
                 duration_minutes = row['Duration (minutes)']
                 customer_satisfaction = row['Customer Satisfaction']
@@ -29,7 +28,7 @@ class Command(BaseCommand):
                 no_show = row['No-show']
                 status = row['Status']
 
-                business_name = "BarberEx" # Change this to the actual business name you want to use
+                business_name = "BarberGreg" # Change this to the actual business name you want to use
                 
                 try:
                     business = BusinessAccount.objects.filter(name__iexact=business_name).first()
@@ -42,7 +41,7 @@ class Command(BaseCommand):
                         customer_name=customer_name,
                         customer_email=customer_email,
                         service=service,
-                        price=price,
+                        price=service.price,
                         payment_method=payment_method,
                         duration_minutes=duration_minutes,
                         barber=barber,
